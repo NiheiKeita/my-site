@@ -105,6 +105,7 @@ export const Game = () => {
           handleMove('right')
           break
         case 'z':
+        case 'Enter':
           handleInteract()
           break
       }
