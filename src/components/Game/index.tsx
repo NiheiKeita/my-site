@@ -30,6 +30,9 @@ export const Game = () => {
   ])
 
   const handleMove = (direction: 'up' | 'down' | 'left' | 'right') => {
+    // ポップアップ表示中は移動しない
+    if (showPopup) return
+
     setPlayerDirection(direction)
     const newPosition = { ...playerPosition }
 
@@ -52,6 +55,7 @@ export const Game = () => {
     const isCollision = gameObjects.some(
       (obj) => obj.position.x === newPosition.x && obj.position.y === newPosition.y
     )
+
     // 衝突している場合は、元の位置に戻す
     if (isCollision) {
       newPosition.x = playerPosition.x
@@ -60,9 +64,26 @@ export const Game = () => {
 
     // 位置を更新してアニメーションを表示
     setPlayerPosition(newPosition)
+
+    // 10%の確率でランダムなメッセージを表示
+    if (Math.random() < 0.1) {
+      const messages = [
+        '何かが動いた気がする...',
+        '風の音が聞こえる...',
+        '遠くで何かの音がする...',
+        '不思議な気配を感じる...',
+        '何かが光っている...',
+      ]
+      const randomMessage = messages[Math.floor(Math.random() * messages.length)]
+      setPopupContent(randomMessage)
+      setShowPopup(true)
+    }
   }
 
   const handleInteract = () => {
+    // ポップアップ表示中はインタラクションしない
+    if (showPopup) return
+
     const frontPosition = { ...playerPosition }
     switch (playerDirection) {
       case 'up':
@@ -105,15 +126,21 @@ export const Game = () => {
           handleMove('right')
           break
         case 'z':
-        case 'Enter':
           handleInteract()
+          break
+        case 'Enter':
+          if (showPopup) {
+            setShowPopup(false)
+          } else {
+            handleInteract()
+          }
           break
       }
     }
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [playerPosition])
+  }, [playerPosition, showPopup])
 
   return (
     <div className="relative flex h-screen w-full items-center justify-center bg-gray-900">
