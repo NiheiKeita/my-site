@@ -65,8 +65,8 @@ export const Game = () => {
     // 位置を更新してアニメーションを表示
     setPlayerPosition(newPosition)
 
-    // 10%の確率でランダムなメッセージを表示
-    if (Math.random() < 0.1) {
+    // 25分の1の確率でランダムなメッセージを表示
+    if (Math.random() < 0.04) {
       const messages = [
         '何かが動いた気がする...',
         '風の音が聞こえる...',
