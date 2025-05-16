@@ -52,10 +52,14 @@ export const Game = () => {
     const isCollision = gameObjects.some(
       (obj) => obj.position.x === newPosition.x && obj.position.y === newPosition.y
     )
-
-    if (!isCollision) {
-      setPlayerPosition(newPosition)
+    // 衝突している場合は、元の位置に戻す
+    if (isCollision) {
+      newPosition.x = playerPosition.x
+      newPosition.y = playerPosition.y
     }
+
+    // 位置を更新してアニメーションを表示
+    setPlayerPosition(newPosition)
   }
 
   const handleInteract = () => {

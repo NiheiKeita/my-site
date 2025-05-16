@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 
 interface CharacterProps {
   position: {
@@ -9,11 +9,33 @@ interface CharacterProps {
 }
 
 export const Character = ({ position, direction }: CharacterProps) => {
+  const [isWalking, setIsWalking] = useState(false)
+  const [step, setStep] = useState(0)
+
+  // 位置が変更されたときに歩行アニメーションを開始
+  useEffect(() => {
+    setIsWalking(true)
+    const timer = setTimeout(() => {
+      setIsWalking(false)
+    }, 200) // 200ミリ秒後に歩行アニメーションを停止
+    return () => clearTimeout(timer)
+  }, [position])
+
+  // 歩行アニメーション中はステップを切り替え
+  useEffect(() => {
+    if (isWalking) {
+      const timer = setInterval(() => {
+        setStep((prev) => (prev + 1) % 2)
+      }, 100) // 100ミリ秒ごとにステップを切り替え
+      return () => clearInterval(timer)
+    }
+  }, [isWalking])
+
   return (
     <img
-      src={`/assets/characters/hero_${direction}.PNG`}
-      alt={`Character facing ${direction}`}
-      className="absolute size-8 transition-all duration-100"
+      src={`/assets/characters/hero_${direction}_${step}.PNG`}
+      alt="主人公"
+      className="absolute size-8"
       style={{
         left: `${position.x * 32}px`,
         top: `${position.y * 32}px`,
