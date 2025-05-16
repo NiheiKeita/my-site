@@ -20,14 +20,16 @@ interface GameObject {
 }
 
 export const Game = () => {
-  const [playerPosition, setPlayerPosition] = useState<Position>({ x: 0, y: 0 })
+  const [playerPosition, setPlayerPosition] = useState<Position>({ x: 4, y: 4 })
   const [playerDirection, setPlayerDirection] = useState<'up' | 'down' | 'left' | 'right'>('down')
   const [showPopup, setShowPopup] = useState(false)
   const [popupContent, setPopupContent] = useState('')
 
   const objects: GameObject[] = [
     { id: '1', type: 'pot', position: { x: 2, y: 2 } },
-    { id: '2', type: 'chest', position: { x: 4, y: 3 } },
+    { id: '2', type: 'chest', position: { x: 5, y: 3 } },
+    { id: '3', type: 'pot', position: { x: 6, y: 6 } },
+    { id: '4', type: 'chest', position: { x: 3, y: 5 } },
   ]
 
   const handleMove = (direction: 'up' | 'down' | 'left' | 'right') => {
@@ -51,7 +53,13 @@ export const Game = () => {
 
     // マップの境界チェック
     if (newPosition.x >= 0 && newPosition.x < 8 && newPosition.y >= 0 && newPosition.y < 8) {
-      setPlayerPosition(newPosition)
+      // オブジェクトとの衝突チェック
+      const isCollision = objects.some(
+        obj => obj.position.x === newPosition.x && obj.position.y === newPosition.y
+      )
+      if (!isCollision) {
+        setPlayerPosition(newPosition)
+      }
     }
   }
 
@@ -88,7 +96,7 @@ export const Game = () => {
   return (
     <div className="relative flex h-screen w-full items-center justify-center bg-gray-900">
       <div className="relative">
-        <Map />
+        <Map width={8} height={8} />
         <Character position={playerPosition} direction={playerDirection} />
         {objects.map(obj => (
           <div
