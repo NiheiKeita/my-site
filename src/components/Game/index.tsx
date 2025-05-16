@@ -1,22 +1,20 @@
 'use client'
 
-import { useState } from 'react'
-import { useKeyboardControls } from '../../hooks/useKeyboardControls'
-import { useTouchControls } from '../../hooks/useTouchControls'
+import { useEffect, useState } from 'react'
 import { Character } from '../Character'
 import { Map } from '../Map'
 import { TouchControls } from '../TouchControls'
 import { Popup } from '../Popup'
+import { GameObject } from '../GameObject'
 
 interface Position {
-  x: number;
-  y: number;
+  x: number
+  y: number
 }
 
 interface GameObject {
-  id: string;
-  type: 'pot' | 'chest';
-  position: Position;
+  type: 'pot' | 'chest'
+  position: Position
 }
 
 export const Game = () => {
@@ -24,13 +22,12 @@ export const Game = () => {
   const [playerDirection, setPlayerDirection] = useState<'up' | 'down' | 'left' | 'right'>('down')
   const [showPopup, setShowPopup] = useState(false)
   const [popupContent, setPopupContent] = useState('')
-
-  const objects: GameObject[] = [
-    { id: '1', type: 'pot', position: { x: 2, y: 2 } },
-    { id: '2', type: 'chest', position: { x: 5, y: 3 } },
-    { id: '3', type: 'pot', position: { x: 6, y: 6 } },
-    { id: '4', type: 'chest', position: { x: 3, y: 5 } },
-  ]
+  const [gameObjects] = useState<GameObject[]>([
+    { type: 'pot', position: { x: 2, y: 2 } },
+    { type: 'pot', position: { x: 5, y: 2 } },
+    { type: 'chest', position: { x: 2, y: 5 } },
+    { type: 'chest', position: { x: 5, y: 5 } },
+  ])
 
   const handleMove = (direction: 'up' | 'down' | 'left' | 'right') => {
     setPlayerDirection(direction)
@@ -38,28 +35,26 @@ export const Game = () => {
 
     switch (direction) {
       case 'up':
-        newPosition.y -= 1
+        newPosition.y = Math.max(0, playerPosition.y - 1)
         break
       case 'down':
-        newPosition.y += 1
+        newPosition.y = Math.min(7, playerPosition.y + 1)
         break
       case 'left':
-        newPosition.x -= 1
+        newPosition.x = Math.max(0, playerPosition.x - 1)
         break
       case 'right':
-        newPosition.x += 1
+        newPosition.x = Math.min(7, playerPosition.x + 1)
         break
     }
 
-    // マップの境界チェック
-    if (newPosition.x >= 0 && newPosition.x < 8 && newPosition.y >= 0 && newPosition.y < 8) {
-      // オブジェクトとの衝突チェック
-      const isCollision = objects.some(
-        obj => obj.position.x === newPosition.x && obj.position.y === newPosition.y
-      )
-      if (!isCollision) {
-        setPlayerPosition(newPosition)
-      }
+    // オブジェクトとの衝突チェック
+    const isCollision = gameObjects.some(
+      (obj) => obj.position.x === newPosition.x && obj.position.y === newPosition.y
+    )
+
+    if (!isCollision) {
+      setPlayerPosition(newPosition)
     }
   }
 
@@ -80,7 +75,7 @@ export const Game = () => {
         break
     }
 
-    const object = objects.find(
+    const object = gameObjects.find(
       obj => obj.position.x === frontPosition.x && obj.position.y === frontPosition.y
     )
 
@@ -90,28 +85,47 @@ export const Game = () => {
     }
   }
 
-  useKeyboardControls(handleMove, handleInteract)
-  const { isMobile, handleTouchMove, handleTouchInteract } = useTouchControls(handleMove, handleInteract)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      switch (e.key) {
+        case 'ArrowUp':
+          handleMove('up')
+          break
+        case 'ArrowDown':
+          handleMove('down')
+          break
+        case 'ArrowLeft':
+          handleMove('left')
+          break
+        case 'ArrowRight':
+          handleMove('right')
+          break
+        case 'z':
+          handleInteract()
+          break
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [playerPosition])
 
   return (
     <div className="relative flex h-screen w-full items-center justify-center bg-gray-900">
       <div className="relative">
         <Map width={8} height={8} />
         <Character position={playerPosition} direction={playerDirection} />
-        {objects.map(obj => (
-          <div
-            key={obj.id}
-            className="absolute size-8"
-            style={{
-              left: `${obj.position.x * 32}px`,
-              top: `${obj.position.y * 32}px`,
-              backgroundImage: `url(/assets/objects/${obj.type}.png)`,
-              backgroundSize: 'contain',
-            }}
-          />
-        ))}
+        <div className="absolute top-0 left-0 right-0 bottom-0">
+          {gameObjects.map((obj, index) => (
+            <GameObject
+              key={`${obj.type}-${index}`}
+              type={obj.type}
+              position={obj.position}
+            />
+          ))}
+        </div>
       </div>
-      {isMobile && <TouchControls onMove={handleTouchMove} onInteract={handleTouchInteract} />}
+      <TouchControls onMove={handleMove} onInteract={handleInteract} />
       {showPopup && <Popup content={popupContent} onClose={() => setShowPopup(false)} />}
     </div>
   )
