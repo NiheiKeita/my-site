@@ -143,21 +143,25 @@ export const Game = () => {
   }, [playerPosition, showPopup])
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-900 overflow-hidden">
-      <div className="relative">
-        <Map width={8} height={8} />
-        <Character position={playerPosition} direction={playerDirection} />
-        <div className="absolute top-0 left-0 right-0 bottom-0">
-          {gameObjects.map((obj, index) => (
-            <GameObject
-              key={`${obj.type}-${index}`}
-              type={obj.type}
-              position={obj.position}
-            />
-          ))}
+    <div className="fixed inset-0 flex flex-col items-center justify-start bg-gray-900 overflow-hidden">
+      <div className="flex-1 flex items-start justify-center min-h-0 p-4 sm:items-center sm:pt-4 pt-8">
+        <div className="relative">
+          <Map width={8} height={8} />
+          <Character position={playerPosition} direction={playerDirection} />
+          <div className="absolute top-0 left-0 right-0 bottom-0">
+            {gameObjects.map((obj, index) => (
+              <GameObject
+                key={`${obj.type}-${index}`}
+                type={obj.type}
+                position={obj.position}
+              />
+            ))}
+          </div>
         </div>
       </div>
-      <TouchControls onMove={handleMove} onInteract={handleInteract} />
+      <div className="w-full max-w-md p-4">
+        <TouchControls onMove={handleMove} onInteract={handleInteract} />
+      </div>
       {showPopup && <Popup content={popupContent} onClose={() => setShowPopup(false)} />}
     </div>
   )
