@@ -1,3 +1,6 @@
+// グリッドのサイズを定数として定義
+export const GRID_SIZE = 48
+
 interface MapProps {
   width?: number;
   height?: number;
@@ -8,24 +11,18 @@ export const Map = ({ width = 8, height = 8 }: MapProps) => {
     Array.from({ length: width }, (_, x) => ({
       x,
       y,
+      isAlternate: (x + y) % 2 === 0,
     }))
   )
 
   return (
-    <div className="relative bg-gray-800">
-      <div className="grid" style={{ gridTemplateColumns: `repeat(${width}, 32px)` }}>
-        {grid.map((row) =>
-          row.map((cell) => (
-            <div
-              key={`${cell.x}-${cell.y}`}
-              className="size-8 border border-gray-700"
-              style={{
-                backgroundColor: (cell.x + cell.y) % 2 === 0 ? '#1f2937' : '#374151',
-              }}
-            />
-          ))
-        )}
-      </div>
+    <div className="grid" style={{ gridTemplateColumns: `repeat(${width}, ${GRID_SIZE}px)` }}>
+      {grid.flat().map((cell) => (
+        <div
+          key={`${cell.x}-${cell.y}`}
+          className={`size-12 ${cell.isAlternate ? 'bg-gray-700' : 'bg-gray-800'}`}
+        />
+      ))}
     </div>
   )
 } 

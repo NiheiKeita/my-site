@@ -1,3 +1,5 @@
+import { GRID_SIZE } from '../Map'
+
 interface GameObjectProps {
   type: 'pot' | 'chest';
   position: {
@@ -11,10 +13,10 @@ export const GameObject = ({ type, position }: GameObjectProps) => {
     <img
       src={`/assets/objects/${type}.png`}
       alt={`${type === 'pot' ? '壺' : '宝箱'}`}
-      className="absolute size-8"
+      className="absolute size-12"
       style={{
-        left: `${position.x * 32}px`,
-        top: `${position.y * 32}px`,
+        left: `${position.x * GRID_SIZE}px`,
+        top: `${position.y * GRID_SIZE}px`,
       }}
     />
   )

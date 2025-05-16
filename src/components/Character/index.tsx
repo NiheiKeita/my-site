@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { GRID_SIZE } from '../Map'
 
 interface CharacterProps {
   position: {
@@ -35,10 +36,10 @@ export const Character = ({ position, direction }: CharacterProps) => {
     <img
       src={`/assets/characters/hero_${direction}_${step}.PNG`}
       alt="主人公"
-      className="absolute size-8"
+      className="absolute size-12"
       style={{
-        left: `${position.x * 32}px`,
-        top: `${position.y * 32}px`,
+        left: `${position.x * GRID_SIZE}px`,
+        top: `${position.y * GRID_SIZE}px`,
       }}
     />
   )

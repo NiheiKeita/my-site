@@ -143,7 +143,7 @@ export const Game = () => {
   }, [playerPosition, showPopup])
 
   return (
-    <div className="relative flex h-screen w-full items-center justify-center bg-gray-900">
+    <div className="fixed inset-0 flex items-center justify-center bg-gray-900 overflow-hidden">
       <div className="relative">
         <Map width={8} height={8} />
         <Character position={playerPosition} direction={playerDirection} />
