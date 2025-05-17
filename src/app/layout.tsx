@@ -7,8 +7,8 @@ import { Providers } from './providers'
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "ドラゴンクエスト風RPG",
-  description: "ドラゴンクエスト風のRPGゲーム",
+  title: "ケイタMAXの冒険",
+  description: "ケイタMAXの冒険",
 }
 
 export default function RootLayout({

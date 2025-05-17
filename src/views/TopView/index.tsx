@@ -27,13 +27,13 @@ export const TopView = () => {
   return (
     <div className="fixed inset-0 flex flex-col items-center justify-center bg-black text-white">
       <h1 className="text-4xl md:text-6xl font-bold mb-8 animate-fade-in">
-        ドラゴンクエスト風RPG
+        ケイタMAXの冒険
       </h1>
       <p className="text-xl md:text-2xl mb-4 animate-fade-in">
-        ようこそ、冒険者よ
+        ケイタMAXの冒険にようこそ
       </p>
       <p className="text-lg md:text-xl animate-blink">
-        ゲームを開始します...
+        ゲームを開始しています...
       </p>
     </div>
   )
