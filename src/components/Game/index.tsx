@@ -7,6 +7,10 @@ import { TouchControls } from '../TouchControls'
 import { Popup } from '../Popup'
 import { GameObject } from '../GameObject'
 import { CommandMenu } from '../CommandMenu'
+import { BattleView } from '../../views/BattleView'
+import { enemies } from '../../data/enemies'
+import { useAtom, useSetAtom } from 'jotai'
+import { playerStatusAtom, updatePlayerStatusAtom } from '../../store/player'
 
 interface Position {
   x: number
@@ -19,6 +23,10 @@ interface GameObjectData {
 }
 
 export const Game = () => {
+  const [playerStatus] = useAtom(playerStatusAtom)
+  const updatePlayerStatus = useSetAtom(updatePlayerStatusAtom)
+  const [isInBattle, setIsInBattle] = useState(false)
+  const [currentEnemy, setCurrentEnemy] = useState(enemies[0])
   const [playerPosition, setPlayerPosition] = useState<Position>({ x: 4, y: 4 })
   const [playerDirection, setPlayerDirection] = useState<'up' | 'down' | 'left' | 'right'>('down')
   const [showPopup, setShowPopup] = useState(false)
@@ -47,6 +55,23 @@ export const Game = () => {
     // クリーンアップ
     return () => window.removeEventListener('resize', updateGridSize)
   }, [])
+
+  // // ランダムエンカウントの処理
+  // useEffect(() => {
+  //   if (isInBattle) return
+
+  //   const handleMove = () => {
+  //     // 10%の確率でエンカウント
+  //     if (Math.random() < 0.1) {
+  //       const randomEnemy = enemies[Math.floor(Math.random() * enemies.length)]
+  //       setCurrentEnemy(randomEnemy)
+  //       setIsInBattle(true)
+  //     }
+  //   }
+
+  //   window.addEventListener('keydown', handleMove)
+  //   return () => window.removeEventListener('keydown', handleMove)
+  // }, [isInBattle])
 
   const handleMove = useCallback((direction: 'up' | 'down' | 'left' | 'right') => {
     // ポップアップ表示中またはコマンドメニュー表示中は移動しない
@@ -86,18 +111,22 @@ export const Game = () => {
 
     // 25分の1の確率でランダムなメッセージを表示
     if (Math.random() < 0.04) {
-      const messages = [
-        '何かが動いた気がする...',
-        '風の音が聞こえる...',
-        '遠くで何かの音がする...',
-        '不思議な気配を感じる...',
-        '何かが光っている...',
-      ]
-      const randomMessage = messages[Math.floor(Math.random() * messages.length)]
-      setPopupContent(randomMessage)
-      setShowPopup(true)
+      if (isInBattle) return
+      const randomEnemy = enemies[Math.floor(Math.random() * enemies.length)]
+      setCurrentEnemy(randomEnemy)
+      setIsInBattle(true)
+      // const messages = [
+      //   '何かが動いた気がする...',
+      //   '風の音が聞こえる...',
+      //   '遠くで何かの音がする...',
+      //   '不思議な気配を感じる...',
+      //   '何かが光っている...',
+      // ]
+      // const randomMessage = messages[Math.floor(Math.random() * messages.length)]
+      // setPopupContent(randomMessage)
+      // setShowPopup(true)
     }
-  }, [playerPosition, showPopup, showCommandMenu, gameObjects])
+  }, [playerPosition, showPopup, showCommandMenu, gameObjects, isInBattle])
 
   const handleInteract = useCallback(() => {
     // ポップアップ表示中はインタラクションしない
@@ -172,27 +201,55 @@ export const Game = () => {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [playerPosition, showPopup, showCommandMenu, handleMove, handleInteract])
 
+  const handleBattleEnd = (isVictory: boolean, exp: number, gold: number) => {
+    if (isVictory) {
+      // 勝利時の処理
+      updatePlayerStatus({
+        exp: playerStatus.exp + exp,
+        gold: playerStatus.gold + gold,
+      })
+    } else {
+      // 敗北時の処理
+      updatePlayerStatus({
+        hp: playerStatus.maxHp, // HPを全回復
+      })
+    }
+    setIsInBattle(false)
+  }
+
+  if (isInBattle) {
+    return <BattleView enemy={currentEnemy} onBattleEnd={handleBattleEnd} />
+  }
+
   return (
-    <div className="fixed inset-0 flex flex-col items-center justify-start overflow-hidden bg-gray-900">
-      <div className="flex min-h-0 flex-1 items-start justify-center p-4 pt-8 sm:items-center sm:pt-4">
-        <div className="relative">
-          <Map width={8} height={8} />
-          <Character position={playerPosition} direction={playerDirection} gridSize={gridSize} />
-          <div className="absolute inset-0">
-            {gameObjects.map((obj, index) => (
-              <GameObject
-                key={`${obj.type}-${index}`}
-                type={obj.type}
-                position={obj.position}
-                gridSize={gridSize}
-              />
-            ))}
-          </div>
+    <div className="relative size-full">
+      {/* ステータス表示 */}
+      <div className="absolute top-4 left-4 z-10 bg-black/50 p-2 rounded text-white">
+        <p>Lv.{playerStatus.level}</p>
+        <div className="h-4 w-48 bg-gray-700 rounded">
+          <div
+            className="h-full bg-green-500 rounded"
+            style={{ width: `${(playerStatus.hp / playerStatus.maxHp) * 100}%` }}
+          />
         </div>
+        <p>HP: {playerStatus.hp}/{playerStatus.maxHp}</p>
+        <p>EXP: {playerStatus.exp}</p>
+        <p>GOLD: {playerStatus.gold}</p>
       </div>
-      <div className="w-full max-w-md p-4">
-        <TouchControls onMove={handleMove} onInteract={handleInteract} />
+
+      <Map width={8} height={8} />
+      <Character position={playerPosition} direction={playerDirection} gridSize={gridSize} />
+      <div className="absolute inset-0">
+        {gameObjects.map((obj, index) => (
+          <GameObject
+            key={`${obj.type}-${index}`}
+            type={obj.type}
+            position={obj.position}
+            gridSize={gridSize}
+          />
+        ))}
       </div>
+      <TouchControls onMove={handleMove} onInteract={handleInteract} />
       {showPopup && <Popup content={popupContent} onClose={() => setShowPopup(false)} />}
       {showCommandMenu && <CommandMenu onClose={() => setShowCommandMenu(false)} />}
     </div>
