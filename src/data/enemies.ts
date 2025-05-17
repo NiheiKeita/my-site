@@ -3,7 +3,7 @@ import { Enemy } from '../types/enemy'
 export const enemies: Enemy[] = [
   {
     id: 'slime',
-    name: 'スライム',
+    name: 'とろけスライム',
     hp: 30,
     maxHp: 30,
     attack: 5,
@@ -16,8 +16,8 @@ export const enemies: Enemy[] = [
   {
     id: 'tomato',
     name: 'びっくりトマト',
-    hp: 50,
-    maxHp: 50,
+    hp: 20,
+    maxHp: 20,
     attack: 8,
     defense: 4,
     image: '/assets/enemies/tomato.PNG',
@@ -28,8 +28,8 @@ export const enemies: Enemy[] = [
   {
     id: 'cheese',
     name: 'はいチーズ',
-    hp: 70,
-    maxHp: 70,
+    hp: 30,
+    maxHp: 30,
     attack: 12,
     defense: 6,
     image: '/assets/enemies/cheese.PNG',
