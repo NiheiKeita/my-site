@@ -3,20 +3,16 @@ name: ESLint
 on: [pull_request]
 
 jobs:
-  eslint:
-    name: eslint
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - name: npm ci
-        run: npm ci
-      - name: eslint review
-        uses: reviewdog/action-eslint@v1
+      - uses: actions/checkout@v4
+      # Setup .npmrc file to publish to npm
+      - uses: actions/setup-node@v4
         with:
-          github_token: ${{ secrets.github_token }}
-          reporter: github-pr-review
-          eslint_flags: './**/*.{vue,ts,js}'
-          fail_on_error: 'true'
+          node-version: '21.x'
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm ci
       - name: eslint
         run: npm run lint
       - name: eslint
