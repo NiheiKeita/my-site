@@ -6,6 +6,7 @@ import { Map, calculateGridSize } from '../Map'
 import { TouchControls } from '../TouchControls'
 import { Popup } from '../Popup'
 import { GameObject } from '../GameObject'
+import { CommandMenu } from '../CommandMenu'
 
 interface Position {
   x: number
@@ -23,6 +24,7 @@ export const Game = () => {
   const [showPopup, setShowPopup] = useState(false)
   const [popupContent, setPopupContent] = useState('')
   const [gridSize, setGridSize] = useState(48)
+  const [showCommandMenu, setShowCommandMenu] = useState(false)
   const [gameObjects] = useState<GameObject[]>([
     { type: 'pot', position: { x: 2, y: 2 } },
     { type: 'pot', position: { x: 5, y: 2 } },
@@ -47,8 +49,8 @@ export const Game = () => {
   }, [])
 
   const handleMove = (direction: 'up' | 'down' | 'left' | 'right') => {
-    // ポップアップ表示中は移動しない
-    if (showPopup) return
+    // ポップアップ表示中またはコマンドメニュー表示中は移動しない
+    if (showPopup || showCommandMenu) return
 
     setPlayerDirection(direction)
     const newPosition = { ...playerPosition }
@@ -124,6 +126,9 @@ export const Game = () => {
     if (object) {
       setPopupContent(`${object.type === 'pot' ? '壺' : '宝箱'}を見つけました！`)
       setShowPopup(true)
+    } else {
+      // オブジェクトがない場合はコマンドメニューを表示
+      setShowCommandMenu(true)
     }
   }
 
@@ -148,8 +153,15 @@ export const Game = () => {
         case 'Enter':
           if (showPopup) {
             setShowPopup(false)
+          } else if (showCommandMenu) {
+            setShowCommandMenu(false)
           } else {
             handleInteract()
+          }
+          break
+        case 'Escape':
+          if (showCommandMenu) {
+            setShowCommandMenu(false)
           }
           break
       }
@@ -157,7 +169,7 @@ export const Game = () => {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [playerPosition, showPopup])
+  }, [playerPosition, showPopup, showCommandMenu])
 
   return (
     <div className="fixed inset-0 flex flex-col items-center justify-start bg-gray-900 overflow-hidden">
@@ -181,6 +193,7 @@ export const Game = () => {
         <TouchControls onMove={handleMove} onInteract={handleInteract} />
       </div>
       {showPopup && <Popup content={popupContent} onClose={() => setShowPopup(false)} />}
+      {showCommandMenu && <CommandMenu onClose={() => setShowCommandMenu(false)} />}
     </div>
   )
 } 

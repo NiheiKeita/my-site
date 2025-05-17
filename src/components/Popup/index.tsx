@@ -6,14 +6,18 @@ interface PopupProps {
 export const Popup = ({ content, onClose }: PopupProps) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="w-full max-w-sm rounded-lg bg-white p-6 shadow-lg">
-        <p className="mb-4 text-gray-800">{content}</p>
-        <button
-          className="w-full rounded bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600"
-          onClick={onClose}
-        >
-          閉じる
-        </button>
+      <div className="bg-gray-800 p-4 rounded-lg shadow-lg w-[90%] max-w-md">
+        <div className="text-white">
+          <div className="text-lg leading-relaxed mb-4">{content}</div>
+          <div className="text-center">
+            <button
+              onClick={onClose}
+              className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded transition-colors"
+            >
+              決定
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   )
