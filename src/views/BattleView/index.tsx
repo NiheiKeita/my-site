@@ -118,7 +118,7 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
       <div className="flex justify-between p-4">
         <div>
           <p>あなた</p>
-          <div className="h-4 sm:w-48 w-36 bg-gray-700 rounded">
+          <div className="h-4 sm:w-64 w-36 bg-gray-700 rounded">
             <div
               className="h-full bg-green-500 rounded"
               style={{ width: `${(playerHp / 100) * 100}%` }}
@@ -128,7 +128,7 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
         </div>
         <div>
           <p>{enemy.name} Lv.{enemy.level}</p>
-          <div className="h-4 sm:w-48 w-36 bg-gray-700 rounded">
+          <div className="h-4 sm:w-64 w-36 bg-gray-700 rounded">
             <div
               className="h-full bg-red-500 rounded"
               style={{ width: `${(enemyHp / enemy.maxHp) * 100}%` }}
