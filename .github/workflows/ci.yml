@@ -1,0 +1,20 @@
+name: ESLint
+
+on: [pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Setup .npmrc file to publish to npm
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '21.x'
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm ci
+      - name: eslint
+        run: npm run lint
+      - name: eslint
+        run: npm run type-check
+

@@ -1,5 +1,5 @@
-
 import type { StorybookConfig } from '@storybook/nextjs';
+import path from 'path';
 
 const config: StorybookConfig = {
   "stories": [
@@ -23,10 +23,17 @@ const config: StorybookConfig = {
     if (config.resolve) {
       config.resolve.alias = {
         ...config.resolve.alias,
-        '~': path.resolve(__dirname, '../src'),
+        "@": path.resolve(__dirname, '../src'),
       };
+    }
+    if (config.module && config.module.rules) {
+      config.module.rules.push({
+        test: /\.(png|jpg|jpeg|gif|svg)$/i,
+        type: 'asset/resource',
+      });
     }
     return config;
   },
+  "staticDirs": ['../public'],
 };
 export default config;
