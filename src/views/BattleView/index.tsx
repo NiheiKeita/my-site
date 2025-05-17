@@ -118,7 +118,7 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
       <div className="flex justify-between p-4">
         <div>
           <p>あなた</p>
-          <div className="h-4 w-48 bg-gray-700 rounded">
+          <div className="h-4 sm:w-48 w-36 bg-gray-700 rounded">
             <div
               className="h-full bg-green-500 rounded"
               style={{ width: `${(playerHp / 100) * 100}%` }}
@@ -128,7 +128,7 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
         </div>
         <div>
           <p>{enemy.name} Lv.{enemy.level}</p>
-          <div className="h-4 w-48 bg-gray-700 rounded">
+          <div className="h-4 sm:w-48 w-36 bg-gray-700 rounded">
             <div
               className="h-full bg-red-500 rounded"
               style={{ width: `${(enemyHp / enemy.maxHp) * 100}%` }}
@@ -160,22 +160,22 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
       </div>
 
       {/* コマンド選択 */}
-      {battleState.isPlayerTurn && !battleState.isAttacking && !showEndMessage && (
-        <div className="grid grid-cols-2 gap-4 p-4">
-          <button
-            onClick={handleAttack}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >
-            たたかう
-          </button>
-          <button
-            className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-            disabled
-          >
-            にげる
-          </button>
-        </div>
-      )}
+      {/* {battleState.isPlayerTurn && !battleState.isAttacking && !showEndMessage && ( */}
+      <div className={`grid grid-cols-2 gap-4 p-4 ${(battleState.isPlayerTurn && !battleState.isAttacking && !showEndMessage) ? '' : 'invisible'}`}>
+        <button
+          onClick={handleAttack}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
+          たたかう
+        </button>
+        <button
+          className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+          disabled
+        >
+          にげる
+        </button>
+      </div>
+      {/* )} */}
     </div>
   )
 } 
