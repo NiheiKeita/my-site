@@ -223,6 +223,7 @@ export const Game = () => {
 
   return (
     <div className="relative flex size-full items-center justify-center">
+      <div className="fixed inset-0 bg-gray-900" />
       {/* ステータス表示 */}
       <div className="fixed left-4 bottom-4 z-2 rounded bg-black/50 p-2 text-white">
         <p>Lv.{playerStatus.level}</p>
