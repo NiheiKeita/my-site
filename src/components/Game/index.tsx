@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Character } from '../Character'
-import { Map } from '../Map'
+import { Map, calculateGridSize } from '../Map'
 import { TouchControls } from '../TouchControls'
 import { Popup } from '../Popup'
 import { GameObject } from '../GameObject'
@@ -22,12 +22,29 @@ export const Game = () => {
   const [playerDirection, setPlayerDirection] = useState<'up' | 'down' | 'left' | 'right'>('down')
   const [showPopup, setShowPopup] = useState(false)
   const [popupContent, setPopupContent] = useState('')
+  const [gridSize, setGridSize] = useState(48)
   const [gameObjects] = useState<GameObject[]>([
     { type: 'pot', position: { x: 2, y: 2 } },
     { type: 'pot', position: { x: 5, y: 2 } },
     { type: 'chest', position: { x: 2, y: 5 } },
     { type: 'chest', position: { x: 5, y: 5 } },
   ])
+
+  // グリッドサイズの更新
+  useEffect(() => {
+    const updateGridSize = () => {
+      setGridSize(calculateGridSize(8, 8))
+    }
+
+    // 初期サイズを計算
+    updateGridSize()
+
+    // リサイズイベントのリスナーを追加
+    window.addEventListener('resize', updateGridSize)
+
+    // クリーンアップ
+    return () => window.removeEventListener('resize', updateGridSize)
+  }, [])
 
   const handleMove = (direction: 'up' | 'down' | 'left' | 'right') => {
     // ポップアップ表示中は移動しない
@@ -147,13 +164,14 @@ export const Game = () => {
       <div className="flex-1 flex items-start justify-center min-h-0 p-4 sm:items-center sm:pt-4 pt-8">
         <div className="relative">
           <Map width={8} height={8} />
-          <Character position={playerPosition} direction={playerDirection} />
+          <Character position={playerPosition} direction={playerDirection} gridSize={gridSize} />
           <div className="absolute top-0 left-0 right-0 bottom-0">
             {gameObjects.map((obj, index) => (
               <GameObject
                 key={`${obj.type}-${index}`}
                 type={obj.type}
                 position={obj.position}
+                gridSize={gridSize}
               />
             ))}
           </div>

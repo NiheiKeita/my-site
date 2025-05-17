@@ -7,9 +7,10 @@ interface CharacterProps {
     y: number;
   };
   direction: 'up' | 'down' | 'left' | 'right';
+  gridSize?: number;
 }
 
-export const Character = ({ position, direction }: CharacterProps) => {
+export const Character = ({ position, direction, gridSize = GRID_SIZE }: CharacterProps) => {
   const [isWalking, setIsWalking] = useState(false)
   const [step, setStep] = useState(0)
 
@@ -35,11 +36,13 @@ export const Character = ({ position, direction }: CharacterProps) => {
   return (
     <img
       src={`/assets/characters/hero_${direction}_${step}.PNG`}
-      alt="主人公"
-      className="absolute size-12"
+      alt={`Character facing ${direction}`}
+      className="absolute transition-transform duration-150"
       style={{
-        left: `${position.x * GRID_SIZE}px`,
-        top: `${position.y * GRID_SIZE}px`,
+        width: `${gridSize}px`,
+        height: `${gridSize}px`,
+        left: `${position.x * gridSize}px`,
+        top: `${position.y * gridSize}px`,
       }}
     />
   )
