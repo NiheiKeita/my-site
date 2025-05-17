@@ -6,12 +6,9 @@
     "node": true
   },
   "extends": [
-    "eslint:recommended",
-    "plugin:react/recommended",
-    "plugin:@next/next/recommended",
-    "plugin:tailwindcss/recommended",
     "next/core-web-vitals",
-    "plugin:@typescript-eslint/recommended"
+    "eslint:recommended",
+    "plugin:tailwindcss/recommended"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
@@ -22,21 +19,22 @@
     "sourceType": "module"
   },
   "plugins": [
-    "react",
+    "@typescript-eslint",
     "tailwindcss"
   ],
   "rules": {
+    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "@typescript-eslint/no-explicit-any": "off",
+    "react/no-unescaped-entities": "off",
+    "react/display-name": "off",
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off",
-    "tailwindcss/classnames-order": "warn",
+    "tailwindcss/classnames-order": "off",
     "tailwindcss/no-custom-classname": "off",
+    "tailwindcss/migration-from-tailwind-2": "off",
+    "@next/next/no-img-element": "off",
     "newline-before-return": "warn",
-    "semi": ["error", "never"],
-    "@typescript-eslint/no-unused-vars": ["error", {
-      "argsIgnorePattern": "^_",
-      "varsIgnorePattern": "^_",
-      "ignoreRestSiblings": true
-    }]
+    "semi": ["error", "never"]
   },
   "settings": {
     "react": {

@@ -61,9 +61,9 @@ export const CommandDetail = ({ type, onClose }: CommandDetailProps) => {
     switch (type) {
       case 'spell':
         return (
-          <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-2">
+          <div className="max-h-[60vh] space-y-2 overflow-y-auto pr-2">
             {spellData.map((spell) => (
-              <div key={spell.name} className="bg-gray-700 p-2 rounded">
+              <div key={spell.name} className="rounded bg-gray-700 p-2">
                 <div className="flex justify-between">
                   <span className="font-bold">{spell.name}</span>
                   <span className="text-blue-400">MP {spell.mp}</span>
@@ -75,9 +75,9 @@ export const CommandDetail = ({ type, onClose }: CommandDetailProps) => {
         )
       case 'item':
         return (
-          <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-2">
+          <div className="max-h-[60vh] space-y-2 overflow-y-auto pr-2">
             {itemData.map((item) => (
-              <div key={item.name} className="bg-gray-700 p-2 rounded">
+              <div key={item.name} className="rounded bg-gray-700 p-2">
                 <div className="flex justify-between">
                   <span className="font-bold">{item.name}</span>
                   <span className="text-yellow-400">×{item.count}</span>
@@ -89,9 +89,9 @@ export const CommandDetail = ({ type, onClose }: CommandDetailProps) => {
         )
       case 'status':
         return (
-          <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-2">
-            <div className="bg-gray-700 p-2 rounded">
-              <div className="text-center font-bold mb-2">レベル {statusData.level}</div>
+          <div className="max-h-[60vh] space-y-2 overflow-y-auto pr-2">
+            <div className="rounded bg-gray-700 p-2">
+              <div className="mb-2 text-center font-bold">レベル {statusData.level}</div>
               <div className="grid grid-cols-2 gap-2">
                 <div>経験値: {statusData.exp}/{statusData.nextLevel}</div>
                 <div>所持金: {statusData.gold}G</div>
@@ -107,9 +107,9 @@ export const CommandDetail = ({ type, onClose }: CommandDetailProps) => {
         )
       case 'equip':
         return (
-          <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-2">
+          <div className="max-h-[60vh] space-y-2 overflow-y-auto pr-2">
             {equipData.map((equip) => (
-              <div key={equip.slot} className="bg-gray-700 p-2 rounded">
+              <div key={equip.slot} className="rounded bg-gray-700 p-2">
                 <div className="flex justify-between">
                   <span className="font-bold">{equip.slot}</span>
                   <span>{equip.name}</span>
@@ -139,12 +139,12 @@ export const CommandDetail = ({ type, onClose }: CommandDetailProps) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-gray-800 p-4 rounded-lg shadow-lg w-80">
-        <div className="flex justify-between items-center mb-4">
+      <div className="w-80 rounded-lg bg-gray-800 p-4 shadow-lg">
+        <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-bold text-white">{getTitle()}</h2>
           <button
             onClick={onClose}
-            className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded transition-colors"
+            className="rounded bg-gray-700 px-3 py-1 text-white transition-colors hover:bg-gray-600"
           >
             閉じる
           </button>

@@ -20,7 +20,8 @@ export const Character = ({ position, direction, gridSize = GRID_SIZE }: Charact
     const timer = setTimeout(() => {
       setIsWalking(false)
     }, 200) // 200ミリ秒後に歩行アニメーションを停止
-    return () => clearTimeout(timer)
+    
+return () => clearTimeout(timer)
   }, [position])
 
   // 歩行アニメーション中はステップを切り替え
@@ -29,7 +30,8 @@ export const Character = ({ position, direction, gridSize = GRID_SIZE }: Charact
       const timer = setInterval(() => {
         setStep((prev) => (prev + 1) % 2)
       }, 100) // 100ミリ秒ごとにステップを切り替え
-      return () => clearInterval(timer)
+      
+return () => clearInterval(timer)
     }
   }, [isWalking])
 

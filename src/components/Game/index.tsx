@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Character } from '../Character'
 import { Map, calculateGridSize } from '../Map'
 import { TouchControls } from '../TouchControls'
@@ -13,7 +13,7 @@ interface Position {
   y: number
 }
 
-interface GameObject {
+interface GameObjectData {
   type: 'pot' | 'chest'
   position: Position
 }
@@ -25,7 +25,7 @@ export const Game = () => {
   const [popupContent, setPopupContent] = useState('')
   const [gridSize, setGridSize] = useState(48)
   const [showCommandMenu, setShowCommandMenu] = useState(false)
-  const [gameObjects] = useState<GameObject[]>([
+  const [gameObjects] = useState<GameObjectData[]>([
     { type: 'pot', position: { x: 2, y: 2 } },
     { type: 'pot', position: { x: 5, y: 2 } },
     { type: 'chest', position: { x: 2, y: 5 } },
@@ -48,7 +48,7 @@ export const Game = () => {
     return () => window.removeEventListener('resize', updateGridSize)
   }, [])
 
-  const handleMove = (direction: 'up' | 'down' | 'left' | 'right') => {
+  const handleMove = useCallback((direction: 'up' | 'down' | 'left' | 'right') => {
     // ポップアップ表示中またはコマンドメニュー表示中は移動しない
     if (showPopup || showCommandMenu) return
 
@@ -97,9 +97,9 @@ export const Game = () => {
       setPopupContent(randomMessage)
       setShowPopup(true)
     }
-  }
+  }, [playerPosition, showPopup, showCommandMenu, gameObjects])
 
-  const handleInteract = () => {
+  const handleInteract = useCallback(() => {
     // ポップアップ表示中はインタラクションしない
     if (showPopup) return
 
@@ -130,7 +130,7 @@ export const Game = () => {
       // オブジェクトがない場合はコマンドメニューを表示
       setShowCommandMenu(true)
     }
-  }
+  }, [playerPosition, playerDirection, showPopup, gameObjects])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -168,16 +168,17 @@ export const Game = () => {
     }
 
     window.addEventListener('keydown', handleKeyDown)
+
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [playerPosition, showPopup, showCommandMenu])
+  }, [playerPosition, showPopup, showCommandMenu, handleMove, handleInteract])
 
   return (
-    <div className="fixed inset-0 flex flex-col items-center justify-start bg-gray-900 overflow-hidden">
-      <div className="flex-1 flex items-start justify-center min-h-0 p-4 sm:items-center sm:pt-4 pt-8">
+    <div className="fixed inset-0 flex flex-col items-center justify-start overflow-hidden bg-gray-900">
+      <div className="flex min-h-0 flex-1 items-start justify-center p-4 pt-8 sm:items-center sm:pt-4">
         <div className="relative">
           <Map width={8} height={8} />
           <Character position={playerPosition} direction={playerDirection} gridSize={gridSize} />
-          <div className="absolute top-0 left-0 right-0 bottom-0">
+          <div className="absolute inset-0">
             {gameObjects.map((obj, index) => (
               <GameObject
                 key={`${obj.type}-${index}`}
