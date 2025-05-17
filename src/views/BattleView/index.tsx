@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { Enemy, BattleState } from '../../types/enemy'
+import { getImagePath } from '@/utils/imagePath'
 
 interface BattleViewProps {
   enemy: Enemy
@@ -141,7 +142,7 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
       {/* 敵の画像 */}
       <div className="flex-1 flex items-center justify-center">
         <img
-          src={enemy.image}
+          src={getImagePath(enemy.image)}
           alt={enemy.name}
           className="size-80 object-contain"
         />

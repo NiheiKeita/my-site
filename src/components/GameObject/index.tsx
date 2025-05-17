@@ -1,4 +1,5 @@
 import { GRID_SIZE } from '../Map'
+import { getImagePath } from '@/utils/imagePath'
 
 interface GameObjectProps {
   type: 'pot' | 'chest'
@@ -12,7 +13,7 @@ interface GameObjectProps {
 export const GameObject = ({ type, position, gridSize = GRID_SIZE }: GameObjectProps) => {
   return (
     <img
-      src={`/assets/objects/${type}.png`}
+      src={getImagePath(`/assets/objects/${type}.png`)}
       alt={type}
       className="absolute transition-transform duration-150"
       style={{
