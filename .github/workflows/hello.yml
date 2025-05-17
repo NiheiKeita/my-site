@@ -1,8 +1,0 @@
-name: Hello
-
-on: [pull_request]
-jobs:
-  ci:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "こんにちは"

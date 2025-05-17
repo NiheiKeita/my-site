@@ -8,8 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - name: npm install
-        run: npm install
+      - name: npm ci
+        run: npm ci
       - name: eslint review
         uses: reviewdog/action-eslint@v1
         with:
@@ -19,4 +19,6 @@ jobs:
           fail_on_error: 'true'
       - name: eslint
         run: npm run lint
+      - name: eslint
+        run: npm run type-check
 
