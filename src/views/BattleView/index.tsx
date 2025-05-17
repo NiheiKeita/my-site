@@ -142,9 +142,9 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
       {/* 敵の画像 */}
       <div className="flex-1 flex items-center justify-center">
         <img
-          src={getImagePath(enemy.image)}
+          src={getImagePath(battleState.isVictory ? enemy.defeatedImage : enemy.image)}
           alt={enemy.name}
-          className="size-80 object-contain"
+          className={`size-80 object-contain ${battleState.isVictory ? 'animate-fade-out' : ''}`}
         />
       </div>
 
