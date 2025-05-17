@@ -28,8 +28,8 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown)
-    
-return () => window.removeEventListener('keydown', handleKeyDown)
+
+    return () => window.removeEventListener('keydown', handleKeyDown)
   }, [handleKeyDown])
 
   const handleAttack = () => {
@@ -57,10 +57,12 @@ return () => window.removeEventListener('keydown', handleKeyDown)
             message: `${enemy.name}をやっつけた！`,
           }))
           setShowEndMessage(true)
-          onBattleEnd(true, enemy.exp, enemy.gold)
+          setTimeout(() => {
+            onBattleEnd(true, enemy.exp, enemy.gold)
+          }, 1000)
         }, 1000)
-        
-return
+
+        return
       }
 
       // 敵の攻撃
@@ -92,8 +94,8 @@ return
               setShowEndMessage(true)
               onBattleEnd(false, 0, 0)
             }, 1000)
-            
-return
+
+            return
           }
 
           // 次のターンへ
