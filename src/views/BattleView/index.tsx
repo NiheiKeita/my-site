@@ -143,7 +143,7 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
         <img
           src={enemy.image}
           alt={enemy.name}
-          className="size-64 object-contain"
+          className="size-80 object-contain"
         />
       </div>
 
