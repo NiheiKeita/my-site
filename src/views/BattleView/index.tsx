@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { Enemy, BattleState } from '../../types/enemy'
-import { getImagePath } from '@/utils/imagePath'
+import { getImagePath } from '../../utils/imagePath'
 
 interface BattleViewProps {
   enemy: Enemy

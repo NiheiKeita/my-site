@@ -1,5 +1,5 @@
 import { GRID_SIZE } from '../Map'
-import { getImagePath } from '@/utils/imagePath'
+import { getImagePath } from '../../utils/imagePath'
 
 interface GameObjectProps {
   type: 'pot' | 'chest'

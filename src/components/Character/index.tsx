@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { GRID_SIZE } from '../Map'
-import { getImagePath } from '@/utils/imagePath'
+import { getImagePath } from '../../utils/imagePath'
 
 interface CharacterProps {
   position: {
