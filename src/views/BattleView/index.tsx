@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Enemy, BattleState } from '../../types/enemy'
 
 interface BattleViewProps {
@@ -18,6 +18,19 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
     isBattleEnd: false,
     isVictory: false,
   })
+  const [showEndMessage, setShowEndMessage] = useState(false)
+
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (showEndMessage && e.key === 'Enter') {
+      onBattleEnd(battleState.isVictory, battleState.isVictory ? enemy.exp : 0, battleState.isVictory ? enemy.gold : 0)
+    }
+  }, [showEndMessage, battleState.isVictory, enemy.exp, enemy.gold, onBattleEnd])
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown)
+    
+return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [handleKeyDown])
 
   const handleAttack = () => {
     if (!battleState.isPlayerTurn || battleState.isAttacking) return
@@ -43,10 +56,11 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
             isVictory: true,
             message: `${enemy.name}をやっつけた！`,
           }))
+          setShowEndMessage(true)
           onBattleEnd(true, enemy.exp, enemy.gold)
         }, 1000)
-
-        return
+        
+return
       }
 
       // 敵の攻撃
@@ -75,10 +89,11 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
                 isVictory: false,
                 message: 'あなたは力尽きた...',
               }))
+              setShowEndMessage(true)
               onBattleEnd(false, 0, 0)
             }, 1000)
-
-            return
+            
+return
           }
 
           // 次のターンへ
@@ -133,10 +148,17 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
       {/* メッセージウィンドウ */}
       <div className="h-32 bg-black/80 p-4">
         <p className="text-xl">{battleState.message}</p>
+        {showEndMessage && (
+          <p className="text-lg mt-2 text-yellow-400 animate-blink">
+            {battleState.isVictory
+              ? `経験値${enemy.exp}と${enemy.gold}ゴールドを獲得！`
+              : 'エンターキーを押してください'}
+          </p>
+        )}
       </div>
 
       {/* コマンド選択 */}
-      {battleState.isPlayerTurn && !battleState.isAttacking && (
+      {battleState.isPlayerTurn && !battleState.isAttacking && !showEndMessage && (
         <div className="grid grid-cols-2 gap-4 p-4">
           <button
             onClick={handleAttack}
