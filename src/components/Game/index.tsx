@@ -222,13 +222,13 @@ export const Game = () => {
   }
 
   return (
-    <div className="relative size-full">
+    <div className="relative flex h-full w-full items-center justify-center">
       {/* ステータス表示 */}
-      <div className="absolute top-4 left-4 z-10 bg-black/50 p-2 rounded text-white">
+      <div className="absolute left-4 top-4 z-10 rounded bg-black/50 p-2 text-white">
         <p>Lv.{playerStatus.level}</p>
-        <div className="h-4 w-48 bg-gray-700 rounded">
+        <div className="h-4 w-48 rounded bg-gray-700">
           <div
-            className="h-full bg-green-500 rounded"
+            className="h-full rounded bg-green-500"
             style={{ width: `${(playerStatus.hp / playerStatus.maxHp) * 100}%` }}
           />
         </div>
@@ -237,18 +237,21 @@ export const Game = () => {
         <p>GOLD: {playerStatus.gold}</p>
       </div>
 
-      <Map width={8} height={8} />
-      <Character position={playerPosition} direction={playerDirection} gridSize={gridSize} />
-      <div className="absolute inset-0">
-        {gameObjects.map((obj, index) => (
-          <GameObject
-            key={`${obj.type}-${index}`}
-            type={obj.type}
-            position={obj.position}
-            gridSize={gridSize}
-          />
-        ))}
+      <div className="relative">
+        <Map width={8} height={8} />
+        <Character position={playerPosition} direction={playerDirection} gridSize={gridSize} />
+        <div className="absolute inset-0">
+          {gameObjects.map((obj, index) => (
+            <GameObject
+              key={`${obj.type}-${index}`}
+              type={obj.type}
+              position={obj.position}
+              gridSize={gridSize}
+            />
+          ))}
+        </div>
       </div>
+
       <TouchControls onMove={handleMove} onInteract={handleInteract} />
       {showPopup && <Popup content={popupContent} onClose={() => setShowPopup(false)} />}
       {showCommandMenu && <CommandMenu onClose={() => setShowCommandMenu(false)} />}
