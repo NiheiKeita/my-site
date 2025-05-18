@@ -27,7 +27,7 @@ export const Game = () => {
   const [playerStatus] = useAtom(playerStatusAtom)
   const updatePlayerStatus = useSetAtom(updatePlayerStatusAtom)
   const [isInBattle, setIsInBattle] = useState(false)
-  const [currentEnemy, setCurrentEnemy] = useState(enemies[0])
+  const [currentEnemy, setCurrentEnemy] = useState<Enemy | null>(null)
   const [playerPosition, setPlayerPosition] = useState<Position>({ x: 4, y: 4 })
   const [playerDirection, setPlayerDirection] = useState<'up' | 'down' | 'left' | 'right'>('down')
   const [showPopup, setShowPopup] = useState(false)
@@ -214,10 +214,10 @@ export const Game = () => {
       })
     }
     setIsInBattle(false)
-    setCurrentEnemy(null as unknown as Enemy)
+    setCurrentEnemy(null)
   }
 
-  if (isInBattle) {
+  if (isInBattle && currentEnemy !== null) {
     return <BattleView enemy={currentEnemy} onBattleEnd={handleBattleEnd} />
   }
 
