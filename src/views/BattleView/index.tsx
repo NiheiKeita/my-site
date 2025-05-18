@@ -22,6 +22,7 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
   })
   const [showEndMessage, setShowEndMessage] = useState(false)
   const [isEnemyDamaged, setIsEnemyDamaged] = useState(false)
+  const [isEscaping, setIsEscaping] = useState(false)
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (showEndMessage && e.key === 'Enter') {
@@ -121,6 +122,72 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
     }, 1000)
   }
 
+  const handleEscape = () => {
+    if (!battleState.isPlayerTurn || battleState.isAttacking || isEscaping) return
+
+    setIsEscaping(true)
+    setBattleState(prev => ({ ...prev, message: '逃げ出そうとしている...' }))
+
+    // 50%の確率で逃げられる
+    const isEscaped = Math.random() < 0.5
+
+    setTimeout(() => {
+      if (isEscaped) {
+        setBattleState(prev => ({
+          ...prev,
+          isBattleEnd: true,
+          isVictory: false,
+          message: '逃げ出した！',
+        }))
+        setShowEndMessage(true)
+        setTimeout(() => {
+          onBattleEnd(false, 0, 0)
+        }, 2000)
+      } else {
+        setBattleState(prev => ({
+          ...prev,
+          message: '逃げ出せなかった！',
+        }))
+        // 敵の攻撃
+        setTimeout(() => {
+          const enemyDamage = Math.max(1, enemy.attack - 5)
+          const newPlayerHp = Math.max(0, playerHp - enemyDamage)
+          setPlayerHp(newPlayerHp)
+          setBattleState(prev => ({
+            ...prev,
+            message: `${enemyDamage}のダメージを受けた！`,
+          }))
+
+          // プレイヤーのHPが0になった場合
+          if (newPlayerHp === 0) {
+            setTimeout(() => {
+              setBattleState(prev => ({
+                ...prev,
+                isBattleEnd: true,
+                isVictory: false,
+                message: 'あなたは力尽きた...',
+              }))
+              setShowEndMessage(true)
+              onBattleEnd(false, 0, 0)
+            }, 1000)
+            return
+          }
+
+          // 次のターンへ
+          setTimeout(() => {
+            setBattleState(prev => ({
+              ...prev,
+              isPlayerTurn: true,
+              isAttacking: false,
+              message: 'コマンドを選択してください',
+            }))
+            setIsEscaping(false)
+          }, 1000)
+        }, 1000)
+      }
+    }, 1000)
+  }
+
   return (
     <div className="fixed inset-0 flex flex-col bg-gray-900 text-white">
       {/* ステータス表示 */}
@@ -184,8 +251,7 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
       </div>
 
       {/* コマンド選択 */}
-      {/* {battleState.isPlayerTurn && !battleState.isAttacking && !showEndMessage && ( */}
-      <div className={`grid grid-cols-2 gap-4 p-4 ${(battleState.isPlayerTurn && !battleState.isAttacking && !showEndMessage) ? '' : 'invisible'}`}>
+      <div className={`grid grid-cols-2 gap-4 p-4 ${(battleState.isPlayerTurn && !battleState.isAttacking && !showEndMessage && !isEscaping) ? '' : 'invisible'}`}>
         <button
           onClick={handleAttack}
           className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -193,13 +259,12 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
           たたかう
         </button>
         <button
+          onClick={handleEscape}
           className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-          disabled
         >
           にげる
         </button>
       </div>
-      {/* )} */}
     </div>
   )
 } 
