@@ -22,13 +22,14 @@ const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult) => voi
   const [battleState, setBattleState] = useState<BattleState>({
     isPlayerTurn: true,
     isAttacking: false,
-    message: '戦闘開始！',
+    message: `${enemy.name}が現れた！`,
     isBattleEnd: false,
     isVictory: false,
   })
   const [showEndMessage, setShowEndMessage] = useState(false)
   const [isEnemyDamaged, setIsEnemyDamaged] = useState(false)
   const [isEscaping, setIsEscaping] = useState(false)
+  const [isEnemyAppeared, setIsEnemyAppeared] = useState(true)
 
   const updateBattleState = (updates: Partial<BattleState>) => {
     setBattleState(prev => ({ ...prev, ...updates }))
@@ -155,6 +156,18 @@ const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult) => voi
     }, ANIMATION_DURATION.ATTACK)
   }, [battleState.isPlayerTurn, battleState.isAttacking, isEscaping, handleEscapeSuccess, handleEscapeFailure])
 
+  useEffect(() => {
+    // 敵の出現メッセージの後に戦闘開始メッセージを表示
+    const timer = setTimeout(() => {
+      updateBattleState({
+        message: '戦闘開始！',
+      })
+      setIsEnemyAppeared(false)
+    }, ANIMATION_DURATION.MESSAGE)
+
+    return () => clearTimeout(timer)
+  }, [])
+
   return {
     playerHp,
     enemyHp,
@@ -162,6 +175,7 @@ const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult) => voi
     showEndMessage,
     isEnemyDamaged,
     isEscaping,
+    isEnemyAppeared,
     handlePlayerAttack,
     handleEscape,
   }
@@ -180,6 +194,7 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
     showEndMessage,
     isEnemyDamaged,
     isEscaping,
+    isEnemyAppeared,
     handlePlayerAttack,
     handleEscape,
   } = useBattleLogic(enemy, onBattleEnd)
@@ -281,7 +296,7 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
       </div>
 
       {/* コマンド選択 */}
-      <div className={`grid grid-cols-2 gap-4 p-4 ${(battleState.isPlayerTurn && !battleState.isAttacking && !showEndMessage && !isEscaping) ? '' : 'invisible'}`}>
+      <div className={`grid grid-cols-2 gap-4 p-4 ${(battleState.isPlayerTurn && !battleState.isAttacking && !showEndMessage && !isEscaping && !isEnemyAppeared) ? '' : 'invisible'}`}>
         <button
           onClick={handlePlayerAttack}
           className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
