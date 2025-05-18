@@ -19,12 +19,13 @@ interface Position {
 }
 
 interface GameObjectData {
-  type: 'pot' | 'chest'
+  type: 'pot' | 'chest' | 'fountain'
   position: Position
+  message: string
 }
 
 export const Game = () => {
-  const [playerStatus] = useAtom(playerStatusAtom)
+  const [playerStatus, setPlayerStatus] = useAtom(playerStatusAtom)
   const updatePlayerStatus = useSetAtom(updatePlayerStatusAtom)
   const [isInBattle, setIsInBattle] = useState(false)
   const [currentEnemy, setCurrentEnemy] = useState<Enemy | null>(null)
@@ -34,12 +35,32 @@ export const Game = () => {
   const [popupContent, setPopupContent] = useState('')
   const [gridSize, setGridSize] = useState(48)
   const [showCommandMenu, setShowCommandMenu] = useState(false)
-  const [playerHp, setPlayerHp] = useState(playerStatus.hp)
   const [gameObjects] = useState<GameObjectData[]>([
-    { type: 'pot', position: { x: 2, y: 2 } },
-    { type: 'pot', position: { x: 5, y: 2 } },
-    { type: 'chest', position: { x: 2, y: 5 } },
-    { type: 'chest', position: { x: 5, y: 5 } },
+    {
+      type: 'pot',
+      position: { x: 2, y: 2 },
+      message: '古い壺だ。中は空っぽだ。'
+    },
+    {
+      type: 'pot',
+      position: { x: 5, y: 2 },
+      message: '壺の中に何かが入っている気がする...'
+    },
+    {
+      type: 'chest',
+      position: { x: 2, y: 5 },
+      message: '宝箱は固く閉ざされている。'
+    },
+    {
+      type: 'chest',
+      position: { x: 5, y: 5 },
+      message: '宝箱の中から光が漏れている...'
+    },
+    {
+      type: 'fountain',
+      position: { x: 0, y: 0 },
+      message: '神秘的な力が宿る泉だ。'
+    },
   ])
 
   // グリッドサイズの更新
@@ -99,7 +120,7 @@ export const Game = () => {
 
     // オブジェクトとの衝突チェック
     const isCollision = gameObjects.some(
-      (obj) => obj.position.x === newPosition.x && obj.position.y === newPosition.y
+      (obj) => obj.position.x === newPosition.x && obj.position.y === newPosition.y && obj.type !== 'fountain'
     )
 
     // 衝突している場合は、元の位置に戻す
@@ -111,24 +132,24 @@ export const Game = () => {
     // 位置を更新してアニメーションを表示
     setPlayerPosition(newPosition)
 
+    // 回復の泉に乗った時の処理
+    const fountain = gameObjects.find(
+      (obj) => obj.position.x === newPosition.x && obj.position.y === newPosition.y && obj.type === 'fountain'
+    )
+    if (fountain && playerStatus.hp < playerStatus.maxHp) {
+      setPlayerStatus(prev => ({ ...prev, hp: prev.maxHp }))
+      setPopupContent('HPが全回復した！')
+      setShowPopup(true)
+    }
+
     // 25分の1の確率でランダムなメッセージを表示
     if (Math.random() < 0.04) {
       if (isInBattle) return
       const randomEnemy = enemies[Math.floor(Math.random() * enemies.length)]
       setCurrentEnemy(randomEnemy)
       setIsInBattle(true)
-      // const messages = [
-      //   '何かが動いた気がする...',
-      //   '風の音が聞こえる...',
-      //   '遠くで何かの音がする...',
-      //   '不思議な気配を感じる...',
-      //   '何かが光っている...',
-      // ]
-      // const randomMessage = messages[Math.floor(Math.random() * messages.length)]
-      // setPopupContent(randomMessage)
-      // setShowPopup(true)
     }
-  }, [playerPosition, showPopup, showCommandMenu, gameObjects, isInBattle])
+  }, [playerPosition, showPopup, showCommandMenu, gameObjects, isInBattle, playerStatus])
 
   const handleInteract = useCallback(() => {
     // ポップアップ表示中はインタラクションしない
@@ -155,7 +176,7 @@ export const Game = () => {
     )
 
     if (object) {
-      setPopupContent(`${object.type === 'pot' ? '壺' : '宝箱'}を見つけました！`)
+      setPopupContent(object.message)
       setShowPopup(true)
     } else {
       // オブジェクトがない場合はコマンドメニューを表示
@@ -208,13 +229,9 @@ export const Game = () => {
       updatePlayerStatus({
         exp: playerStatus.exp + result.exp,
         gold: playerStatus.gold + result.gold,
-        hp: playerHp,
       })
     } else {
-      updatePlayerStatus({
-        hp: playerStatus.maxHp, // HPを全回復
-      })
-      setPlayerHp(playerStatus.maxHp)
+      setPlayerStatus(prev => ({ ...prev, hp: prev.maxHp }))
     }
     setIsInBattle(false)
     setCurrentEnemy(null)
@@ -224,8 +241,8 @@ export const Game = () => {
     return <BattleView
       enemy={currentEnemy}
       onBattleEnd={handleBattleEnd}
-      playerHp={playerHp}
-      setPlayerHp={setPlayerHp}
+      playerHp={playerStatus.hp}
+      setPlayerHp={(hp: number) => setPlayerStatus(prev => ({ ...prev, hp }))}
     />
   }
 
@@ -248,7 +265,6 @@ export const Game = () => {
 
       <div className="relative">
         <Map width={8} height={8} />
-        <Character position={playerPosition} direction={playerDirection} gridSize={gridSize} />
         <div className="absolute inset-0">
           {gameObjects.map((obj, index) => (
             <GameObject
@@ -259,6 +275,7 @@ export const Game = () => {
             />
           ))}
         </div>
+        <Character position={playerPosition} direction={playerDirection} gridSize={gridSize} />
       </div>
 
       <TouchControls onMove={handleMove} onInteract={handleInteract} />
