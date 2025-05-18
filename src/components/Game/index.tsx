@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, ReactNode } from 'react'
 import { Character } from '../Character'
 import { Map, calculateGridSize } from '../Map'
 import { TouchControls } from '../TouchControls'
@@ -21,7 +21,7 @@ interface Position {
 interface GameObjectData {
   type: 'pot' | 'chest' | 'fountain'
   position: Position
-  message: string
+  message: ReactNode
 }
 
 export const Game = () => {
@@ -32,34 +32,60 @@ export const Game = () => {
   const [playerPosition, setPlayerPosition] = useState<Position>({ x: 4, y: 4 })
   const [playerDirection, setPlayerDirection] = useState<'up' | 'down' | 'left' | 'right'>('down')
   const [showPopup, setShowPopup] = useState(false)
-  const [popupContent, setPopupContent] = useState('')
+  const [popupContent, setPopupContent] = useState<ReactNode>('')
   const [gridSize, setGridSize] = useState(48)
   const [showCommandMenu, setShowCommandMenu] = useState(false)
   const [gameObjects] = useState<GameObjectData[]>([
     {
       type: 'pot',
       position: { x: 2, y: 2 },
-      message: '古い壺だ。中は空っぽだ。'
+      message: (
+        <div className="text-gray-300">
+          <p className="text-lg mb-2">古い壺</p>
+          <p>中は空っぽだ。</p>
+        </div>
+      )
     },
     {
       type: 'pot',
       position: { x: 5, y: 2 },
-      message: '壺の中に何かが入っている気がする...'
+      message: (
+        <div className="text-yellow-300">
+          <p className="text-lg mb-2">✨ 光る壺 ✨</p>
+          <p>壺の中に何かが入っている気がする...</p>
+        </div>
+      )
     },
     {
       type: 'chest',
       position: { x: 2, y: 5 },
-      message: '宝箱は固く閉ざされている。'
+      message: (
+        <div className="text-gray-300">
+          <p className="text-lg mb-2">宝箱</p>
+          <p>宝箱は固く閉ざされている。</p>
+        </div>
+      )
     },
     {
       type: 'chest',
       position: { x: 5, y: 5 },
-      message: '宝箱の中から光が漏れている...'
+      message: (
+        <div className="text-yellow-300">
+          <p className="text-lg mb-2">✨ 輝く宝箱 ✨</p>
+          <p>宝箱の中から光が漏れている...</p>
+        </div>
+      )
     },
     {
       type: 'fountain',
       position: { x: 0, y: 0 },
-      message: '神秘的な力が宿る泉だ。'
+      message: (
+        <div className="text-blue-300">
+          <p className="text-lg mb-2">💫 神秘の泉 💫</p>
+          <p>神秘的な力が宿る泉だ。</p>
+          <p className="text-sm mt-2">HPが全回復するかもしれない...</p>
+        </div>
+      )
     },
   ])
 
