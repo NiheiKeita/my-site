@@ -227,7 +227,7 @@ export const Game = () => {
       {/* ステータス表示 */}
       <div className="fixed left-4 bottom-4 z-2 rounded bg-black/50 p-2 text-white">
         <p>Lv.{playerStatus.level}</p>
-        <div className="h-4 w-48 rounded bg-gray-700">
+        <div className="h-4 w-36 rounded bg-gray-700">
           <div
             className="h-full rounded bg-green-500"
             style={{ width: `${(playerStatus.hp / playerStatus.maxHp) * 100}%` }}
