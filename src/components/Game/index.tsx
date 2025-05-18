@@ -312,19 +312,21 @@ export const Game = () => {
         <p>GOLD: {playerStatus.gold}</p>
       </div>
 
-      <div className="relative">
-        <Map width={8} height={8} />
-        <div className="absolute inset-0">
-          {gameObjects.map((obj, index) => (
-            <GameObject
-              key={`${obj.type}-${index}`}
-              type={obj.type}
-              position={obj.position}
-              gridSize={gridSize}
-            />
-          ))}
+      <div className="fixed inset-0 flex items-start justify-center pt-8">
+        <div className="relative">
+          <Map width={8} height={8} />
+          <div className="absolute inset-0">
+            {gameObjects.map((obj, index) => (
+              <GameObject
+                key={`${obj.type}-${index}`}
+                type={obj.type}
+                position={obj.position}
+                gridSize={gridSize}
+              />
+            ))}
+          </div>
+          <Character position={playerPosition} direction={playerDirection} gridSize={gridSize} />
         </div>
-        <Character position={playerPosition} direction={playerDirection} gridSize={gridSize} />
       </div>
 
       <TouchControls onMove={handleMove} onInteract={handleInteract} />
