@@ -57,7 +57,8 @@ const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult) => voi
 
       if (newEnemyHp === 0) {
         handleVictory()
-        return
+        
+return
       }
 
       handleEnemyAttack()
@@ -79,7 +80,8 @@ const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult) => voi
 
         if (newPlayerHp === 0) {
           handleDefeat()
-          return
+          
+return
         }
 
         handleNextTurn()
@@ -199,7 +201,8 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
+    
+return () => window.removeEventListener('keydown', handleKeyDown)
   }, [handleKeyDown])
 
   return (
