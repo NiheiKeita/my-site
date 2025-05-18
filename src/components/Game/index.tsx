@@ -35,14 +35,37 @@ export const Game = () => {
   const [popupContent, setPopupContent] = useState<ReactNode>('')
   const [gridSize, setGridSize] = useState(48)
   const [showCommandMenu, setShowCommandMenu] = useState(false)
+
+
+  const androidApps = [
+    { id: 1, name: 'ひたすら因数分解', url: "https://play.google.com/store/apps/details?id=com.iggyapp.insuubunkai&hl=ja", },
+    { id: 2, name: 'ひたすら積分', url: "https://play.google.com/store/apps/details?id=com.iggyapp.sekibunn&hl=ja", },
+    { id: 3, name: 'ひたすら微分', url: "https://play.google.com/store/apps/details?id=com.iggyapp.bibunn&hl=ja", },
+    { id: 4, name: 'ひたすら素因数分解', url: "https://play.google.com/store/apps/details?id=com.iggyapp.soinnsuubunnkai&hl=ja", },
+    { id: 5, name: '鬼封じの縄', url: "https://play.google.com/store/apps/details?id=com.iggy.catchthedemon&hl=ja", },
+  ]
   const [gameObjects] = useState<GameObjectData[]>([
     {
       type: 'pot',
       position: { x: 2, y: 2 },
       message: (
         <div className="text-gray-300">
-          <p className="text-lg mb-2">古い壺</p>
-          <p>中は空っぽだ。</p>
+          <p className="text-lg mb-2">✨ Androidアプリを見つけた ✨</p>
+          {
+            androidApps.map((app) => {
+              return (
+                <div className="text-yellow-300" key={app.id}>
+                  <a
+                    href={app.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mb-2 block hover:underline"
+                  >
+                    {app.name}
+                  </a>
+                </div>
+              )
+            })}
         </div>
       )
     },
