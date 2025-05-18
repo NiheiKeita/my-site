@@ -57,8 +57,8 @@ const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult) => voi
 
       if (newEnemyHp === 0) {
         handleVictory()
-        
-return
+
+        return
       }
 
       handleEnemyAttack()
@@ -80,8 +80,8 @@ return
 
         if (newPlayerHp === 0) {
           handleDefeat()
-          
-return
+
+          return
         }
 
         handleNextTurn()
@@ -201,8 +201,8 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown)
-    
-return () => window.removeEventListener('keydown', handleKeyDown)
+
+    return () => window.removeEventListener('keydown', handleKeyDown)
   }, [handleKeyDown])
 
   return (
@@ -232,7 +232,25 @@ return () => window.removeEventListener('keydown', handleKeyDown)
       </div>
 
       {/* 敵の画像 */}
-      <div className="flex-1 flex items-center justify-center">
+      <div className="flex-1 flex items-center justify-center relative">
+        {/* プレイヤーの剣 */}
+        <motion.img
+          src={getImagePath('/assets/weapons/sword.png')}
+          alt="剣"
+          className="absolute left-0 bottom-0 sm:size-32 size-24 object-contain"
+          animate={battleState.isAttacking ? {
+            y: ['-50vh', '0vh', 0],
+            x: [0, '50vw', 0],
+            rotate: [-30, 45, 0],
+            transition: {
+              duration: 0.8,
+              times: [0, 0.4, 1],
+              ease: ["easeOut", "easeIn", "easeInOut"]
+            }
+          } : {}}
+          initial={false}
+        />
+        {/* 敵の画像 */}
         <motion.img
           src={getImagePath(battleState.isVictory ? enemy.defeatedImage : enemy.image)}
           alt={enemy.name}
