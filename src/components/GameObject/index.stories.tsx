@@ -17,6 +17,7 @@ export const Pot: Story = {
   args: {
     type: 'pot',
     position: { x: 0, y: 0 },
+    gridSize: 10,
   },
 }
 
@@ -24,5 +25,6 @@ export const Chest: Story = {
   args: {
     type: 'chest',
     position: { x: 0, y: 0 },
+    gridSize: 10,
   },
 } 
