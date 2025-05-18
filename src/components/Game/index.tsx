@@ -34,6 +34,7 @@ export const Game = () => {
   const [popupContent, setPopupContent] = useState('')
   const [gridSize, setGridSize] = useState(48)
   const [showCommandMenu, setShowCommandMenu] = useState(false)
+  const [playerHp, setPlayerHp] = useState(playerStatus.hp)
   const [gameObjects] = useState<GameObjectData[]>([
     { type: 'pot', position: { x: 2, y: 2 } },
     { type: 'pot', position: { x: 5, y: 2 } },
@@ -207,18 +208,25 @@ export const Game = () => {
       updatePlayerStatus({
         exp: playerStatus.exp + result.exp,
         gold: playerStatus.gold + result.gold,
+        hp: playerHp,
       })
     } else {
       updatePlayerStatus({
         hp: playerStatus.maxHp, // HPを全回復
       })
+      setPlayerHp(playerStatus.maxHp)
     }
     setIsInBattle(false)
     setCurrentEnemy(null)
   }
 
   if (isInBattle && currentEnemy !== null) {
-    return <BattleView enemy={currentEnemy} onBattleEnd={handleBattleEnd} />
+    return <BattleView
+      enemy={currentEnemy}
+      onBattleEnd={handleBattleEnd}
+      playerHp={playerHp}
+      setPlayerHp={setPlayerHp}
+    />
   }
 
   return (
@@ -227,7 +235,7 @@ export const Game = () => {
       {/* ステータス表示 */}
       <div className="fixed left-4 bottom-4 z-2 rounded bg-black/50 p-2 text-white">
         <p>Lv.{playerStatus.level}</p>
-        <div className="h-4 w-36 rounded bg-gray-700">
+        <div className="h-4 sm:w-48 w-36 rounded bg-gray-700">
           <div
             className="h-full rounded bg-green-500"
             style={{ width: `${(playerStatus.hp / playerStatus.maxHp) * 100}%` }}

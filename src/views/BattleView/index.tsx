@@ -16,8 +16,7 @@ const ANIMATION_DURATION = {
 }
 
 // バトルロジック
-const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult) => void) => {
-  const [playerHp, setPlayerHp] = useState(INITIAL_PLAYER_HP)
+const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult) => void, playerHp: number, setPlayerHp: (hp: number) => void) => {
   const [enemyHp, setEnemyHp] = useState(enemy.hp)
   const [battleState, setBattleState] = useState<BattleState>({
     isPlayerTurn: true,
@@ -93,6 +92,7 @@ const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult) => voi
 
         if (newPlayerHp === 0) {
           handleDefeat()
+
           return
         }
 
@@ -136,6 +136,7 @@ const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult) => voi
 
       if (newEnemyHp === 0) {
         handleVictory()
+
         return
       }
 
@@ -173,7 +174,6 @@ const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult) => voi
   }, [])
 
   return {
-    playerHp,
     enemyHp,
     battleState,
     showEndMessage,
@@ -189,11 +189,12 @@ const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult) => voi
 interface BattleViewProps {
   enemy: Enemy
   onBattleEnd: (result: BattleResult) => void
+  playerHp: number
+  setPlayerHp: (hp: number) => void
 }
 
-export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
+export const BattleView = ({ enemy, onBattleEnd, playerHp, setPlayerHp }: BattleViewProps) => {
   const {
-    playerHp,
     enemyHp,
     battleState,
     showEndMessage,
@@ -203,7 +204,7 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
     isPlayerDamaged,
     handlePlayerAttack,
     handleEscape,
-  } = useBattleLogic(enemy, onBattleEnd)
+  } = useBattleLogic(enemy, onBattleEnd, playerHp, setPlayerHp)
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (showEndMessage && e.key === 'Enter') {
