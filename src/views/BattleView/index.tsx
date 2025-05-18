@@ -105,7 +105,8 @@ const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult) => voi
 
         if (newPlayerHp === 0) {
           handleDefeat()
-          return
+          
+return
         }
 
         handleNextTurn()
@@ -136,7 +137,8 @@ const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult) => voi
 
       if (newEnemyHp === 0) {
         handleVictory()
-        return
+        
+return
       }
 
       handleEnemyAttack()
