@@ -13,6 +13,7 @@ export const CommandMenu = ({ onClose }: CommandMenuProps) => {
     { id: 'item', label: 'バッグ' },
     { id: 'status', label: '強さ' },
     { id: 'equip', label: '装備' },
+    { id: 'skill', label: 'スキル' },
   ]
 
   const handleCommandSelect = (commandId: string) => {

@@ -65,7 +65,7 @@ export const Map = ({ width = 8, height = 8 }: MapProps) => {
       {grid.flat().map((cell) => (
         <div
           key={`${cell.x}-${cell.y}`}
-          className={`${cell.isAlternate ? 'bg-gray-700' : 'bg-gray-800'}`}
+          className={`${cell.isAlternate ? 'bg-gray-600' : 'bg-gray-700'}`}
           style={{ width: `${gridSize}px`, height: `${gridSize}px` }}
         />
       ))}

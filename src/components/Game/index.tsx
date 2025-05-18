@@ -11,6 +11,7 @@ import { BattleView } from '../../views/BattleView'
 import { enemies } from '../../data/enemies'
 import { useAtom, useSetAtom } from 'jotai'
 import { playerStatusAtom, updatePlayerStatusAtom } from '../../store/player'
+import { Enemy, BattleResult } from '../../types/enemy'
 
 interface Position {
   x: number
@@ -26,7 +27,7 @@ export const Game = () => {
   const [playerStatus] = useAtom(playerStatusAtom)
   const updatePlayerStatus = useSetAtom(updatePlayerStatusAtom)
   const [isInBattle, setIsInBattle] = useState(false)
-  const [currentEnemy, setCurrentEnemy] = useState(enemies[0])
+  const [currentEnemy, setCurrentEnemy] = useState<Enemy | null>(null)
   const [playerPosition, setPlayerPosition] = useState<Position>({ x: 4, y: 4 })
   const [playerDirection, setPlayerDirection] = useState<'up' | 'down' | 'left' | 'right'>('down')
   const [showPopup, setShowPopup] = useState(false)
@@ -201,34 +202,34 @@ export const Game = () => {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [playerPosition, showPopup, showCommandMenu, handleMove, handleInteract])
 
-  const handleBattleEnd = (isVictory: boolean, exp: number, gold: number) => {
-    if (isVictory) {
-      // 勝利時の処理
+  const handleBattleEnd = (result: BattleResult) => {
+    if (result.isVictory) {
       updatePlayerStatus({
-        exp: playerStatus.exp + exp,
-        gold: playerStatus.gold + gold,
+        exp: playerStatus.exp + result.exp,
+        gold: playerStatus.gold + result.gold,
       })
     } else {
-      // 敗北時の処理
       updatePlayerStatus({
         hp: playerStatus.maxHp, // HPを全回復
       })
     }
     setIsInBattle(false)
+    setCurrentEnemy(null)
   }
 
-  if (isInBattle) {
+  if (isInBattle && currentEnemy !== null) {
     return <BattleView enemy={currentEnemy} onBattleEnd={handleBattleEnd} />
   }
 
   return (
-    <div className="relative size-full">
+    <div className="relative flex size-full items-center justify-center">
+      <div className="fixed inset-0 bg-gray-900" />
       {/* ステータス表示 */}
-      <div className="absolute top-4 left-4 z-10 bg-black/50 p-2 rounded text-white">
+      <div className="fixed left-4 bottom-4 z-2 rounded bg-black/50 p-2 text-white">
         <p>Lv.{playerStatus.level}</p>
-        <div className="h-4 w-48 bg-gray-700 rounded">
+        <div className="h-4 w-48 rounded bg-gray-700">
           <div
-            className="h-full bg-green-500 rounded"
+            className="h-full rounded bg-green-500"
             style={{ width: `${(playerStatus.hp / playerStatus.maxHp) * 100}%` }}
           />
         </div>
@@ -237,18 +238,21 @@ export const Game = () => {
         <p>GOLD: {playerStatus.gold}</p>
       </div>
 
-      <Map width={8} height={8} />
-      <Character position={playerPosition} direction={playerDirection} gridSize={gridSize} />
-      <div className="absolute inset-0">
-        {gameObjects.map((obj, index) => (
-          <GameObject
-            key={`${obj.type}-${index}`}
-            type={obj.type}
-            position={obj.position}
-            gridSize={gridSize}
-          />
-        ))}
+      <div className="relative">
+        <Map width={8} height={8} />
+        <Character position={playerPosition} direction={playerDirection} gridSize={gridSize} />
+        <div className="absolute inset-0">
+          {gameObjects.map((obj, index) => (
+            <GameObject
+              key={`${obj.type}-${index}`}
+              type={obj.type}
+              position={obj.position}
+              gridSize={gridSize}
+            />
+          ))}
+        </div>
       </div>
+
       <TouchControls onMove={handleMove} onInteract={handleInteract} />
       {showPopup && <Popup content={popupContent} onClose={() => setShowPopup(false)} />}
       {showCommandMenu && <CommandMenu onClose={() => setShowCommandMenu(false)} />}
