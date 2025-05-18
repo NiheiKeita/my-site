@@ -30,6 +30,7 @@ const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult) => voi
   const [isEnemyDamaged, setIsEnemyDamaged] = useState(false)
   const [isEscaping, setIsEscaping] = useState(false)
   const [isEnemyAppeared, setIsEnemyAppeared] = useState(true)
+  const [isPlayerDamaged, setIsPlayerDamaged] = useState(false)
 
   const updateBattleState = (updates: Partial<BattleState>) => {
     setBattleState(prev => ({ ...prev, ...updates }))
@@ -72,18 +73,6 @@ const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult) => voi
     }, ANIMATION_DURATION.MESSAGE)
   }, [onBattleEnd])
 
-  const handleEscapeSuccess = useCallback(() => {
-    updateBattleState({
-      isBattleEnd: true,
-      isVictory: false,
-      message: '逃げ出した！',
-    })
-    setShowEndMessage(true)
-    setTimeout(() => {
-      onBattleEnd({ isVictory: false, exp: 0, gold: 0 })
-    }, ANIMATION_DURATION.BATTLE_END)
-  }, [onBattleEnd])
-
   const handleEnemyAttack = useCallback(() => {
     setTimeout(() => {
       updateBattleState({
@@ -95,11 +84,15 @@ const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult) => voi
         const enemyDamage = Math.max(1, enemy.attack - 5)
         const newPlayerHp = Math.max(0, playerHp - enemyDamage)
         setPlayerHp(newPlayerHp)
+        setIsPlayerDamaged(true)
         updateBattleState({ message: `${enemyDamage}のダメージを受けた！` })
+
+        setTimeout(() => {
+          setIsPlayerDamaged(false)
+        }, ANIMATION_DURATION.DAMAGE)
 
         if (newPlayerHp === 0) {
           handleDefeat()
-
           return
         }
 
@@ -114,6 +107,18 @@ const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult) => voi
       handleEnemyAttack()
     }, ANIMATION_DURATION.MESSAGE)
   }, [handleEnemyAttack])
+
+  const handleEscapeSuccess = useCallback(() => {
+    updateBattleState({
+      isBattleEnd: true,
+      isVictory: false,
+      message: '逃げ出した！',
+    })
+    setShowEndMessage(true)
+    setTimeout(() => {
+      onBattleEnd({ isVictory: false, exp: 0, gold: 0 })
+    }, ANIMATION_DURATION.BATTLE_END)
+  }, [onBattleEnd])
 
   const handlePlayerAttack = useCallback(() => {
     if (!battleState.isPlayerTurn || battleState.isAttacking) return
@@ -131,7 +136,6 @@ const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult) => voi
 
       if (newEnemyHp === 0) {
         handleVictory()
-
         return
       }
 
@@ -176,6 +180,7 @@ const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult) => voi
     isEnemyDamaged,
     isEscaping,
     isEnemyAppeared,
+    isPlayerDamaged,
     handlePlayerAttack,
     handleEscape,
   }
@@ -195,6 +200,7 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
     isEnemyDamaged,
     isEscaping,
     isEnemyAppeared,
+    isPlayerDamaged,
     handlePlayerAttack,
     handleEscape,
   } = useBattleLogic(enemy, onBattleEnd)
@@ -217,6 +223,18 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
 
   return (
     <div className="fixed inset-0 flex flex-col bg-gray-900 text-white">
+      {/* ダメージエフェクト */}
+      <motion.div
+        className="fixed inset-0 pointer-events-none"
+        animate={isPlayerDamaged ? {
+          backgroundColor: ['rgba(255, 0, 0, 0.3)', 'rgba(255, 0, 0, 0)'],
+          transition: {
+            duration: 0.3,
+            ease: "easeInOut"
+          }
+        } : {}}
+        initial={false}
+      />
       {/* ステータス表示 */}
       <div className="flex justify-between p-4">
         <div>
