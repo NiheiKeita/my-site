@@ -1,5 +1,5 @@
 interface CommandDetailProps {
-  type: 'spell' | 'item' | 'status' | 'equip'
+  type: 'spell' | 'item' | 'status' | 'equip' | 'skill'
   onClose: () => void
 }
 
@@ -53,6 +53,19 @@ export const CommandDetail = ({ type, onClose }: CommandDetailProps) => {
     { slot: 'アクセサリー1', name: 'スマートウォッチ', defense: 2, description: '健康と通知を管理する万能ガジェット' },
     { slot: 'アクセサリー2', name: 'ブルーライトカットメガネ', defense: 2, description: '目の疲労を軽減する防御メガネ' },
   ]
+  const skillData = [
+    { name: 'フロントエンド', level: 9, description: 'Next.js、React、TypeScript、TailwindCSSを駆使して、高品質かつモダンなUIを構築。StorybookやJotaiで開発効率と状態管理も最適化' },
+    { name: 'バックエンド', level: 7, description: 'LaravelとCakePHPを中心に、Djangoも扱う。RESTful APIや認証、非同期処理まで幅広く対応' },
+    { name: 'インフラ', level: 6, description: 'DockerやAWS（EC2、S3、RDSなど）を用いて、開発・本番環境を構築。ラズパイによるハードウェア連携の経験もあり' },
+    { name: 'データベース', level: 4, description: 'MySQL、PostgreSQL、Redisを中心に、効率的なスキーマ設計とクエリ最適化が可能。MongoDBにも対応' },
+    { name: 'セキュリティ', level: 2, description: '徳丸本を読んだ' },
+    { name: 'CI/CD', level: 7, description: 'GitHub Actionsを使ってデプロイ・テストを自動化。アジャイル開発と統合し高速なリリースを実現' },
+    { name: 'テスト', level: 8, description: 'Vitest、Jest、Playwrightを活用した単体・E2Eテストを実装。TDD志向での開発経験あり' },
+    { name: 'UIライブラリ', level: 6, description: 'MUI、TailwindCSS、jQueryまで、プロジェクトに応じて適切なUI構築が可能。デザインと実装を両立' },
+    { name: 'アジャイル開発', level: 6, description: 'スクラムを中心にチーム開発を実践。タスク分割、レビュー、デイリー進捗共有など、円滑な進行をサポート' },
+    { name: 'モバイル開発', level: 5, description: 'Kotlin（Android）、Swift（iOS）を用いたネイティブアプリ開発経験あり。Androidアプリを５つ公開中。ARKitを使ったAR実装も対応可能' },
+    { name: 'ハードウェア連携', level: 2, description: 'Raspberry Pi を用いたセンサー連携やIoT開発の経験あり。PythonスクリプトやGPIO制御にも対応' }
+  ]
 
   const renderContent = () => {
     switch (type) {
@@ -61,7 +74,7 @@ export const CommandDetail = ({ type, onClose }: CommandDetailProps) => {
           <div className="max-h-[60vh] space-y-2 overflow-y-auto pr-2">
             {spellData.map((spell) => (
               <div key={spell.name} className="rounded bg-gray-700 p-2">
-                <div className="flex justify-between">
+                <div className="flex justify-between text-white">
                   <span className="font-bold">{spell.name}</span>
                   <span className="text-blue-400">MP {spell.mp}</span>
                 </div>
@@ -75,7 +88,7 @@ export const CommandDetail = ({ type, onClose }: CommandDetailProps) => {
           <div className="max-h-[60vh] space-y-2 overflow-y-auto pr-2">
             {itemData.map((item) => (
               <div key={item.name} className="rounded bg-gray-700 p-2">
-                <div className="flex justify-between">
+                <div className="flex justify-between text-white">
                   <span className="font-bold">{item.name}</span>
                   <span className="text-yellow-400">×{item.count}</span>
                 </div>
@@ -96,6 +109,7 @@ export const CommandDetail = ({ type, onClose }: CommandDetailProps) => {
                 <div>性別: 男</div>
                 <div>職業: エンジニア</div>
                 <div>好きな食べ物: ラーメン</div>
+                <div>誕生日: 5/29</div>
               </div>
             </div>
           </div>
@@ -105,13 +119,27 @@ export const CommandDetail = ({ type, onClose }: CommandDetailProps) => {
           <div className="max-h-[60vh] space-y-2 overflow-y-auto pr-2">
             {equipData.map((equip) => (
               <div key={equip.slot} className="rounded bg-gray-700 p-2">
-                <div className="flex justify-between">
+                <div className="flex justify-between text-white">
                   <span className="font-bold">{equip.slot}</span>
                   <span>{equip.name}</span>
                 </div>
                 <div className="text-sm text-gray-300">{equip.description}</div>
                 {equip.attack && <div className="text-sm text-red-400">攻撃力 +{equip.attack}</div>}
                 {equip.defense && <div className="text-sm text-blue-400">防御力 +{equip.defense}</div>}
+              </div>
+            ))}
+          </div>
+        )
+      case 'skill':
+        return (
+          <div className="max-h-[60vh] space-y-2 overflow-y-auto pr-2">
+            {skillData.map((skill) => (
+              <div key={skill.name} className="rounded bg-gray-700 p-2">
+                <div className="flex justify-between text-white">
+                  <span className="font-bold">{skill.name}</span>
+                  <span className="text-green-400">Lv.{skill.level}</span>
+                </div>
+                <div className="text-sm text-gray-300">{skill.description}</div>
               </div>
             ))}
           </div>
@@ -129,6 +157,8 @@ export const CommandDetail = ({ type, onClose }: CommandDetailProps) => {
         return '強さ'
       case 'equip':
         return '装備'
+      case 'skill':
+        return 'スキル'
     }
   }
 
