@@ -17,26 +17,26 @@ type Story = StoryObj<typeof BattleView>
 export const SlimeBattle: Story = {
   args: {
     enemy: enemies[0],
-    onBattleEnd: (isVictory, exp, gold) => {
-      console.log('Battle ended:', { isVictory, exp, gold })
+    onBattleEnd: (result) => {
+      console.log('Battle ended:', result)
     },
   },
 }
 
-export const GoblinBattle: Story = {
+export const TomatoBattle: Story = {
   args: {
     enemy: enemies[1],
-    onBattleEnd: (isVictory, exp, gold) => {
-      console.log('Battle ended:', { isVictory, exp, gold })
+    onBattleEnd: (result) => {
+      console.log('Battle ended:', result)
     },
   },
 }
 
-export const WolfBattle: Story = {
+export const CheeseBattle: Story = {
   args: {
     enemy: enemies[2],
-    onBattleEnd: (isVictory, exp, gold) => {
-      console.log('Battle ended:', { isVictory, exp, gold })
+    onBattleEnd: (result) => {
+      console.log('Battle ended:', result)
     },
   },
 } 

@@ -11,6 +11,7 @@ import { BattleView } from '../../views/BattleView'
 import { enemies } from '../../data/enemies'
 import { useAtom, useSetAtom } from 'jotai'
 import { playerStatusAtom, updatePlayerStatusAtom } from '../../store/player'
+import { Enemy, BattleResult } from '../../types/enemy'
 
 interface Position {
   x: number
@@ -201,20 +202,19 @@ export const Game = () => {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [playerPosition, showPopup, showCommandMenu, handleMove, handleInteract])
 
-  const handleBattleEnd = (isVictory: boolean, exp: number, gold: number) => {
-    if (isVictory) {
-      // 勝利時の処理
+  const handleBattleEnd = (result: BattleResult) => {
+    if (result.isVictory) {
       updatePlayerStatus({
-        exp: playerStatus.exp + exp,
-        gold: playerStatus.gold + gold,
+        exp: playerStatus.exp + result.exp,
+        gold: playerStatus.gold + result.gold,
       })
     } else {
-      // 敗北時の処理
       updatePlayerStatus({
         hp: playerStatus.maxHp, // HPを全回復
       })
     }
     setIsInBattle(false)
+    setCurrentEnemy(null as unknown as Enemy)
   }
 
   if (isInBattle) {

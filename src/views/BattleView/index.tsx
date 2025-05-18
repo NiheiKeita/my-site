@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { Enemy, BattleState } from '../../types/enemy'
+import { Enemy, BattleResult, BattleState } from '../../types/enemy'
 import { getImagePath } from '../../utils/imagePath'
 import { motion } from 'framer-motion'
 
@@ -13,13 +13,6 @@ const ANIMATION_DURATION = {
   DAMAGE: 300,
   MESSAGE: 1000,
   BATTLE_END: 2000,
-}
-
-// 型定義
-interface BattleResult {
-  isVictory: boolean
-  exp: number
-  gold: number
 }
 
 // バトルロジック
@@ -105,8 +98,8 @@ const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult) => voi
 
         if (newPlayerHp === 0) {
           handleDefeat()
-          
-return
+
+          return
         }
 
         handleNextTurn()
@@ -137,8 +130,8 @@ return
 
       if (newEnemyHp === 0) {
         handleVictory()
-        
-return
+
+        return
       }
 
       handleEnemyAttack()

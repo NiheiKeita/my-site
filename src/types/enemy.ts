@@ -1,5 +1,5 @@
 export interface Enemy {
-  id: string
+  id: number
   name: string
   level: number
   hp: number
@@ -10,6 +10,12 @@ export interface Enemy {
   gold: number
   image: string
   defeatedImage: string
+}
+
+export interface BattleResult {
+  isVictory: boolean
+  exp: number
+  gold: number
 }
 
 export interface BattleState {
