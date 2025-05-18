@@ -1,23 +1,23 @@
+import { ReactNode } from 'react'
+
 interface PopupProps {
-  content: string;
-  onClose: () => void;
+  content: ReactNode
+  onClose: () => void
 }
 
 export const Popup = ({ content, onClose }: PopupProps) => {
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="w-[90%] max-w-md rounded-lg bg-gray-800 p-4 shadow-lg">
+    <div className="fixed inset-0 flex items-center justify-center bg-black/50">
+      <div className="bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
         <div className="text-white">
-          <div className="mb-4 text-lg leading-relaxed">{content}</div>
-          <div className="text-center">
-            <button
-              onClick={onClose}
-              className="rounded bg-gray-700 px-6 py-2 text-white transition-colors hover:bg-gray-600"
-            >
-              決定
-            </button>
-          </div>
+          {content}
         </div>
+        <button
+          onClick={onClose}
+          className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
+        >
+          閉じる
+        </button>
       </div>
     </div>
   )

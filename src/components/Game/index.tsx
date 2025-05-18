@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, ReactNode } from 'react'
 import { Character } from '../Character'
 import { Map, calculateGridSize } from '../Map'
 import { TouchControls } from '../TouchControls'
@@ -19,26 +19,97 @@ interface Position {
 }
 
 interface GameObjectData {
-  type: 'pot' | 'chest'
+  type: 'pot' | 'chest' | 'fountain'
   position: Position
+  message: ReactNode
 }
 
 export const Game = () => {
-  const [playerStatus] = useAtom(playerStatusAtom)
+  const [playerStatus, setPlayerStatus] = useAtom(playerStatusAtom)
   const updatePlayerStatus = useSetAtom(updatePlayerStatusAtom)
   const [isInBattle, setIsInBattle] = useState(false)
   const [currentEnemy, setCurrentEnemy] = useState<Enemy | null>(null)
   const [playerPosition, setPlayerPosition] = useState<Position>({ x: 4, y: 4 })
   const [playerDirection, setPlayerDirection] = useState<'up' | 'down' | 'left' | 'right'>('down')
   const [showPopup, setShowPopup] = useState(false)
-  const [popupContent, setPopupContent] = useState('')
+  const [popupContent, setPopupContent] = useState<ReactNode>('')
   const [gridSize, setGridSize] = useState(48)
   const [showCommandMenu, setShowCommandMenu] = useState(false)
+
+
+  const androidApps = [
+    { id: 1, name: 'ひたすら因数分解', url: "https://play.google.com/store/apps/details?id=com.iggyapp.insuubunkai&hl=ja", },
+    { id: 2, name: 'ひたすら積分', url: "https://play.google.com/store/apps/details?id=com.iggyapp.sekibunn&hl=ja", },
+    { id: 3, name: 'ひたすら微分', url: "https://play.google.com/store/apps/details?id=com.iggyapp.bibunn&hl=ja", },
+    { id: 4, name: 'ひたすら素因数分解', url: "https://play.google.com/store/apps/details?id=com.iggyapp.soinnsuubunnkai&hl=ja", },
+    { id: 5, name: '鬼封じの縄', url: "https://play.google.com/store/apps/details?id=com.iggy.catchthedemon&hl=ja", },
+  ]
   const [gameObjects] = useState<GameObjectData[]>([
-    { type: 'pot', position: { x: 2, y: 2 } },
-    { type: 'pot', position: { x: 5, y: 2 } },
-    { type: 'chest', position: { x: 2, y: 5 } },
-    { type: 'chest', position: { x: 5, y: 5 } },
+    {
+      type: 'pot',
+      position: { x: 2, y: 2 },
+      message: (
+        <div className="text-gray-300">
+          <p className="text-lg mb-2">✨ Androidアプリを見つけた ✨</p>
+          {
+            androidApps.map((app) => {
+              return (
+                <div className="text-yellow-300" key={app.id}>
+                  <a
+                    href={app.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mb-2 block hover:underline"
+                  >
+                    {app.name}
+                  </a>
+                </div>
+              )
+            })}
+        </div>
+      )
+    },
+    {
+      type: 'pot',
+      position: { x: 5, y: 2 },
+      message: (
+        <div className="text-yellow-300">
+          <p className="text-lg mb-2">✨ 光る壺 ✨</p>
+          <p>壺の中に何かが入っている気がする...</p>
+        </div>
+      )
+    },
+    {
+      type: 'chest',
+      position: { x: 2, y: 5 },
+      message: (
+        <div className="text-gray-300">
+          <p className="text-lg mb-2">宝箱</p>
+          <p>宝箱は固く閉ざされている。</p>
+        </div>
+      )
+    },
+    {
+      type: 'chest',
+      position: { x: 5, y: 5 },
+      message: (
+        <div className="text-yellow-300">
+          <p className="text-lg mb-2">✨ 輝く宝箱 ✨</p>
+          <p>宝箱の中から光が漏れている...</p>
+        </div>
+      )
+    },
+    {
+      type: 'fountain',
+      position: { x: 0, y: 0 },
+      message: (
+        <div className="text-blue-300">
+          <p className="text-lg mb-2">💫 神秘の泉 💫</p>
+          <p>神秘的な力が宿る泉だ。</p>
+          <p className="text-sm mt-2">HPが全回復するかもしれない...</p>
+        </div>
+      )
+    },
   ])
 
   // グリッドサイズの更新
@@ -98,7 +169,7 @@ export const Game = () => {
 
     // オブジェクトとの衝突チェック
     const isCollision = gameObjects.some(
-      (obj) => obj.position.x === newPosition.x && obj.position.y === newPosition.y
+      (obj) => obj.position.x === newPosition.x && obj.position.y === newPosition.y && obj.type !== 'fountain'
     )
 
     // 衝突している場合は、元の位置に戻す
@@ -110,24 +181,24 @@ export const Game = () => {
     // 位置を更新してアニメーションを表示
     setPlayerPosition(newPosition)
 
+    // 回復の泉に乗った時の処理
+    const fountain = gameObjects.find(
+      (obj) => obj.position.x === newPosition.x && obj.position.y === newPosition.y && obj.type === 'fountain'
+    )
+    if (fountain && playerStatus.hp < playerStatus.maxHp) {
+      setPlayerStatus(prev => ({ ...prev, hp: prev.maxHp }))
+      setPopupContent('HPが全回復した！')
+      setShowPopup(true)
+    }
+
     // 25分の1の確率でランダムなメッセージを表示
     if (Math.random() < 0.04) {
       if (isInBattle) return
       const randomEnemy = enemies[Math.floor(Math.random() * enemies.length)]
       setCurrentEnemy(randomEnemy)
       setIsInBattle(true)
-      // const messages = [
-      //   '何かが動いた気がする...',
-      //   '風の音が聞こえる...',
-      //   '遠くで何かの音がする...',
-      //   '不思議な気配を感じる...',
-      //   '何かが光っている...',
-      // ]
-      // const randomMessage = messages[Math.floor(Math.random() * messages.length)]
-      // setPopupContent(randomMessage)
-      // setShowPopup(true)
     }
-  }, [playerPosition, showPopup, showCommandMenu, gameObjects, isInBattle])
+  }, [playerPosition, showPopup, showCommandMenu, gameObjects, isInBattle, playerStatus])
 
   const handleInteract = useCallback(() => {
     // ポップアップ表示中はインタラクションしない
@@ -154,7 +225,7 @@ export const Game = () => {
     )
 
     if (object) {
-      setPopupContent(`${object.type === 'pot' ? '壺' : '宝箱'}を見つけました！`)
+      setPopupContent(object.message)
       setShowPopup(true)
     } else {
       // オブジェクトがない場合はコマンドメニューを表示
@@ -209,16 +280,19 @@ export const Game = () => {
         gold: playerStatus.gold + result.gold,
       })
     } else {
-      updatePlayerStatus({
-        hp: playerStatus.maxHp, // HPを全回復
-      })
+      setPlayerStatus(prev => ({ ...prev, hp: prev.maxHp }))
     }
     setIsInBattle(false)
     setCurrentEnemy(null)
   }
 
   if (isInBattle && currentEnemy !== null) {
-    return <BattleView enemy={currentEnemy} onBattleEnd={handleBattleEnd} />
+    return <BattleView
+      enemy={currentEnemy}
+      onBattleEnd={handleBattleEnd}
+      playerHp={playerStatus.hp}
+      setPlayerHp={(hp: number) => setPlayerStatus(prev => ({ ...prev, hp }))}
+    />
   }
 
   return (
@@ -227,7 +301,7 @@ export const Game = () => {
       {/* ステータス表示 */}
       <div className="fixed left-4 bottom-4 z-2 rounded bg-black/50 p-2 text-white">
         <p>Lv.{playerStatus.level}</p>
-        <div className="h-4 w-48 rounded bg-gray-700">
+        <div className="h-4 sm:w-48 w-36 rounded bg-gray-700">
           <div
             className="h-full rounded bg-green-500"
             style={{ width: `${(playerStatus.hp / playerStatus.maxHp) * 100}%` }}
@@ -240,7 +314,6 @@ export const Game = () => {
 
       <div className="relative">
         <Map width={8} height={8} />
-        <Character position={playerPosition} direction={playerDirection} gridSize={gridSize} />
         <div className="absolute inset-0">
           {gameObjects.map((obj, index) => (
             <GameObject
@@ -251,6 +324,7 @@ export const Game = () => {
             />
           ))}
         </div>
+        <Character position={playerPosition} direction={playerDirection} gridSize={gridSize} />
       </div>
 
       <TouchControls onMove={handleMove} onInteract={handleInteract} />

@@ -1,26 +1,36 @@
-import { GRID_SIZE } from '../Map'
 import { getImagePath } from '../../utils/imagePath'
 
 interface GameObjectProps {
-  type: 'pot' | 'chest'
+  type: 'pot' | 'chest' | 'fountain'
   position: {
     x: number
     y: number
   }
-  gridSize?: number
+  gridSize: number
 }
 
-export const GameObject = ({ type, position, gridSize = GRID_SIZE }: GameObjectProps) => {
+export const GameObject = ({ type, position, gridSize }: GameObjectProps) => {
+  const getImage = () => {
+    switch (type) {
+      case 'pot':
+        return getImagePath('/assets/objects/pot.png')
+      case 'chest':
+        return getImagePath('/assets/objects/chest.png')
+      case 'fountain':
+        return getImagePath('/assets/objects/fountain.png')
+    }
+  }
+
   return (
     <img
-      src={getImagePath(`/assets/objects/${type}.png`)}
+      src={getImage()}
       alt={type}
-      className="absolute transition-transform duration-150"
+      className="absolute object-contain"
       style={{
-        width: `${gridSize}px`,
-        height: `${gridSize}px`,
-        left: `${position.x * gridSize}px`,
-        top: `${position.y * gridSize}px`,
+        width: gridSize,
+        height: gridSize,
+        left: position.x * gridSize,
+        top: position.y * gridSize,
       }}
     />
   )
