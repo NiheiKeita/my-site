@@ -5,13 +5,26 @@ import { Enemy, BattleState } from '../../types/enemy'
 import { getImagePath } from '../../utils/imagePath'
 import { motion } from 'framer-motion'
 
-interface BattleViewProps {
-  enemy: Enemy
-  onBattleEnd: (isVictory: boolean, exp: number, gold: number) => void
+// 定数
+const INITIAL_PLAYER_HP = 100
+const ESCAPE_CHANCE = 0.5
+const ANIMATION_DURATION = {
+  ATTACK: 1000,
+  DAMAGE: 300,
+  MESSAGE: 1000,
+  BATTLE_END: 2000,
 }
 
-export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
-  const [playerHp, setPlayerHp] = useState(100)
+// 型定義
+interface BattleResult {
+  isVictory: boolean
+  exp: number
+  gold: number
+}
+
+// バトルロジック
+const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult) => void) => {
+  const [playerHp, setPlayerHp] = useState(INITIAL_PLAYER_HP)
   const [enemyHp, setEnemyHp] = useState(enemy.hp)
   const [battleState, setBattleState] = useState<BattleState>({
     isPlayerTurn: true,
@@ -24,169 +37,170 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
   const [isEnemyDamaged, setIsEnemyDamaged] = useState(false)
   const [isEscaping, setIsEscaping] = useState(false)
 
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (showEndMessage && e.key === 'Enter') {
-      onBattleEnd(battleState.isVictory, battleState.isVictory ? enemy.exp : 0, battleState.isVictory ? enemy.gold : 0)
-    }
-  }, [showEndMessage, battleState.isVictory, enemy.exp, enemy.gold, onBattleEnd])
+  const updateBattleState = (updates: Partial<BattleState>) => {
+    setBattleState(prev => ({ ...prev, ...updates }))
+  }
 
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown)
-
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [handleKeyDown])
-
-  const handleAttack = () => {
+  const handlePlayerAttack = useCallback(() => {
     if (!battleState.isPlayerTurn || battleState.isAttacking) return
 
-    setBattleState(prev => ({ ...prev, isAttacking: true, message: '攻撃！' }))
+    updateBattleState({ isAttacking: true, message: '攻撃！' })
 
-    // プレイヤーの攻撃
     setTimeout(() => {
       const damage = Math.max(1, 20 - enemy.defense)
       const newEnemyHp = Math.max(0, enemyHp - damage)
       setEnemyHp(newEnemyHp)
       setIsEnemyDamaged(true)
-      setBattleState(prev => ({
-        ...prev,
-        message: `${enemy.name}に${damage}のダメージ！`,
-      }))
+      updateBattleState({ message: `${enemy.name}に${damage}のダメージ！` })
 
-      // ダメージアニメーションをリセット
-      setTimeout(() => {
-        setIsEnemyDamaged(false)
-      }, 300)
+      setTimeout(() => setIsEnemyDamaged(false), ANIMATION_DURATION.DAMAGE)
 
-      // 敵のHPが0になった場合
       if (newEnemyHp === 0) {
-        setTimeout(() => {
-          setBattleState(prev => ({
-            ...prev,
-            isBattleEnd: true,
-            isVictory: true,
-            message: `${enemy.name}をやっつけた！`,
-          }))
-          setShowEndMessage(true)
-          setTimeout(() => {
-            onBattleEnd(true, enemy.exp, enemy.gold)
-          }, 2000)
-        }, 1000)
-
+        handleVictory()
         return
       }
 
-      // 敵の攻撃
+      handleEnemyAttack()
+    }, ANIMATION_DURATION.ATTACK)
+  }, [battleState.isPlayerTurn, battleState.isAttacking, enemy, enemyHp])
+
+  const handleEnemyAttack = useCallback(() => {
+    setTimeout(() => {
+      updateBattleState({
+        isPlayerTurn: false,
+        message: `${enemy.name}の攻撃！`,
+      })
+
       setTimeout(() => {
-        setBattleState(prev => ({
-          ...prev,
-          isPlayerTurn: false,
-          message: `${enemy.name}の攻撃！`,
-        }))
+        const enemyDamage = Math.max(1, enemy.attack - 5)
+        const newPlayerHp = Math.max(0, playerHp - enemyDamage)
+        setPlayerHp(newPlayerHp)
+        updateBattleState({ message: `${enemyDamage}のダメージを受けた！` })
 
-        setTimeout(() => {
-          const enemyDamage = Math.max(1, enemy.attack - 5)
-          const newPlayerHp = Math.max(0, playerHp - enemyDamage)
-          setPlayerHp(newPlayerHp)
-          setBattleState(prev => ({
-            ...prev,
-            message: `${enemyDamage}のダメージを受けた！`,
-          }))
+        if (newPlayerHp === 0) {
+          handleDefeat()
+          return
+        }
 
-          // プレイヤーのHPが0になった場合
-          if (newPlayerHp === 0) {
-            setTimeout(() => {
-              setBattleState(prev => ({
-                ...prev,
-                isBattleEnd: true,
-                isVictory: false,
-                message: 'あなたは力尽きた...',
-              }))
-              setShowEndMessage(true)
-              onBattleEnd(false, 0, 0)
-            }, 1000)
+        handleNextTurn()
+      }, ANIMATION_DURATION.ATTACK)
+    }, ANIMATION_DURATION.MESSAGE)
+  }, [enemy, playerHp])
 
-            return
-          }
-
-          // 次のターンへ
-          setTimeout(() => {
-            setBattleState(prev => ({
-              ...prev,
-              isPlayerTurn: true,
-              isAttacking: false,
-              message: 'コマンドを選択してください',
-            }))
-          }, 1000)
-        }, 1000)
-      }, 1000)
-    }, 1000)
-  }
-
-  const handleEscape = () => {
+  const handleEscape = useCallback(() => {
     if (!battleState.isPlayerTurn || battleState.isAttacking || isEscaping) return
 
     setIsEscaping(true)
-    setBattleState(prev => ({ ...prev, message: '逃げ出そうとしている...' }))
+    updateBattleState({ message: '逃げ出そうとしている...' })
 
-    // 50%の確率で逃げられる
-    const isEscaped = Math.random() < 0.5
+    const isEscaped = Math.random() < ESCAPE_CHANCE
 
     setTimeout(() => {
       if (isEscaped) {
-        setBattleState(prev => ({
-          ...prev,
-          isBattleEnd: true,
-          isVictory: false,
-          message: '逃げ出した！',
-        }))
-        setShowEndMessage(true)
-        setTimeout(() => {
-          onBattleEnd(false, 0, 0)
-        }, 2000)
+        handleEscapeSuccess()
       } else {
-        setBattleState(prev => ({
-          ...prev,
-          message: '逃げ出せなかった！',
-        }))
-        // 敵の攻撃
-        setTimeout(() => {
-          const enemyDamage = Math.max(1, enemy.attack - 5)
-          const newPlayerHp = Math.max(0, playerHp - enemyDamage)
-          setPlayerHp(newPlayerHp)
-          setBattleState(prev => ({
-            ...prev,
-            message: `${enemyDamage}のダメージを受けた！`,
-          }))
-
-          // プレイヤーのHPが0になった場合
-          if (newPlayerHp === 0) {
-            setTimeout(() => {
-              setBattleState(prev => ({
-                ...prev,
-                isBattleEnd: true,
-                isVictory: false,
-                message: 'あなたは力尽きた...',
-              }))
-              setShowEndMessage(true)
-              onBattleEnd(false, 0, 0)
-            }, 1000)
-            return
-          }
-
-          // 次のターンへ
-          setTimeout(() => {
-            setBattleState(prev => ({
-              ...prev,
-              isPlayerTurn: true,
-              isAttacking: false,
-              message: 'コマンドを選択してください',
-            }))
-            setIsEscaping(false)
-          }, 1000)
-        }, 1000)
+        handleEscapeFailure()
       }
-    }, 1000)
+    }, ANIMATION_DURATION.ATTACK)
+  }, [battleState.isPlayerTurn, battleState.isAttacking, isEscaping])
+
+  const handleVictory = useCallback(() => {
+    setTimeout(() => {
+      updateBattleState({
+        isBattleEnd: true,
+        isVictory: true,
+        message: `${enemy.name}をやっつけた！`,
+      })
+      setShowEndMessage(true)
+      setTimeout(() => {
+        onBattleEnd({ isVictory: true, exp: enemy.exp, gold: enemy.gold })
+      }, ANIMATION_DURATION.BATTLE_END)
+    }, ANIMATION_DURATION.MESSAGE)
+  }, [enemy])
+
+  const handleDefeat = useCallback(() => {
+    setTimeout(() => {
+      updateBattleState({
+        isBattleEnd: true,
+        isVictory: false,
+        message: 'あなたは力尽きた...',
+      })
+      setShowEndMessage(true)
+      onBattleEnd({ isVictory: false, exp: 0, gold: 0 })
+    }, ANIMATION_DURATION.MESSAGE)
+  }, [])
+
+  const handleEscapeSuccess = useCallback(() => {
+    updateBattleState({
+      isBattleEnd: true,
+      isVictory: false,
+      message: '逃げ出した！',
+    })
+    setShowEndMessage(true)
+    setTimeout(() => {
+      onBattleEnd({ isVictory: false, exp: 0, gold: 0 })
+    }, ANIMATION_DURATION.BATTLE_END)
+  }, [])
+
+  const handleEscapeFailure = useCallback(() => {
+    updateBattleState({ message: '逃げ出せなかった！' })
+    handleEnemyAttack()
+  }, [handleEnemyAttack])
+
+  const handleNextTurn = useCallback(() => {
+    setTimeout(() => {
+      updateBattleState({
+        isPlayerTurn: true,
+        isAttacking: false,
+        message: 'コマンドを選択してください',
+      })
+      setIsEscaping(false)
+    }, ANIMATION_DURATION.MESSAGE)
+  }, [])
+
+  return {
+    playerHp,
+    enemyHp,
+    battleState,
+    showEndMessage,
+    isEnemyDamaged,
+    isEscaping,
+    handlePlayerAttack,
+    handleEscape,
   }
+}
+
+interface BattleViewProps {
+  enemy: Enemy
+  onBattleEnd: (result: BattleResult) => void
+}
+
+export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
+  const {
+    playerHp,
+    enemyHp,
+    battleState,
+    showEndMessage,
+    isEnemyDamaged,
+    isEscaping,
+    handlePlayerAttack,
+    handleEscape,
+  } = useBattleLogic(enemy, onBattleEnd)
+
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (showEndMessage && e.key === 'Enter') {
+      onBattleEnd({
+        isVictory: battleState.isVictory,
+        exp: battleState.isVictory ? enemy.exp : 0,
+        gold: battleState.isVictory ? enemy.gold : 0,
+      })
+    }
+  }, [showEndMessage, battleState.isVictory, enemy.exp, enemy.gold, onBattleEnd])
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [handleKeyDown])
 
   return (
     <div className="fixed inset-0 flex flex-col bg-gray-900 text-white">
@@ -197,10 +211,10 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
           <div className="h-4 sm:w-64 w-36 bg-gray-700 rounded">
             <div
               className="h-full bg-green-500 rounded"
-              style={{ width: `${(playerHp / 100) * 100}%` }}
+              style={{ width: `${(playerHp / INITIAL_PLAYER_HP) * 100}%` }}
             />
           </div>
-          <p>HP: {playerHp}/100</p>
+          <p>HP: {playerHp}/{INITIAL_PLAYER_HP}</p>
         </div>
         <div>
           <p>{enemy.name} Lv.{enemy.level}</p>
@@ -253,7 +267,7 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
       {/* コマンド選択 */}
       <div className={`grid grid-cols-2 gap-4 p-4 ${(battleState.isPlayerTurn && !battleState.isAttacking && !showEndMessage && !isEscaping) ? '' : 'invisible'}`}>
         <button
-          onClick={handleAttack}
+          onClick={handlePlayerAttack}
           className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
           たたかう
