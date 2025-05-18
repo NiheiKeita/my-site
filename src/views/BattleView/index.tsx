@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Enemy, BattleState } from '../../types/enemy'
 import { getImagePath } from '../../utils/imagePath'
+import { motion } from 'framer-motion'
 
 interface BattleViewProps {
   enemy: Enemy
@@ -20,6 +21,7 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
     isVictory: false,
   })
   const [showEndMessage, setShowEndMessage] = useState(false)
+  const [isEnemyDamaged, setIsEnemyDamaged] = useState(false)
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (showEndMessage && e.key === 'Enter') {
@@ -43,10 +45,16 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
       const damage = Math.max(1, 20 - enemy.defense)
       const newEnemyHp = Math.max(0, enemyHp - damage)
       setEnemyHp(newEnemyHp)
+      setIsEnemyDamaged(true)
       setBattleState(prev => ({
         ...prev,
         message: `${enemy.name}に${damage}のダメージ！`,
       }))
+
+      // ダメージアニメーションをリセット
+      setTimeout(() => {
+        setIsEnemyDamaged(false)
+      }, 300)
 
       // 敵のHPが0になった場合
       if (newEnemyHp === 0) {
@@ -141,10 +149,25 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
 
       {/* 敵の画像 */}
       <div className="flex-1 flex items-center justify-center">
-        <img
+        <motion.img
           src={getImagePath(battleState.isVictory ? enemy.defeatedImage : enemy.image)}
           alt={enemy.name}
-          className={`size-80 object-contain ${battleState.isVictory ? 'animate-fade-out' : ''}`}
+          className="size-80 object-contain"
+          animate={isEnemyDamaged ? {
+            x: [0, -10, 10, -10, 10, 0],
+            transition: {
+              duration: 0.3,
+              ease: "easeInOut"
+            }
+          } : battleState.isVictory ? {
+            opacity: [1, 0],
+            scale: [1, 0.8],
+            transition: {
+              duration: 1,
+              ease: "easeOut"
+            }
+          } : {}}
+          initial={false}
         />
       </div>
 
