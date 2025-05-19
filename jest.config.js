@@ -1,21 +1,20 @@
 module.exports = {
-    preset: 'ts-jest',
     testEnvironment: 'jsdom',
+    setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
     moduleNameMapper: {
-        '\\.(css|less|sass|scss)$': 'identity-obj-proxy',
+        '^@/(.*)$': '<rootDir>/src/$1',
     },
     transform: {
-        '^.+\\.(ts|tsx)$': 'ts-jest',
-        '^.+\\.(js|jsx)$': ['babel-jest', { presets: ['next/babel'] }],
-    },
-    globals: {
-        'ts-jest': {
+        '^.+\\.(ts|tsx)$': ['ts-jest', {
             tsconfig: {
-                jsx: 'react-jsx',
-            },
-        },
+                jsx: 'react-jsx'
+            }
+        }]
     },
-    testMatch: [
-        "**/views/**/*.spec.[jt]s?(x)"
-    ]
+    testMatch: ['**/__tests__/**/*.test.(ts|tsx)'],
+    collectCoverageFrom: [
+        'src/**/*.{ts,tsx}',
+        '!src/**/*.stories.{ts,tsx}',
+        '!src/**/*.d.ts',
+    ],
 };

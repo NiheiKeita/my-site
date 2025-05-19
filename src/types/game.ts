@@ -5,21 +5,31 @@ export interface Position {
   y: number
 }
 
+export type GameObjectType = 'pot' | 'chest' | 'fountain' | 'stairs' | 'npc' | 'item' | 'android'
+export type StairDirection = 'up' | 'down'
+
+export interface AndroidApp {
+  id: string
+  name: string
+  url: string
+}
+
 export interface GameObjectData {
-  type: 'pot' | 'chest' | 'fountain' | 'stairs' | 'npc' | 'item' | 'android'
+  type: GameObjectType
   position: Position
   message: ReactNode
-  direction?: 'up' | 'down'
-  app?: {
-    id: string
-    name: string
-    url: string
-  }
+  direction?: StairDirection
+  app?: AndroidApp
 }
 
 export interface StairData {
   mapId: string
   position: Position
+}
+
+export interface StairConnections {
+  up?: StairData
+  down?: StairData
 }
 
 export interface MapData {
@@ -28,8 +38,5 @@ export interface MapData {
   width: number
   height: number
   gameObjects: GameObjectData[]
-  stairs?: {
-    up?: StairData
-    down?: StairData
-  }
+  stairs?: StairConnections
 } 
