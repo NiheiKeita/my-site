@@ -1,5 +1,5 @@
 'use client'
-
+import React from 'react'
 import { useState, useEffect, useCallback } from 'react'
 import { Enemy, BattleResult, BattleState } from '../../types/enemy'
 import { getImagePath } from '../../utils/imagePath'
@@ -7,12 +7,19 @@ import { motion } from 'framer-motion'
 
 // 定数
 const INITIAL_PLAYER_HP = 100
-const ESCAPE_CHANCE = 0.5
+const ESCAPE_CHANCE = 0.3
 const ANIMATION_DURATION = {
   ATTACK: 1000,
   DAMAGE: 300,
   MESSAGE: 1000,
   BATTLE_END: 2000,
+}
+
+interface BattleViewProps {
+  enemy: Enemy;
+  onBattleEnd: (result: BattleResult) => void;
+  playerHp: number;
+  setPlayerHp: (hp: number) => void;
 }
 
 // バトルロジック
@@ -186,14 +193,7 @@ const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult) => voi
   }
 }
 
-interface BattleViewProps {
-  enemy: Enemy
-  onBattleEnd: (result: BattleResult) => void
-  playerHp: number
-  setPlayerHp: (hp: number) => void
-}
-
-export const BattleView = ({ enemy, onBattleEnd, playerHp, setPlayerHp }: BattleViewProps) => {
+export const BattleView: React.FC<BattleViewProps> = ({ enemy, onBattleEnd, playerHp, setPlayerHp }) => {
   const {
     enemyHp,
     battleState,

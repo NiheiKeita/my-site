@@ -31,18 +31,23 @@ export const GRID_SIZE = 48
 interface MapProps {
   width?: number;
   height?: number;
+  onGridSizeChange?: (size: number) => void;
 }
 
-export const Map = ({ width = 8, height = 8 }: MapProps) => {
+export const Map = ({ width = 8, height = 8, onGridSizeChange }: MapProps) => {
   const [gridSize, setGridSize] = useState(GRID_SIZE)
 
   useEffect(() => {
     // 初期サイズを計算
-    setGridSize(calculateGridSize(width, height))
+    const newGridSize = calculateGridSize(width, height)
+    setGridSize(newGridSize)
+    onGridSizeChange?.(newGridSize)
 
     // リサイズイベントのハンドラー
     const handleResize = () => {
-      setGridSize(calculateGridSize(width, height))
+      const newGridSize = calculateGridSize(width, height)
+      setGridSize(newGridSize)
+      onGridSizeChange?.(newGridSize)
     }
 
     // リサイズイベントのリスナーを追加
@@ -50,7 +55,7 @@ export const Map = ({ width = 8, height = 8 }: MapProps) => {
 
     // クリーンアップ
     return () => window.removeEventListener('resize', handleResize)
-  }, [width, height])
+  }, [width, height, onGridSizeChange])
 
   const grid = Array.from({ length: height }, (_, y) =>
     Array.from({ length: width }, (_, x) => ({
