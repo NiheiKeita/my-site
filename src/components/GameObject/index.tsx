@@ -1,37 +1,27 @@
-import { getImagePath } from '../../utils/imagePath'
+import { GameObjectData } from '../../types/game'
+import { getObjectImage } from '../../constants/objects'
 
 interface GameObjectProps {
-  type: 'pot' | 'chest' | 'fountain'
-  position: {
-    x: number
-    y: number
-  }
+  object: GameObjectData
   gridSize: number
 }
 
-export const GameObject = ({ type, position, gridSize }: GameObjectProps) => {
-  const getImage = () => {
-    switch (type) {
-      case 'pot':
-        return getImagePath('/assets/objects/pot.png')
-      case 'chest':
-        return getImagePath('/assets/objects/chest.png')
-      case 'fountain':
-        return getImagePath('/assets/objects/fountain.png')
-    }
-  }
-
+export const GameObject = ({ object, gridSize }: GameObjectProps) => {
   return (
-    <img
-      src={getImage()}
-      alt={type}
-      className="absolute object-contain"
+    <div
+      className="absolute"
       style={{
+        left: object.position.x * gridSize,
+        top: object.position.y * gridSize,
         width: gridSize,
         height: gridSize,
-        left: position.x * gridSize,
-        top: position.y * gridSize,
       }}
-    />
+    >
+      <img
+        src={getObjectImage(object.type, object.direction)}
+        alt={object.type}
+        className="size-full object-contain"
+      />
+    </div>
   )
 } 
