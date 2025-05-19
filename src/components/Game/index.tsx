@@ -12,16 +12,12 @@ import { enemies } from '../../data/enemies'
 import { useAtom, useSetAtom } from 'jotai'
 import { playerStatusAtom, updatePlayerStatusAtom } from '../../store/player'
 import { Enemy, BattleResult } from '../../types/enemy'
+import { MapData } from '../../types/game'
+import { maps } from '../../constants/maps'
 
 interface Position {
   x: number
   y: number
-}
-
-interface GameObjectData {
-  type: 'pot' | 'chest' | 'fountain'
-  position: Position
-  message: ReactNode
 }
 
 export const Game = () => {
@@ -35,87 +31,98 @@ export const Game = () => {
   const [popupContent, setPopupContent] = useState<ReactNode>('')
   const [gridSize, setGridSize] = useState(48)
   const [showCommandMenu, setShowCommandMenu] = useState(false)
+  const [currentMap, setCurrentMap] = useState<MapData>(maps[0])
 
-
-  const androidApps = [
-    { id: 1, name: 'ひたすら因数分解', url: "https://play.google.com/store/apps/details?id=com.iggyapp.insuubunkai&hl=ja", },
-    { id: 2, name: 'ひたすら積分', url: "https://play.google.com/store/apps/details?id=com.iggyapp.sekibunn&hl=ja", },
-    { id: 3, name: 'ひたすら微分', url: "https://play.google.com/store/apps/details?id=com.iggyapp.bibunn&hl=ja", },
-    { id: 4, name: 'ひたすら素因数分解', url: "https://play.google.com/store/apps/details?id=com.iggyapp.soinnsuubunnkai&hl=ja", },
-    { id: 5, name: '鬼封じの縄', url: "https://play.google.com/store/apps/details?id=com.iggy.catchthedemon&hl=ja", },
-  ]
-  const [gameObjects] = useState<GameObjectData[]>([
-    {
-      type: 'pot',
-      position: { x: 2, y: 2 },
-      message: (
-        <div className="text-gray-300">
-          <p className="text-lg mb-2">✨ Androidアプリを見つけた ✨</p>
-          {
-            androidApps.map((app) => {
-              return (
-                <div className="text-yellow-300" key={app.id}>
-                  <a
-                    href={app.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mb-2 block hover:underline"
-                  >
-                    {app.name}
-                  </a>
-                </div>
-              )
-            })}
-        </div>
-      )
-    },
-    {
-      type: 'pot',
-      position: { x: 5, y: 2 },
-      message: (
-        <div className="text-yellow-300">
-          <p className="text-lg mb-2">✨ 光る壺 ✨</p>
-          <p>壺の中に何かが入っている気がする...</p>
-        </div>
-      )
-    },
-    {
-      type: 'chest',
-      position: { x: 2, y: 5 },
-      message: (
-        <div className="text-gray-300">
-          <p className="text-lg mb-2">宝箱</p>
-          <p>宝箱は固く閉ざされている。</p>
-        </div>
-      )
-    },
-    {
-      type: 'chest',
-      position: { x: 5, y: 5 },
-      message: (
-        <div className="text-yellow-300">
-          <p className="text-lg mb-2">✨ 輝く宝箱 ✨</p>
-          <p>宝箱の中から光が漏れている...</p>
-        </div>
-      )
-    },
-    {
-      type: 'fountain',
-      position: { x: 0, y: 0 },
-      message: (
-        <div className="text-blue-300">
-          <p className="text-lg mb-2">💫 神秘の泉 💫</p>
-          <p>神秘的な力が宿る泉だ。</p>
-          <p className="text-sm mt-2">HPが全回復するかもしれない...</p>
-        </div>
-      )
-    },
-  ])
+  // const androidApps = [
+  //   { id: 1, name: 'ひたすら因数分解', url: "https://play.google.com/store/apps/details?id=com.iggyapp.insuubunkai&hl=ja", },
+  //   { id: 2, name: 'ひたすら積分', url: "https://play.google.com/store/apps/details?id=com.iggyapp.sekibunn&hl=ja", },
+  //   { id: 3, name: 'ひたすら微分', url: "https://play.google.com/store/apps/details?id=com.iggyapp.bibunn&hl=ja", },
+  //   { id: 4, name: 'ひたすら素因数分解', url: "https://play.google.com/store/apps/details?id=com.iggyapp.soinnsuubunnkai&hl=ja", },
+  //   { id: 5, name: '鬼封じの縄', url: "https://play.google.com/store/apps/details?id=com.iggy.catchthedemon&hl=ja", },
+  // ]
+  // const [gameObjects] = useState<GameObjectData[]>([
+  //   {
+  //     type: 'pot',
+  //     position: { x: 2, y: 2 },
+  //     message: (
+  //       <div className="text-gray-300">
+  //         <p className="text-lg mb-2">✨ Androidアプリを見つけた ✨</p>
+  //         {
+  //           androidApps.map((app) => {
+  //             return (
+  //               <div className="text-yellow-300" key={app.id}>
+  //                 <a
+  //                   href={app.url}
+  //                   target="_blank"
+  //                   rel="noopener noreferrer"
+  //                   className="mb-2 block hover:underline"
+  //                 >
+  //                   {app.name}
+  //                 </a>
+  //               </div>
+  //             )
+  //           })}
+  //       </div>
+  //     )
+  //   },
+  //   {
+  //     type: 'pot',
+  //     position: { x: 5, y: 2 },
+  //     message: (
+  //       <div className="text-yellow-300">
+  //         <p className="text-lg mb-2">✨ 光る壺 ✨</p>
+  //         <p>壺の中に何かが入っている気がする...</p>
+  //       </div>
+  //     )
+  //   },
+  //   {
+  //     type: 'chest',
+  //     position: { x: 2, y: 5 },
+  //     message: (
+  //       <div className="text-gray-300">
+  //         <p className="text-lg mb-2">宝箱</p>
+  //         <p>宝箱は固く閉ざされている。</p>
+  //       </div>
+  //     )
+  //   },
+  //   {
+  //     type: 'chest',
+  //     position: { x: 5, y: 5 },
+  //     message: (
+  //       <div className="text-yellow-300">
+  //         <p className="text-lg mb-2">✨ 輝く宝箱 ✨</p>
+  //         <p>宝箱の中から光が漏れている...</p>
+  //       </div>
+  //     )
+  //   },
+  //   {
+  //     type: 'fountain',
+  //     position: { x: 0, y: 0 },
+  //     message: (
+  //       <div className="text-blue-300">
+  //         <p className="text-lg mb-2">💫 神秘の泉 💫</p>
+  //         <p>神秘的な力が宿る泉だ。</p>
+  //         <p className="text-sm mt-2">HPが全回復するかもしれない...</p>
+  //       </div>
+  //     )
+  //   },
+  //   {
+  //     type: 'stairs',
+  //     position: { x: 7, y: 7 },
+  //     message: (
+  //       <div className="text-gray-300">
+  //         <p className="text-lg mb-2">下へ続く階段</p>
+  //         <p>下の階へ続く階段がある。</p>
+  //       </div>
+  //     ),
+  //     direction: 'down'
+  //   }
+  // ])
 
   // グリッドサイズの更新
   useEffect(() => {
     const updateGridSize = () => {
-      setGridSize(calculateGridSize(8, 8))
+      setGridSize(calculateGridSize(currentMap.width, currentMap.height))
     }
 
     // 初期サイズを計算
@@ -126,7 +133,7 @@ export const Game = () => {
 
     // クリーンアップ
     return () => window.removeEventListener('resize', updateGridSize)
-  }, [])
+  }, [currentMap])
 
   // // ランダムエンカウントの処理
   // useEffect(() => {
@@ -157,19 +164,20 @@ export const Game = () => {
         newPosition.y = Math.max(0, playerPosition.y - 1)
         break
       case 'down':
-        newPosition.y = Math.min(7, playerPosition.y + 1)
+        newPosition.y = Math.min(currentMap.height - 1, playerPosition.y + 1)
         break
       case 'left':
         newPosition.x = Math.max(0, playerPosition.x - 1)
         break
       case 'right':
-        newPosition.x = Math.min(7, playerPosition.x + 1)
+        newPosition.x = Math.min(currentMap.width - 1, playerPosition.x + 1)
         break
     }
 
     // オブジェクトとの衝突チェック
-    const isCollision = gameObjects.some(
-      (obj) => obj.position.x === newPosition.x && obj.position.y === newPosition.y && obj.type !== 'fountain'
+    const isCollision = currentMap.gameObjects.some(
+      (obj) => obj.position.x === newPosition.x && obj.position.y === newPosition.y &&
+        obj.type !== 'fountain' && obj.type !== 'stairs'
     )
 
     // 衝突している場合は、元の位置に戻す
@@ -182,7 +190,7 @@ export const Game = () => {
     setPlayerPosition(newPosition)
 
     // 回復の泉に乗った時の処理
-    const fountain = gameObjects.find(
+    const fountain = currentMap.gameObjects.find(
       (obj) => obj.position.x === newPosition.x && obj.position.y === newPosition.y && obj.type === 'fountain'
     )
     if (fountain && playerStatus.hp < playerStatus.maxHp) {
@@ -191,14 +199,35 @@ export const Game = () => {
       setShowPopup(true)
     }
 
+    // 階段に乗った時の処理
+    const stairs = currentMap.gameObjects.find(
+      (obj) => obj.position.x === newPosition.x && obj.position.y === newPosition.y && obj.type === 'stairs'
+    )
+    if (stairs) {
+      // 階段を降りる/登る処理
+      if (stairs.direction === 'down' && currentMap.stairs?.down) {
+        const nextMap = maps.find(map => map.id === currentMap.stairs?.down?.mapId)
+        if (nextMap) {
+          setCurrentMap(nextMap)
+          setPlayerPosition(currentMap.stairs.down.position)
+        }
+      } else if (stairs.direction === 'up' && currentMap.stairs?.up) {
+        const prevMap = maps.find(map => map.id === currentMap.stairs?.up?.mapId)
+        if (prevMap) {
+          setCurrentMap(prevMap)
+          setPlayerPosition(currentMap.stairs.up.position)
+        }
+      }
+    }
+
     // 25分の1の確率でランダムなメッセージを表示
-    if (Math.random() < 0.04) {
+    if (Math.random() < 0.01) {
       if (isInBattle) return
       const randomEnemy = enemies[Math.floor(Math.random() * enemies.length)]
       setCurrentEnemy(randomEnemy)
       setIsInBattle(true)
     }
-  }, [playerPosition, showPopup, showCommandMenu, gameObjects, isInBattle, playerStatus])
+  }, [playerPosition, showPopup, showCommandMenu, currentMap, isInBattle, playerStatus])
 
   const handleInteract = useCallback(() => {
     // ポップアップ表示中はインタラクションしない
@@ -220,18 +249,19 @@ export const Game = () => {
         break
     }
 
-    const object = gameObjects.find(
+    const object = currentMap.gameObjects.find(
       obj => obj.position.x === frontPosition.x && obj.position.y === frontPosition.y
     )
 
     if (object) {
+      // オブジェクトのメッセージを表示
       setPopupContent(object.message)
       setShowPopup(true)
     } else {
       // オブジェクトがない場合はコマンドメニューを表示
       setShowCommandMenu(true)
     }
-  }, [playerPosition, playerDirection, showPopup, gameObjects])
+  }, [playerPosition, playerDirection, showPopup, currentMap])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -314,13 +344,12 @@ export const Game = () => {
 
       <div className="fixed inset-0 flex items-start justify-center pt-8">
         <div className="relative">
-          <Map width={8} height={8} />
+          <Map width={currentMap.width} height={currentMap.height} />
           <div className="absolute inset-0">
-            {gameObjects.map((obj, index) => (
+            {currentMap.gameObjects.map((obj, index) => (
               <GameObject
                 key={`${obj.type}-${index}`}
-                type={obj.type}
-                position={obj.position}
+                object={obj}
                 gridSize={gridSize}
               />
             ))}

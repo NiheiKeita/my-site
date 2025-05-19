@@ -15,16 +15,22 @@ type Story = StoryObj<typeof meta>
 
 export const Pot: Story = {
   args: {
-    type: 'pot',
-    position: { x: 0, y: 0 },
+    object: {
+      type: 'pot',
+      position: { x: 0, y: 0 },
+      message: '壺の中に何かが入っている気がする...'
+    },
     gridSize: 10,
   },
 }
 
 export const Chest: Story = {
   args: {
-    type: 'chest',
-    position: { x: 0, y: 0 },
+    object: {
+      type: 'chest',
+      position: { x: 0, y: 0 },
+      message: '宝箱の中に何かが入っている気がする...'
+    },
     gridSize: 10,
   },
 } 
