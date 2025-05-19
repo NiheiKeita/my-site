@@ -1,5 +1,6 @@
 import { GameObjectData } from '../../types/game'
 import { getObjectImage } from '../../constants/objects'
+import { getImagePath } from '../../utils/imagePath'
 
 interface GameObjectProps {
   object: GameObjectData
@@ -18,7 +19,7 @@ export const GameObject = ({ object, gridSize }: GameObjectProps) => {
       }}
     >
       <img
-        src={getObjectImage(object.type, object.direction)}
+        src={getImagePath(getObjectImage(object.type, object.direction))}
         alt={object.type}
         className="size-full object-contain"
       />
