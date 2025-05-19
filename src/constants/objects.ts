@@ -126,5 +126,6 @@ export const getObjectImage = (type: GameObjectType, direction?: 'up' | 'down'):
   if (type === 'stairs' && direction) {
     return `/assets/objects/stairs_${direction}.png`
   }
-  return objectImages[type]?.image || '/assets/objects/default.png'
+  
+return objectImages[type]?.image || '/assets/objects/default.png'
 } 
