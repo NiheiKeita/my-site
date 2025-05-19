@@ -1,5 +1,5 @@
 import { GameObjectData } from '../../types/game'
-import { getImagePath } from '../../utils/imagePath'
+import { getObjectImage } from '../../constants/objects'
 
 interface GameObjectProps {
   object: GameObjectData
@@ -7,21 +7,6 @@ interface GameObjectProps {
 }
 
 export const GameObject = ({ object, gridSize }: GameObjectProps) => {
-  const getImage = () => {
-    switch (object.type) {
-      case 'pot':
-        return getImagePath('/assets/objects/pot.png')
-      case 'chest':
-        return getImagePath('/assets/objects/chest.png')
-      case 'fountain':
-        return getImagePath('/assets/objects/fountain.png')
-      case 'stairs':
-        return getImagePath(`/assets/objects/stairs_${object.direction}.png`)
-      default:
-        return ''
-    }
-  }
-
   return (
     <div
       className="absolute"
@@ -33,7 +18,7 @@ export const GameObject = ({ object, gridSize }: GameObjectProps) => {
       }}
     >
       <img
-        src={getImage()}
+        src={getObjectImage(object.type, object.direction)}
         alt={object.type}
         className="size-full object-contain"
       />
