@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react'
 import { useGameLogic } from './hooks'
-import { act } from 'react';
+import { act } from 'react'
 import { Provider } from 'jotai'
 import React from 'react'
 

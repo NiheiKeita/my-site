@@ -1,5 +1,5 @@
 import React from 'react'
-import { act } from 'react';
+import { act } from 'react'
 import { renderHook } from '@testing-library/react'
 import { useBattleLogic } from './hooks'
 import { Enemy } from '../../types/enemy'

@@ -77,7 +77,8 @@ const calculateLevel = (exp: number): number => {
       return level + 1
     }
   }
-  return 1
+  
+return 1
 }
 
 // プレイヤーステータスをリセットするアトム
