@@ -120,12 +120,16 @@ export const objectImages: Partial<Record<GameObjectType, ObjectImageConfig>> = 
     type: 'stairs',
     image: '/assets/objects/stairs_down.png', // デフォルトの画像
   },
+  item: {
+    type: 'item',
+    image: '/assets/objects/item.png',
+  },
 }
 
 export const getObjectImage = (type: GameObjectType, direction?: 'up' | 'down'): string => {
   if (type === 'stairs' && direction) {
     return `/assets/objects/stairs_${direction}.png`
   }
-  
-return objectImages[type]?.image || '/assets/objects/default.png'
+
+  return objectImages[type]?.image || '/assets/objects/default.png'
 } 
