@@ -3,7 +3,7 @@ import { useState, useCallback, useEffect } from 'react'
 import { useAtom, useSetAtom } from 'jotai'
 import { playerStatusAtom, updatePlayerStatusAtom } from '../../store/player'
 import { Enemy, BattleResult } from '../../types/enemy'
-import { MapData } from '../../types/game'
+import { MapData, GameObjectData } from '../../types/game'
 import { maps } from '../../constants/maps'
 import { enemies } from '../../data/enemies'
 
@@ -42,10 +42,8 @@ export const useGameLogic = () => {
     }
   }, [playerStatus.level, previousLevel, playerStatus.maxHp, playerStatus.attack, playerStatus.defense])
 
-  const handleMove = useCallback((direction: 'up' | 'down' | 'left' | 'right') => {
-    if (showPopup || showCommandMenu) return
-
-    setPlayerDirection(direction)
+  // 移動先の座標を計算
+  const calculateNextPosition = useCallback((direction: 'up' | 'down' | 'left' | 'right'): Position => {
     const newPosition = { ...playerPosition }
 
     switch (direction) {
@@ -63,29 +61,33 @@ export const useGameLogic = () => {
         break
     }
 
-    const isCollision = currentMap.gameObjects.some(
-      (obj) => obj.position.x === newPosition.x && obj.position.y === newPosition.y &&
+    return newPosition
+  }, [playerPosition, currentMap])
+
+  // オブジェクトとの衝突チェック
+  const checkObjectCollision = useCallback((position: Position): GameObjectData | undefined => {
+    return currentMap.gameObjects.find(
+      (obj) => obj.position.x === position.x && obj.position.y === position.y &&
         obj.type !== 'fountain' && obj.type !== 'stairs'
     )
+  }, [currentMap])
 
-    if (isCollision) {
-      newPosition.x = playerPosition.x
-      newPosition.y = playerPosition.y
-    }
-
-    setPlayerPosition(newPosition)
-
+  // 泉との衝突処理
+  const handleFountainCollision = useCallback((position: Position) => {
     const fountain = currentMap.gameObjects.find(
-      (obj) => obj.position.x === newPosition.x && obj.position.y === newPosition.y && obj.type === 'fountain'
+      (obj) => obj.position.x === position.x && obj.position.y === position.y && obj.type === 'fountain'
     )
     if (fountain && playerStatus.hp < playerStatus.maxHp) {
       setPlayerStatus(prev => ({ ...prev, hp: prev.maxHp }))
       setPopupContent('HPが全回復した！')
       setShowPopup(true)
     }
+  }, [currentMap, playerStatus])
 
+  // 階段との衝突処理
+  const handleStairCollision = useCallback((position: Position) => {
     const stairs = currentMap.gameObjects.find(
-      (obj) => obj.position.x === newPosition.x && obj.position.y === newPosition.y && obj.type === 'stairs'
+      (obj) => obj.position.x === position.x && obj.position.y === position.y && obj.type === 'stairs'
     )
     if (stairs) {
       if (stairs.direction === 'down' && currentMap.stairs?.down) {
@@ -102,14 +104,33 @@ export const useGameLogic = () => {
         }
       }
     }
+  }, [currentMap])
 
-    if (Math.random() < 0.04) {
-      if (isInBattle) return
+  // ランダムエンカウント処理
+  const handleRandomEncounter = useCallback(() => {
+    if (Math.random() < 0.04 && !isInBattle) {
       const randomEnemy = enemies[Math.floor(Math.random() * enemies.length)]
       setCurrentEnemy(randomEnemy)
       setIsInBattle(true)
     }
-  }, [playerPosition, showPopup, showCommandMenu, currentMap, isInBattle, playerStatus])
+  }, [isInBattle])
+
+  const handleMove = useCallback((direction: 'up' | 'down' | 'left' | 'right') => {
+    if (showPopup || showCommandMenu) return
+
+    setPlayerDirection(direction)
+    const newPosition = calculateNextPosition(direction)
+
+    const collidedObject = checkObjectCollision(newPosition)
+    if (collidedObject) {
+      return
+    }
+
+    setPlayerPosition(newPosition)
+    handleFountainCollision(newPosition)
+    handleStairCollision(newPosition)
+    handleRandomEncounter()
+  }, [showPopup, showCommandMenu, calculateNextPosition, checkObjectCollision, handleFountainCollision, handleStairCollision, handleRandomEncounter])
 
   const handleInteract = useCallback(() => {
     if (showPopup) return
