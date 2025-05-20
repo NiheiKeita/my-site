@@ -68,7 +68,7 @@ export const useGameLogic = () => {
   const checkObjectCollision = useCallback((position: Position): GameObjectData | undefined => {
     return currentMap.gameObjects.find(
       (obj) => obj.position.x === position.x && obj.position.y === position.y &&
-        obj.type !== 'fountain' && obj.type !== 'stairs'
+        obj.type !== 'fountain' && obj.type !== 'stairs' && obj.type !== 'item'
     )
   }, [currentMap])
 
@@ -127,7 +127,7 @@ export const useGameLogic = () => {
     }
 
     setPlayerPosition(newPosition)
-    handleFountainCollision(newPosition)
+    // handleItemCollision(newPosition)
     handleStairCollision(newPosition)
     handleRandomEncounter()
   }, [showPopup, showCommandMenu, calculateNextPosition, checkObjectCollision, handleFountainCollision, handleStairCollision, handleRandomEncounter])
@@ -154,8 +154,18 @@ export const useGameLogic = () => {
     const object = currentMap.gameObjects.find(
       obj => obj.position.x === frontPosition.x && obj.position.y === frontPosition.y
     )
+    const nowObject = currentMap.gameObjects.find(
+      obj => obj.position.x === playerPosition.x && obj.position.y === playerPosition.y
+    )
 
-    if (object) {
+    if (nowObject) {
+      if (nowObject.type === 'item') {
+        // アイテムを拾った時
+        setPopupContent(`${nowObject.itemId}を拾った`)
+        setShowPopup(true)
+        //TODO: アイテムを拾った時の処理
+      }
+    } else if (object) {
       setPopupContent(object.message)
       setShowPopup(true)
     } else {

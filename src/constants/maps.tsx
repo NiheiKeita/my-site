@@ -88,6 +88,17 @@ const firstFloorObjects: GameObjectData[] = [
     )
   },
   {
+    type: 'item',
+    itemId: 'sword_1',
+    position: { x: 7, y: 1 },
+    message: messageUtils.createMessage(
+      <>
+        <p>~~を拾った</p>
+      </>,
+      'text-blue-300'
+    )
+  },
+  {
     type: 'stairs',
     position: { x: 7, y: 7 },
     message: messageUtils.createMessage(messageUtils.createStairMessage('down')),

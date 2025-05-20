@@ -18,7 +18,7 @@ describe('maps', () => {
     it('1階のマップが正しいオブジェクトを持っている', () => {
       const firstFloor = maps.find((map) => map.id === 'first-floor')
       expect(firstFloor).toBeDefined()
-      expect(firstFloor?.gameObjects).toHaveLength(6)
+      expect(firstFloor?.gameObjects).toHaveLength(7)
       expect(firstFloor?.stairs?.down).toBeDefined()
     })
 
