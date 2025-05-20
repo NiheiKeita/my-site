@@ -20,6 +20,7 @@ export interface GameObjectData {
   message: ReactNode
   direction?: StairDirection
   app?: AndroidApp
+  itemId?: string
 }
 
 export interface StairData {

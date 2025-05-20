@@ -3,7 +3,7 @@ import { useState, useCallback, useEffect } from 'react'
 import { useAtom, useSetAtom } from 'jotai'
 import { playerStatusAtom, updatePlayerStatusAtom } from '../../store/player'
 import { Enemy, BattleResult } from '../../types/enemy'
-import { MapData } from '../../types/game'
+import { MapData, GameObjectData } from '../../types/game'
 import { maps } from '../../constants/maps'
 import { enemies } from '../../data/enemies'
 
@@ -23,11 +23,27 @@ export const useGameLogic = () => {
   const [popupContent, setPopupContent] = useState<React.ReactNode>('')
   const [showCommandMenu, setShowCommandMenu] = useState(false)
   const [currentMap, setCurrentMap] = useState<MapData>(maps[0])
+  const [previousLevel, setPreviousLevel] = useState(playerStatus.level)
 
-  const handleMove = useCallback((direction: 'up' | 'down' | 'left' | 'right') => {
-    if (showPopup || showCommandMenu) return
+  // レベルアップのチェック
+  useEffect(() => {
+    if (playerStatus.level > previousLevel) {
+      const levelUpMessage = [
+        '✨ レベルアップ！ ✨',
+        `レベル ${previousLevel} → ${playerStatus.level}`,
+        `HP: ${playerStatus.maxHp - 20} → ${playerStatus.maxHp}`,
+        `攻撃力: ${playerStatus.attack - 5} → ${playerStatus.attack}`,
+        `防御力: ${playerStatus.defense - 3} → ${playerStatus.defense}`
+      ].join('\n')
 
-    setPlayerDirection(direction)
+      setPopupContent(levelUpMessage)
+      setShowPopup(true)
+      setPreviousLevel(playerStatus.level)
+    }
+  }, [playerStatus.level, previousLevel, playerStatus.maxHp, playerStatus.attack, playerStatus.defense])
+
+  // 移動先の座標を計算
+  const calculateNextPosition = useCallback((direction: 'up' | 'down' | 'left' | 'right'): Position => {
     const newPosition = { ...playerPosition }
 
     switch (direction) {
@@ -45,29 +61,33 @@ export const useGameLogic = () => {
         break
     }
 
-    const isCollision = currentMap.gameObjects.some(
-      (obj) => obj.position.x === newPosition.x && obj.position.y === newPosition.y &&
-        obj.type !== 'fountain' && obj.type !== 'stairs'
+    return newPosition
+  }, [playerPosition, currentMap])
+
+  // オブジェクトとの衝突チェック
+  const checkObjectCollision = useCallback((position: Position): GameObjectData | undefined => {
+    return currentMap.gameObjects.find(
+      (obj) => obj.position.x === position.x && obj.position.y === position.y &&
+        obj.type !== 'fountain' && obj.type !== 'stairs' && obj.type !== 'item'
     )
+  }, [currentMap])
 
-    if (isCollision) {
-      newPosition.x = playerPosition.x
-      newPosition.y = playerPosition.y
-    }
-
-    setPlayerPosition(newPosition)
-
+  // 泉との衝突処理
+  const handleFountainCollision = useCallback((position: Position) => {
     const fountain = currentMap.gameObjects.find(
-      (obj) => obj.position.x === newPosition.x && obj.position.y === newPosition.y && obj.type === 'fountain'
+      (obj) => obj.position.x === position.x && obj.position.y === position.y && obj.type === 'fountain'
     )
     if (fountain && playerStatus.hp < playerStatus.maxHp) {
       setPlayerStatus(prev => ({ ...prev, hp: prev.maxHp }))
       setPopupContent('HPが全回復した！')
       setShowPopup(true)
     }
+  }, [currentMap, playerStatus, setPlayerStatus])
 
+  // 階段との衝突処理
+  const handleStairCollision = useCallback((position: Position) => {
     const stairs = currentMap.gameObjects.find(
-      (obj) => obj.position.x === newPosition.x && obj.position.y === newPosition.y && obj.type === 'stairs'
+      (obj) => obj.position.x === position.x && obj.position.y === position.y && obj.type === 'stairs'
     )
     if (stairs) {
       if (stairs.direction === 'down' && currentMap.stairs?.down) {
@@ -84,14 +104,44 @@ export const useGameLogic = () => {
         }
       }
     }
+  }, [currentMap])
 
-    if (Math.random() < 0.04) {
-      if (isInBattle) return
+  // エンカウント処理
+  const handleRandomEncounter = useCallback(() => {
+    if (!isInBattle) {
       const randomEnemy = enemies[Math.floor(Math.random() * enemies.length)]
       setCurrentEnemy(randomEnemy)
       setIsInBattle(true)
     }
-  }, [playerPosition, showPopup, showCommandMenu, currentMap, isInBattle, playerStatus])
+  }, [isInBattle])
+
+  const handleMove = useCallback((direction: 'up' | 'down' | 'left' | 'right') => {
+    if (showPopup || showCommandMenu) return
+
+    setPlayerDirection(direction)
+    const newPosition = calculateNextPosition(direction)
+    if (playerPosition.x === newPosition.x && playerPosition.y === newPosition.y) {
+      // 壁にぶつかってる時は何も処理をしない
+      return
+    }
+
+    const collidedObject = checkObjectCollision(newPosition)
+    if (collidedObject) {
+      return
+    }
+
+    // ランダムエンカウント処理
+    const isEncounter = Math.random() < 0.04 && !isInBattle
+    if (isEncounter) {
+      handleRandomEncounter()
+
+      return
+    }
+
+    handleFountainCollision(newPosition)
+    handleStairCollision(newPosition)
+    setPlayerPosition(newPosition)
+  }, [showPopup, showCommandMenu, calculateNextPosition, checkObjectCollision, handleFountainCollision, handleStairCollision, handleRandomEncounter, setPlayerPosition, isInBattle, playerPosition])
 
   const handleInteract = useCallback(() => {
     if (showPopup) return
@@ -115,8 +165,18 @@ export const useGameLogic = () => {
     const object = currentMap.gameObjects.find(
       obj => obj.position.x === frontPosition.x && obj.position.y === frontPosition.y
     )
+    const nowObject = currentMap.gameObjects.find(
+      obj => obj.position.x === playerPosition.x && obj.position.y === playerPosition.y
+    )
 
-    if (object) {
+    if (nowObject) {
+      if (nowObject.type === 'item') {
+        // アイテムを拾った時
+        setPopupContent(`${nowObject.itemId}を拾った`)
+        setShowPopup(true)
+        //TODO: アイテムを拾った時の処理
+      }
+    } else if (object) {
       setPopupContent(object.message)
       setShowPopup(true)
     } else {
@@ -135,7 +195,7 @@ export const useGameLogic = () => {
     }
     setIsInBattle(false)
     setCurrentEnemy(null)
-  }, [playerStatus, updatePlayerStatus])
+  }, [playerStatus, updatePlayerStatus, setPlayerStatus])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

@@ -11,7 +11,7 @@ module.exports = {
             }
         }]
     },
-    testMatch: ['**/__tests__/**/*.test.(ts|tsx)'],
+    testMatch: ['**/*.test.(ts|tsx)'],
     collectCoverageFrom: [
         'src/**/*.{ts,tsx}',
         '!src/**/*.stories.{ts,tsx}',

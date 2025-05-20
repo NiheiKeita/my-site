@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import { Game } from '../../components/Game'
 import { useSetAtom } from 'jotai'
 import { resetPlayerStatusAtom } from '../../store/player'
+import { getImagePath } from '../../utils/imagePath'
+import { enemies } from '../../data/enemies'
 
 export const TopView = () => {
   const resetPlayerStatus = useSetAtom(resetPlayerStatusAtom)
@@ -19,6 +21,24 @@ export const TopView = () => {
 
     return () => clearTimeout(timer)
   }, [resetPlayerStatus])
+
+  // 画像をプリロード
+  useEffect(() => {
+    // 主人公
+    const directions = ["up", "down", "right", "left"] as const
+    const steps = [0, 1] as const
+    directions.forEach(direction => {
+      const img = new Image()
+      steps.forEach(step => {
+        img.src = getImagePath(`/assets/characters/hero_${direction}_${step}.PNG`)
+      })
+    })
+    //敵のやられた姿
+    enemies.forEach(enemy => {
+      const img = new Image()
+      img.src = enemy.defeatedImage
+    })
+  }, [])
 
   if (showGame) {
     return <Game />

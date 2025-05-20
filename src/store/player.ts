@@ -1,9 +1,40 @@
 import { atom } from 'jotai'
-import { PlayerStatus } from '../types/player'
 
-const initialPlayerStatus: PlayerStatus = {
-  hp: 100,
-  maxHp: 100,
+export interface PlayerStatus {
+  hp: number
+  maxHp: number
+  level: number
+  exp: number
+  gold: number
+  attack: number
+  defense: number
+}
+
+// レベルアップに必要な経験値テーブル
+const EXP_TABLE = [
+  0,    // レベル1
+  100,  // レベル2
+  300,  // レベル3
+  600,  // レベル4
+  1000, // レベル5
+  1500, // レベル6
+  2100, // レベル7
+  2800, // レベル8
+  3600, // レベル9
+  4500, // レベル10
+]
+
+// レベルアップ時のステータス上昇値
+const LEVEL_UP_STATS = {
+  maxHp: 20,
+  attack: 5,
+  defense: 3,
+}
+
+// 初期ステータス
+const initialStatus: PlayerStatus = {
+  hp: 10,
+  maxHp: 10,
   level: 1,
   exp: 0,
   gold: 0,
@@ -11,21 +42,49 @@ const initialPlayerStatus: PlayerStatus = {
   defense: 5,
 }
 
-export const playerStatusAtom = atom<PlayerStatus>(initialPlayerStatus)
+export const playerStatusAtom = atom<PlayerStatus>(initialStatus)
 
-// プレイヤーステータスを更新するアトム
+// プレイヤーのステータスを更新する関数
 export const updatePlayerStatusAtom = atom(
   null,
   (get, set, update: Partial<PlayerStatus>) => {
     const currentStatus = get(playerStatusAtom)
-    set(playerStatusAtom, { ...currentStatus, ...update })
+    const newStatus = { ...currentStatus, ...update }
+
+    // 経験値が増加した場合、レベルアップをチェック
+    if (update.exp !== undefined && update.exp > currentStatus.exp) {
+      const newLevel = calculateLevel(newStatus.exp)
+
+      // レベルアップした場合
+      if (newLevel > currentStatus.level) {
+        const levelDiff = newLevel - currentStatus.level
+        newStatus.level = newLevel
+        newStatus.maxHp += LEVEL_UP_STATS.maxHp * levelDiff
+        newStatus.hp = newStatus.maxHp // HPを全回復
+        newStatus.attack += LEVEL_UP_STATS.attack * levelDiff
+        newStatus.defense += LEVEL_UP_STATS.defense * levelDiff
+      }
+    }
+
+    set(playerStatusAtom, newStatus)
   }
 )
+
+// 経験値からレベルを計算する関数
+const calculateLevel = (exp: number): number => {
+  for (let level = EXP_TABLE.length - 1; level >= 0; level--) {
+    if (exp >= EXP_TABLE[level]) {
+      return level + 1
+    }
+  }
+  
+return 1
+}
 
 // プレイヤーステータスをリセットするアトム
 export const resetPlayerStatusAtom = atom(
   null,
   (get, set) => {
-    set(playerStatusAtom, initialPlayerStatus)
+    set(playerStatusAtom, initialStatus)
   }
 ) 
