@@ -89,8 +89,8 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
 
         if (newPlayerHp === 0) {
           handleDefeat()
-          
-return
+
+          return
         }
 
         handleNextTurn()
@@ -133,8 +133,8 @@ return
 
       if (newEnemyHp === 0) {
         handleVictory()
-        
-return
+
+        return
       }
 
       handleEnemyAttack()
