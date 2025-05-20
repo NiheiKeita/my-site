@@ -3,6 +3,7 @@ import { Item } from '../types/item'
 export const initialItems: Item[] = [
   {
     id: 'sword_1',
+    name: '銅の剣',
     description: '基本的な銅で作られた剣。',
     type: 'weapon',
     effect: {
