@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest'
 import { playerStatusAtom, updatePlayerStatusAtom } from './player'
 import { createStore } from 'jotai/vanilla'
 
@@ -6,8 +5,8 @@ describe('プレイヤーステータスの更新', () => {
   it('経験値を追加するとレベルアップする', () => {
     const store = createStore()
     store.set(playerStatusAtom, {
-      hp: 100,
-      maxHp: 100,
+      hp: 10,
+      maxHp: 10,
       level: 1,
       exp: 0,
       gold: 0,
@@ -20,17 +19,17 @@ describe('プレイヤーステータスの更新', () => {
 
     const newStatus = store.get(playerStatusAtom)
     expect(newStatus.level).toBe(2)
-    expect(newStatus.maxHp).toBe(120) // +20
+    expect(newStatus.maxHp).toBe(30) // +20
     expect(newStatus.attack).toBe(15) // +5
     expect(newStatus.defense).toBe(8) // +3
-    expect(newStatus.hp).toBe(120) // HP全回復
+    expect(newStatus.hp).toBe(30) // HP全回復
   })
 
   it('レベルアップに必要な経験値に達していない場合はレベルアップしない', () => {
     const store = createStore()
     store.set(playerStatusAtom, {
-      hp: 100,
-      maxHp: 100,
+      hp: 10,
+      maxHp: 10,
       level: 1,
       exp: 0,
       gold: 0,
@@ -43,7 +42,7 @@ describe('プレイヤーステータスの更新', () => {
 
     const newStatus = store.get(playerStatusAtom)
     expect(newStatus.level).toBe(1)
-    expect(newStatus.maxHp).toBe(100)
+    expect(newStatus.maxHp).toBe(10)
     expect(newStatus.attack).toBe(10)
     expect(newStatus.defense).toBe(5)
   })
@@ -51,8 +50,8 @@ describe('プレイヤーステータスの更新', () => {
   it('複数レベルアップする場合も正しく処理される', () => {
     const store = createStore()
     store.set(playerStatusAtom, {
-      hp: 100,
-      maxHp: 100,
+      hp: 10,
+      maxHp: 10,
       level: 1,
       exp: 0,
       gold: 0,
@@ -65,9 +64,9 @@ describe('プレイヤーステータスの更新', () => {
 
     const newStatus = store.get(playerStatusAtom)
     expect(newStatus.level).toBe(3)
-    expect(newStatus.maxHp).toBe(140) // +20 * 2
+    expect(newStatus.maxHp).toBe(50) // +20 * 2
     expect(newStatus.attack).toBe(20) // +5 * 2
     expect(newStatus.defense).toBe(11) // +3 * 2
-    expect(newStatus.hp).toBe(140) // HP全回復
+    expect(newStatus.hp).toBe(50) // HP全回復
   })
 }) 

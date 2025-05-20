@@ -1,5 +1,4 @@
-import { describe, it, expect } from 'vitest'
-import { renderHook } from '@testing-library/react'
+import { renderHook, act } from '@testing-library/react'
 import { useGameLogic } from './hooks'
 import { Provider } from 'jotai'
 import React from 'react'
@@ -11,7 +10,7 @@ describe('useGameLogic', () => {
     </Provider>
   )
 
-  it('レベルアップ時にポップアップが表示される', () => {
+  it('レベルアップ時にポップアップが表示される', async () => {
     const { result } = renderHook(() => useGameLogic(), { wrapper })
 
     // 初期状態の確認
@@ -19,14 +18,16 @@ describe('useGameLogic', () => {
     expect(result.current.popupContent).toBe('')
 
     // レベルアップをシミュレート
-    result.current.setPlayerStatus({
-      hp: 120,
-      maxHp: 120,
-      level: 2,
-      exp: 100,
-      gold: 0,
-      attack: 15,
-      defense: 8,
+    await act(async () => {
+      result.current.setPlayerStatus({
+        hp: 120,
+        maxHp: 120,
+        level: 2,
+        exp: 100,
+        gold: 0,
+        attack: 15,
+        defense: 8,
+      })
     })
 
     // ポップアップが表示されることを確認
@@ -38,7 +39,7 @@ describe('useGameLogic', () => {
     expect(result.current.popupContent).toContain('防御力: 5 → 8')
   })
 
-  it('レベルアップしていない場合はポップアップが表示されない', () => {
+  it('レベルアップしていない場合はポップアップが表示されない', async () => {
     const { result } = renderHook(() => useGameLogic(), { wrapper })
 
     // 初期状態の確認
@@ -46,14 +47,16 @@ describe('useGameLogic', () => {
     expect(result.current.popupContent).toBe('')
 
     // レベルアップしていない状態をシミュレート
-    result.current.setPlayerStatus({
-      hp: 100,
-      maxHp: 100,
-      level: 1,
-      exp: 50,
-      gold: 0,
-      attack: 10,
-      defense: 5,
+    await act(async () => {
+      result.current.setPlayerStatus({
+        hp: 100,
+        maxHp: 100,
+        level: 1,
+        exp: 50,
+        gold: 0,
+        attack: 10,
+        defense: 5,
+      })
     })
 
     // ポップアップが表示されないことを確認
@@ -61,25 +64,29 @@ describe('useGameLogic', () => {
     expect(result.current.popupContent).toBe('')
   })
 
-  it('ポップアップを閉じることができる', () => {
+  it('ポップアップを閉じることができる', async () => {
     const { result } = renderHook(() => useGameLogic(), { wrapper })
 
     // レベルアップをシミュレート
-    result.current.setPlayerStatus({
-      hp: 120,
-      maxHp: 120,
-      level: 2,
-      exp: 100,
-      gold: 0,
-      attack: 15,
-      defense: 8,
+    await act(async () => {
+      result.current.setPlayerStatus({
+        hp: 120,
+        maxHp: 120,
+        level: 2,
+        exp: 100,
+        gold: 0,
+        attack: 15,
+        defense: 8,
+      })
     })
 
     // ポップアップが表示されていることを確認
     expect(result.current.showPopup).toBe(true)
 
     // ポップアップを閉じる
-    result.current.setShowPopup(false)
+    await act(async () => {
+      result.current.setShowPopup(false)
+    })
 
     // ポップアップが閉じられていることを確認
     expect(result.current.showPopup).toBe(false)

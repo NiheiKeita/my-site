@@ -12,16 +12,16 @@ export interface PlayerStatus {
 
 // レベルアップに必要な経験値テーブル
 const EXP_TABLE = [
-  0,      // レベル1
-  1,    // レベル2
-  30,    // レベル3
-  60,    // レベル4
-  100,   // レベル5
-  1500,   // レベル6
-  210,   // レベル7
-  280,   // レベル8
-  360,   // レベル9
-  450,   // レベル10
+  0,    // レベル1
+  100,  // レベル2
+  300,  // レベル3
+  600,  // レベル4
+  1000, // レベル5
+  1500, // レベル6
+  2100, // レベル7
+  2800, // レベル8
+  3600, // レベル9
+  4500, // レベル10
 ]
 
 // レベルアップ時のステータス上昇値
@@ -57,11 +57,12 @@ export const updatePlayerStatusAtom = atom(
 
       // レベルアップした場合
       if (newLevel > currentStatus.level) {
+        const levelDiff = newLevel - currentStatus.level
         newStatus.level = newLevel
-        newStatus.maxHp += LEVEL_UP_STATS.maxHp
+        newStatus.maxHp += LEVEL_UP_STATS.maxHp * levelDiff
         newStatus.hp = newStatus.maxHp // HPを全回復
-        newStatus.attack += LEVEL_UP_STATS.attack
-        newStatus.defense += LEVEL_UP_STATS.defense
+        newStatus.attack += LEVEL_UP_STATS.attack * levelDiff
+        newStatus.defense += LEVEL_UP_STATS.defense * levelDiff
       }
     }
 
@@ -76,8 +77,7 @@ const calculateLevel = (exp: number): number => {
       return level + 1
     }
   }
-  
-return 1
+  return 1
 }
 
 // プレイヤーステータスをリセットするアトム
