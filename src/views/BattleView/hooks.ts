@@ -96,7 +96,7 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
         handleNextTurn()
       }, ANIMATION_DURATION.ATTACK)
     }, ANIMATION_DURATION.MESSAGE)
-  }, [enemy, playerHp, handleDefeat, handleNextTurn])
+  }, [enemy, playerHp, handleDefeat, handleNextTurn, setPlayerHp])
 
   const handleEscapeFailure = useCallback(() => {
     updateBattleState({ message: '逃げ出せなかった！' })

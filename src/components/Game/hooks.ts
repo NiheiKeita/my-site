@@ -82,7 +82,7 @@ export const useGameLogic = () => {
       setPopupContent('HPが全回復した！')
       setShowPopup(true)
     }
-  }, [currentMap, playerStatus])
+  }, [currentMap, playerStatus, setPlayerStatus])
 
   // 階段との衝突処理
   const handleStairCollision = useCallback((position: Position) => {
@@ -106,9 +106,9 @@ export const useGameLogic = () => {
     }
   }, [currentMap])
 
-  // ランダムエンカウント処理
+  // エンカウント処理
   const handleRandomEncounter = useCallback(() => {
-    if (Math.random() < 0.04 && !isInBattle) {
+    if (!isInBattle) {
       const randomEnemy = enemies[Math.floor(Math.random() * enemies.length)]
       setCurrentEnemy(randomEnemy)
       setIsInBattle(true)
@@ -120,17 +120,28 @@ export const useGameLogic = () => {
 
     setPlayerDirection(direction)
     const newPosition = calculateNextPosition(direction)
+    if (playerPosition.x === newPosition.x && playerPosition.y === newPosition.y) {
+      // 壁にぶつかってる時は何も処理をしない
+      return
+    }
 
     const collidedObject = checkObjectCollision(newPosition)
     if (collidedObject) {
       return
     }
 
-    setPlayerPosition(newPosition)
-    // handleItemCollision(newPosition)
+    // ランダムエンカウント処理
+    const isEncounter = Math.random() < 0.04 && !isInBattle
+    if (isEncounter) {
+      handleRandomEncounter()
+
+      return
+    }
+
+    handleFountainCollision(newPosition)
     handleStairCollision(newPosition)
-    handleRandomEncounter()
-  }, [showPopup, showCommandMenu, calculateNextPosition, checkObjectCollision, handleFountainCollision, handleStairCollision, handleRandomEncounter])
+    setPlayerPosition(newPosition)
+  }, [showPopup, showCommandMenu, calculateNextPosition, checkObjectCollision, handleFountainCollision, handleStairCollision, handleRandomEncounter, setPlayerPosition, isInBattle, playerPosition])
 
   const handleInteract = useCallback(() => {
     if (showPopup) return
@@ -184,7 +195,7 @@ export const useGameLogic = () => {
     }
     setIsInBattle(false)
     setCurrentEnemy(null)
-  }, [playerStatus, updatePlayerStatus])
+  }, [playerStatus, updatePlayerStatus, setPlayerStatus])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
