@@ -4,9 +4,10 @@ import { useState, useEffect, useCallback } from 'react'
 import { Enemy, BattleResult, BattleState } from '../../types/enemy'
 import { getImagePath } from '../../utils/imagePath'
 import { motion } from 'framer-motion'
+import { useAtom } from 'jotai'
+import { playerStatusAtom } from '../../store/player'
 
 // 定数
-const INITIAL_PLAYER_HP = 100
 const ESCAPE_CHANCE = 0.3
 const ANIMATION_DURATION = {
   ATTACK: 1000,
@@ -24,6 +25,7 @@ interface BattleViewProps {
 
 // バトルロジック
 const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult) => void, playerHp: number, setPlayerHp: (hp: number) => void) => {
+  const [playerStatus] = useAtom(playerStatusAtom)
   const [enemyHp, setEnemyHp] = useState(enemy.hp)
   const [battleState, setBattleState] = useState<BattleState>({
     isPlayerTurn: true,
@@ -190,6 +192,7 @@ const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult) => voi
     isPlayerDamaged,
     handlePlayerAttack,
     handleEscape,
+    playerStatus,
   }
 }
 
@@ -204,6 +207,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ enemy, onBattleEnd, play
     isPlayerDamaged,
     handlePlayerAttack,
     handleEscape,
+    playerStatus,
   } = useBattleLogic(enemy, onBattleEnd, playerHp, setPlayerHp)
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -243,10 +247,10 @@ export const BattleView: React.FC<BattleViewProps> = ({ enemy, onBattleEnd, play
           <div className="h-4 sm:w-64 w-36 bg-gray-700 rounded">
             <div
               className="h-full bg-green-500 rounded"
-              style={{ width: `${(playerHp / INITIAL_PLAYER_HP) * 100}%` }}
+              style={{ width: `${(playerHp / playerStatus.maxHp) * 100}%` }}
             />
           </div>
-          <p>HP: {playerHp}/{INITIAL_PLAYER_HP}</p>
+          <p>HP: {playerHp}/{playerStatus.maxHp}</p>
         </div>
         <div>
           <p>{enemy.name} Lv.{enemy.level}</p>
