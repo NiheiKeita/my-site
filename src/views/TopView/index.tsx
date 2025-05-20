@@ -36,7 +36,7 @@ export const TopView = () => {
     //敵のやられた姿
     enemies.forEach(enemy => {
       const img = new Image()
-      img.src = enemy.defeatedImage
+      img.src = getImagePath(enemy.defeatedImage)
     })
   }, [])
 
