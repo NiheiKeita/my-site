@@ -23,6 +23,24 @@ export const useGameLogic = () => {
   const [popupContent, setPopupContent] = useState<React.ReactNode>('')
   const [showCommandMenu, setShowCommandMenu] = useState(false)
   const [currentMap, setCurrentMap] = useState<MapData>(maps[0])
+  const [previousLevel, setPreviousLevel] = useState(playerStatus.level)
+
+  // レベルアップのチェック
+  useEffect(() => {
+    if (playerStatus.level > previousLevel) {
+      const levelUpMessage = [
+        '✨ レベルアップ！ ✨',
+        `レベル ${previousLevel} → ${playerStatus.level}`,
+        `HP: ${playerStatus.maxHp - 20} → ${playerStatus.maxHp}`,
+        `攻撃力: ${playerStatus.attack - 5} → ${playerStatus.attack}`,
+        `防御力: ${playerStatus.defense - 3} → ${playerStatus.defense}`
+      ].join('\n')
+
+      setPopupContent(levelUpMessage)
+      setShowPopup(true)
+      setPreviousLevel(playerStatus.level)
+    }
+  }, [playerStatus.level, previousLevel, playerStatus.maxHp, playerStatus.attack, playerStatus.defense])
 
   const handleMove = useCallback((direction: 'up' | 'down' | 'left' | 'right') => {
     if (showPopup || showCommandMenu) return
