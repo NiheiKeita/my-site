@@ -6,6 +6,7 @@ import { Enemy, BattleResult } from '../../types/enemy'
 import { MapData, GameObjectData } from '../../types/game'
 import { maps } from '../../constants/maps'
 import { enemies } from '../../data/enemies'
+import { addBagItemAtom } from '../../store/bag'
 
 interface Position {
   x: number
@@ -24,6 +25,7 @@ export const useGameLogic = () => {
   const [showCommandMenu, setShowCommandMenu] = useState(false)
   const [currentMap, setCurrentMap] = useState<MapData>(maps[0])
   const [previousLevel, setPreviousLevel] = useState(playerStatus.level)
+  const addBagItem = useSetAtom(addBagItemAtom)
 
   // レベルアップのチェック
   useEffect(() => {
@@ -175,6 +177,9 @@ export const useGameLogic = () => {
         setPopupContent(`${nowObject.itemId}を拾った`)
         setShowPopup(true)
         //TODO: アイテムを拾った時の処理
+        if (nowObject.itemId) {
+          addBagItem(nowObject.itemId)
+        }
       }
     } else if (object) {
       setPopupContent(object.message)
@@ -182,7 +187,7 @@ export const useGameLogic = () => {
     } else {
       setShowCommandMenu(true)
     }
-  }, [playerPosition, playerDirection, showPopup, currentMap])
+  }, [playerPosition, playerDirection, showPopup, currentMap, addBagItem])
 
   const handleBattleEnd = useCallback((result: BattleResult) => {
     if (result.isVictory) {
@@ -252,6 +257,6 @@ export const useGameLogic = () => {
     handleInteract,
     handleBattleEnd,
     setShowPopup,
-    setShowCommandMenu,
+    setShowCommandMenu
   }
 } 

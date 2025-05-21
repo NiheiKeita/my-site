@@ -89,11 +89,11 @@ const firstFloorObjects: GameObjectData[] = [
   },
   {
     type: 'item',
-    itemId: 'sword_1',
+    itemId: 'copper_sword',
     position: { x: 7, y: 1 },
     message: messageUtils.createMessage(
       <>
-        <p>~~を拾った</p>
+        <p>何かが落ちている</p>
       </>,
       'text-blue-300'
     )
