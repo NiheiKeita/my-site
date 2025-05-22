@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
+import { fn } from '@storybook/test'
 import { BattleView } from './index'
 import { enemies } from '../../data/enemies'
 
@@ -20,6 +21,7 @@ export const SlimeBattle: Story = {
     onBattleEnd: (result) => {
       console.log('Battle ended:', result)
     },
+    setPlayerHp: fn()
   },
 }
 
@@ -29,6 +31,7 @@ export const TomatoBattle: Story = {
     onBattleEnd: (result) => {
       console.log('Battle ended:', result)
     },
+    setPlayerHp: fn()
   },
 }
 
@@ -38,5 +41,7 @@ export const CheeseBattle: Story = {
     onBattleEnd: (result) => {
       console.log('Battle ended:', result)
     },
+    setPlayerHp: fn()
   },
-} 
+}
+

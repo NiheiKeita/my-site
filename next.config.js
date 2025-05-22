@@ -1,10 +1,13 @@
 /** @type {import('next').NextConfig} */
+const nextPWA = require('next-pwa')({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+})
+
 const nextConfig = {
-  output: 'export',
-  basePath: process.env.NODE_ENV === 'production' ? '/my-site' : '',
-  images: {
-    unoptimized: true,
-  },
+  reactStrictMode: true,
+  swcMinify: true,
 }
 
-module.exports = nextConfig 
+module.exports = nextPWA(nextConfig)

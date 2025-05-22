@@ -1,8 +1,16 @@
-module.exports = {
-    testEnvironment: 'jsdom',
-    setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
+const nextJest = require('next/jest')
+
+const createJestConfig = nextJest({
+    // next.config.jsと.envファイルを読み込むために、Next.jsアプリケーションのパスを指定
+    dir: './',
+})
+
+// Jestに渡すカスタム設定
+const customJestConfig = {
+    setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+    testEnvironment: 'jest-environment-jsdom',
     moduleNameMapper: {
-        '^@/(.*)$': '<rootDir>/src/$1',
+        '^~/(.*)$': '<rootDir>/src/$1',
     },
     transform: {
         '^.+\\.(ts|tsx)$': ['ts-jest', {
@@ -17,4 +25,7 @@ module.exports = {
         '!src/**/*.stories.{ts,tsx}',
         '!src/**/*.d.ts',
     ],
-};
+}
+
+// createJestConfigは、非同期のNext.jsの設定を読み込むために使用
+module.exports = createJestConfig(customJestConfig)

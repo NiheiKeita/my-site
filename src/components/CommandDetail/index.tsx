@@ -1,9 +1,17 @@
+
+import { items } from '../../data/items'
+import { bagItemsAtom } from '../../store/bag'
+import { useAtom } from 'jotai'
+
 interface CommandDetailProps {
   type: 'spell' | 'item' | 'status' | 'equip' | 'skill'
   onClose: () => void
 }
 
 export const CommandDetail = ({ type, onClose }: CommandDetailProps) => {
+  const [bagItemIDs] = useAtom(bagItemsAtom)
+
+  const bagItems = bagItemIDs.map((id) => items.find((item) => item?.id === id)).filter(item => item !== undefined)
   // 仮のデータ
   const spellData = [
     { name: 'コピペ', mp: 1, description: '過去の知識を召喚して作業時間を短縮する' },
@@ -18,15 +26,15 @@ export const CommandDetail = ({ type, onClose }: CommandDetailProps) => {
     { name: 'ググレ', mp: 2, description: '知恵の世界（インターネット）から答えを引き出す' },
   ]
 
-  const itemData = [
-    { name: 'MacBook Pro', count: 1, description: '最強の道具。神器。' },
-    { name: 'iPhone 12', count: 1, description: '情報収集、連絡、撮影、なんでもこなす万能道具' },
-    { name: 'モバイルバッテリー', count: 2, description: '長時間の外出でも安心のMP回復アイテム' },
-    { name: 'Nintendo Switch', count: 1, description: '様々な世界と繋がれる魔法のゲーム機' },
-    { name: 'ゲームキューブ', count: 1, description: '懐かしき神ゲーが封じられし古の箱' },
-    { name: '技術書たち', count: 7, description: '知識とスキルがレベルアップする魔法の書物' },
-    { name: 'ラズベリーパイ', count: 1, description: '小型ながら多彩な実験ができる魔法の機械' },
-  ]
+  // const itemData = [
+  //   { name: 'MacBook Pro', count: 1, description: '最強の道具。神器。' },
+  //   { name: 'iPhone 12', count: 1, description: '情報収集、連絡、撮影、なんでもこなす万能道具' },
+  //   { name: 'モバイルバッテリー', count: 2, description: '長時間の外出でも安心のMP回復アイテム' },
+  //   { name: 'Nintendo Switch', count: 1, description: '様々な世界と繋がれる魔法のゲーム機' },
+  //   { name: 'ゲームキューブ', count: 1, description: '懐かしき神ゲーが封じられし古の箱' },
+  //   { name: '技術書たち', count: 7, description: '知識とスキルがレベルアップする魔法の書物' },
+  //   { name: 'ラズベリーパイ', count: 1, description: '小型ながら多彩な実験ができる魔法の機械' },
+  // ]
 
   const statusData = {
     level: 5,
@@ -86,13 +94,13 @@ export const CommandDetail = ({ type, onClose }: CommandDetailProps) => {
       case 'item':
         return (
           <div className="max-h-[60vh] space-y-2 overflow-y-auto pr-2">
-            {itemData.map((item) => (
-              <div key={item.name} className="rounded bg-gray-700 p-2">
+            {bagItems.map((bagItem) => (
+              <div key={bagItem?.name} className="rounded bg-gray-700 p-2">
                 <div className="flex justify-between text-white">
-                  <span className="font-bold">{item.name}</span>
-                  <span className="text-yellow-400">×{item.count}</span>
+                  <span className="font-bold">{bagItem?.name}</span>
+                  {/* <span className="text-yellow-400">×{bagItem.count}</span> */}
                 </div>
-                <div className="text-sm text-gray-300">{item.description}</div>
+                <div className="text-sm text-gray-300">{bagItem?.description}</div>
               </div>
             ))}
           </div>
