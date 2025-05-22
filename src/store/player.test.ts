@@ -14,15 +14,15 @@ describe('プレイヤーステータスの更新', () => {
       defense: 5,
     })
 
-    // レベル2に必要な経験値（100）を追加
-    store.set(updatePlayerStatusAtom, { exp: 100 })
+    // レベル2に必要な経験値を追加
+    store.set(updatePlayerStatusAtom, { exp: 50 })
 
     const newStatus = store.get(playerStatusAtom)
     expect(newStatus.level).toBe(2)
-    expect(newStatus.maxHp).toBe(30) // +20
-    expect(newStatus.attack).toBe(15) // +5
-    expect(newStatus.defense).toBe(8) // +3
-    expect(newStatus.hp).toBe(30) // HP全回復
+    expect(newStatus.maxHp).toBe(20) // +20
+    expect(newStatus.attack).toBe(13) // +3
+    expect(newStatus.defense).toBe(7) // +2
+    expect(newStatus.hp).toBe(20) // HP全回復
   })
 
   it('レベルアップに必要な経験値に達していない場合はレベルアップしない', () => {
@@ -37,8 +37,8 @@ describe('プレイヤーステータスの更新', () => {
       defense: 5,
     })
 
-    // レベル2に必要な経験値（100）に達していない経験値を追加
-    store.set(updatePlayerStatusAtom, { exp: 50 })
+    // レベル2に必要な経験値に達していない経験値を追加
+    store.set(updatePlayerStatusAtom, { exp: 20 })
 
     const newStatus = store.get(playerStatusAtom)
     expect(newStatus.level).toBe(1)
@@ -59,14 +59,14 @@ describe('プレイヤーステータスの更新', () => {
       defense: 5,
     })
 
-    // レベル3に必要な経験値（300）を追加
-    store.set(updatePlayerStatusAtom, { exp: 300 })
+    // レベル3に必要な経験値を追加
+    store.set(updatePlayerStatusAtom, { exp: 120 })
 
     const newStatus = store.get(playerStatusAtom)
     expect(newStatus.level).toBe(3)
-    expect(newStatus.maxHp).toBe(50) // +20 * 2
-    expect(newStatus.attack).toBe(20) // +5 * 2
-    expect(newStatus.defense).toBe(11) // +3 * 2
-    expect(newStatus.hp).toBe(50) // HP全回復
+    expect(newStatus.maxHp).toBe(30) // +10 * 2
+    expect(newStatus.attack).toBe(16) // +3 * 2
+    expect(newStatus.defense).toBe(9) // +2 * 2
+    expect(newStatus.hp).toBe(30) // HP全回復
   })
 }) 
