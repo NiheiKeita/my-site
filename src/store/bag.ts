@@ -1,7 +1,4 @@
 import { atom } from 'jotai'
-// import { Item } from '../types/item'
-// import { items } from '~/data/items'
-// import { initialItems } from '../data/items'
 
 // バッグの中身の状態
 export const bagItemsAtom = atom<string[]>([])
