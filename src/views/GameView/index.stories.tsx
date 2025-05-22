@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { Game } from '.'
+import { GameView } from '.'
 
-const meta: Meta<typeof Game> = {
-  component: Game,
+const meta: Meta<typeof GameView> = {
+  component: GameView,
   tags: ['autodocs'],
 }
 

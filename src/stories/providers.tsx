@@ -2,9 +2,9 @@ import { Provider, useAtom } from 'jotai'
 import { ReactNode, useEffect } from 'react'
 import { playerStatusAtom } from '../store/player'
 
-const initialPlayerStatus = {
-  hp: 100,
-  maxHp: 100,
+export const initialPlayerStatus = {
+  hp: 10,
+  maxHp: 10,
   level: 1,
   exp: 0,
   gold: 0,

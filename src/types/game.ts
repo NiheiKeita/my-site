@@ -40,4 +40,5 @@ export interface MapData {
   height: number
   gameObjects: GameObjectData[]
   stairs?: StairConnections
+  enemies: { id: number }[]
 } 

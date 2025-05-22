@@ -111,11 +111,13 @@ export const useGameLogic = () => {
   // エンカウント処理
   const handleRandomEncounter = useCallback(() => {
     if (!isInBattle) {
-      const randomEnemy = enemies[Math.floor(Math.random() * enemies.length)]
-      setCurrentEnemy(randomEnemy)
+      const randomEnemy = currentMap.enemies[Math.floor(Math.random() * currentMap.enemies.length)]
+      const targetEnemy = enemies.find(enemy => enemy.id === randomEnemy.id)
+      if (!targetEnemy) throw new Error("enemy not find")
+      setCurrentEnemy(targetEnemy)
       setIsInBattle(true)
     }
-  }, [isInBattle])
+  }, [currentMap.enemies, isInBattle])
 
   const handleMove = useCallback((direction: 'up' | 'down' | 'left' | 'right') => {
     if (showPopup || showCommandMenu) return
@@ -196,11 +198,17 @@ export const useGameLogic = () => {
         gold: playerStatus.gold + result.gold,
       })
     } else {
+      // 敗北時HPを全回復して、所持金を半分にするまたスタート地点に移動
       setPlayerStatus(prev => ({ ...prev, hp: prev.maxHp }))
+      updatePlayerStatus({
+        gold: Math.floor(playerStatus.gold / 2),
+      })
+      setCurrentMap(maps[0])
+      setPlayerPosition({ x: 4, y: 4 })
     }
     setIsInBattle(false)
     setCurrentEnemy(null)
-  }, [playerStatus, updatePlayerStatus, setPlayerStatus])
+  }, [updatePlayerStatus, playerStatus.exp, playerStatus.gold, setPlayerStatus])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

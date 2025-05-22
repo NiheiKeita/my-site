@@ -59,8 +59,8 @@ describe('useGameLogic', () => {
     // レベルアップしていない状態をシミュレート
     await act(async () => {
       result.current.setPlayerStatus({
-        hp: 100,
-        maxHp: 100,
+        hp: 10,
+        maxHp: 10,
         level: 1,
         exp: 50,
         gold: 0,
