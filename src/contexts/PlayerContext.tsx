@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, ReactNode } from 'react'
 import { PlayerStatus } from '../types/player'
+import { initialPlayerStatus } from '~/stories/providers'
 
 interface PlayerContextType {
   playerStatus: PlayerStatus
@@ -9,15 +10,6 @@ interface PlayerContextType {
   resetPlayerStatus: () => void
 }
 
-const initialPlayerStatus: PlayerStatus = {
-  hp: 100,
-  maxHp: 100,
-  level: 1,
-  exp: 0,
-  gold: 0,
-  attack: 10,
-  defense: 5,
-}
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined)
 
