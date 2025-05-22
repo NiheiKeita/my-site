@@ -4,12 +4,12 @@ const nextPWA = require('next-pwa')({
   register: true,
   skipWaiting: true,
 })
-
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   output: 'export',
-  basePath: process.env.NODE_ENV === 'production' ? '/my-site' : '',
+  basePath: '/my-site',
+  assetPrefix: '/my-site',
   images: {
     unoptimized: true,
   },

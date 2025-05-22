@@ -35,7 +35,7 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <head>
-        <link rel="manifest" href="/manifest.json" />
+        <link rel="manifest" href="/my-site/manifest.json" />
       </head>
       <body className={`${inter.className} min-h-screen bg-gray-900`}>
         <div className="flex min-h-screen items-center justify-center">
