@@ -4,9 +4,9 @@ import { useAtom, useSetAtom } from 'jotai'
 import { playerStatusAtom, updatePlayerStatusAtom } from '../../store/player'
 import { Enemy, BattleResult } from '../../types/enemy'
 import { MapData, GameObjectData } from '../../types/game'
-import { maps } from '../../constants/maps'
-import { enemies } from '../../data/enemies'
-import { addBagItemAtom } from '../../store/bag'
+import { maps } from '../../data/maps'
+import { enemies } from '~/data/enemies'
+import { addBagItemAtom } from '~/store/bag'
 
 interface Position {
   x: number

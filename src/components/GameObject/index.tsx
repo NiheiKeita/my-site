@@ -1,5 +1,5 @@
+import { getObjectImage } from '~/data/objects'
 import { GameObjectData } from '../../types/game'
-import { getObjectImage } from '../../constants/objects'
 import { getImagePath } from '../../utils/imagePath'
 
 interface GameObjectProps {

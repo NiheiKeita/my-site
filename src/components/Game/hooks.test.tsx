@@ -1,8 +1,7 @@
 import { renderHook } from '@testing-library/react'
 import { useGameLogic } from './hooks'
-import { act } from 'react'
 import { Provider } from 'jotai'
-import React from 'react'
+import React, { act } from 'react'
 
 describe('useGameLogic', () => {
   const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -10,6 +9,16 @@ describe('useGameLogic', () => {
       {children}
     </Provider>
   )
+
+  it('should initialize with default values', () => {
+    const { result } = renderHook(() => useGameLogic())
+
+    expect(result.current.playerPosition).toEqual({ x: 4, y: 4 })
+    expect(result.current.playerDirection).toBe('down')
+    expect(result.current.showPopup).toBe(false)
+    expect(result.current.showCommandMenu).toBe(false)
+    expect(result.current.isInBattle).toBe(false)
+  })
 
   it('レベルアップ時にポップアップが表示される', async () => {
     const { result } = renderHook(() => useGameLogic(), { wrapper })
