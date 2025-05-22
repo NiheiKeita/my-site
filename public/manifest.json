@@ -2,7 +2,7 @@
   "name": "ケイタMAXの冒険",
   "short_name": "ケイタMAXの冒険",
   "description": "ケイタMAXの忘れた記憶を取り戻す冒険物語",
-  "start_url": "/",
+  "start_url": "/my-site/",
   "display": "standalone",
   "background_color": "#2EC6FE",
   "theme_color": "#8936FF",
@@ -11,13 +11,13 @@
   "lang": "ja",
   "icons": [
     {
-      "src": "/icon512_maskable.png",
+      "src": "/my-site/icon512_maskable.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "/icon512_rounded.png",
+      "src": "/my-site/icon512_rounded.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
