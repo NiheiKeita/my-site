@@ -39,8 +39,8 @@ export const BattleView: React.FC<BattleViewProps> = ({ enemy, onBattleEnd, play
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown)
-    
-return () => window.removeEventListener('keydown', handleKeyDown)
+
+    return () => window.removeEventListener('keydown', handleKeyDown)
   }, [handleKeyDown])
 
   return (
@@ -130,7 +130,7 @@ return () => window.removeEventListener('keydown', handleKeyDown)
           <p className="text-lg mt-2 text-yellow-400 animate-blink">
             {battleState.isVictory
               ? `経験値${enemy.exp}と${enemy.gold}ゴールドを獲得！`
-              : 'エンターキーを押してください'}
+              : ''}
           </p>
         )}
       </div>

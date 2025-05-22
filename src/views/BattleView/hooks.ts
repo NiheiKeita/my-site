@@ -65,7 +65,9 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
         message: 'あなたは力尽きた...',
       })
       setShowEndMessage(true)
-      onBattleEnd({ isVictory: false, exp: 0, gold: 0 })
+      setTimeout(() => {
+        onBattleEnd({ isVictory: false, exp: 0, gold: 0 })
+      }, ANIMATION_DURATION.BATTLE_END)
     }, ANIMATION_DURATION.MESSAGE)
   }, [onBattleEnd])
 
