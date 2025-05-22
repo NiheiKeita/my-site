@@ -111,11 +111,13 @@ export const useGameLogic = () => {
   // エンカウント処理
   const handleRandomEncounter = useCallback(() => {
     if (!isInBattle) {
-      const randomEnemy = enemies[Math.floor(Math.random() * enemies.length)]
-      setCurrentEnemy(randomEnemy)
+      const randomEnemy = currentMap.enemies[Math.floor(Math.random() * currentMap.enemies.length)]
+      const targetEnemy = enemies.find(enemy => enemy.id === randomEnemy.id)
+      if (!targetEnemy) throw new Error("enemy not find")
+      setCurrentEnemy(targetEnemy)
       setIsInBattle(true)
     }
-  }, [isInBattle])
+  }, [currentMap.enemies, isInBattle])
 
   const handleMove = useCallback((direction: 'up' | 'down' | 'left' | 'right') => {
     if (showPopup || showCommandMenu) return

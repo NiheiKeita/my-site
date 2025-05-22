@@ -2,6 +2,9 @@ import { MapData } from "~/types/game"
 import { firstObjects } from "./first/firstObjects"
 import { secondObjects } from "./second/secondObjects"
 import { thirdObjects } from "./Third/thirdObjects"
+import { firstEnemies } from "./first/enemies"
+import { secondEnemies } from "./second/enemies"
+import { thirdEnemies } from "./Third/enemies"
 
 // マップデータのエクスポート
 export const maps: MapData[] = [
@@ -11,6 +14,7 @@ export const maps: MapData[] = [
     width: 8,
     height: 8,
     gameObjects: firstObjects,
+    enemies: firstEnemies,
     stairs: {
       down: {
         mapId: 'second-floor',
@@ -24,6 +28,7 @@ export const maps: MapData[] = [
     width: 8,
     height: 8,
     gameObjects: secondObjects,
+    enemies: secondEnemies,
     stairs: {
       up: {
         mapId: 'first-floor',
@@ -41,6 +46,7 @@ export const maps: MapData[] = [
     width: 8,
     height: 8,
     gameObjects: thirdObjects,
+    enemies: thirdEnemies,
     stairs: {
       up: {
         mapId: 'second-floor',
