@@ -1,6 +1,7 @@
 import React from 'react'
 import { render } from '@testing-library/react'
-import { maps, messageUtils } from '../maps'
+import { maps } from '..'
+import { messageUtils, createStairMessage } from '../messages'
 
 describe('maps', () => {
   describe('マップデータの構造', () => {
@@ -39,11 +40,11 @@ describe('maps', () => {
     })
 
     it('createStairMessageが正しい方向のメッセージを生成する', () => {
-      const { container: upContainer } = render(messageUtils.createStairMessage('up'))
+      const { container: upContainer } = render(createStairMessage('up'))
       expect(upContainer.textContent).toContain('上へ続く階段')
       expect(upContainer.textContent).toContain('上の階へ続く階段がある')
 
-      const { container: downContainer } = render(messageUtils.createStairMessage('down'))
+      const { container: downContainer } = render(createStairMessage('down'))
       expect(downContainer.textContent).toContain('下へ続く階段')
       expect(downContainer.textContent).toContain('下の階へ続く階段がある')
     })
