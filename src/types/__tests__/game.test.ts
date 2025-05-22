@@ -50,6 +50,7 @@ describe('game types', () => {
         name: 'テストマップ',
         width: 8,
         height: 8,
+        enemies: [],
         gameObjects: [],
         stairs: {
           up: {

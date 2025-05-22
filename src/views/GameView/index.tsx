@@ -1,16 +1,16 @@
 'use client'
 
 import React, { useState } from 'react'
+import { Character } from '~/components/Character'
+import { CommandMenu } from '~/components/CommandMenu'
+import { GameObject } from '~/components/GameObject'
+import { Popup } from '~/components/Popup'
+import { TouchControls } from '~/components/TouchControls'
+import { BattleView } from '../BattleView'
 import { useGameLogic } from './hooks'
-import { GameObject } from '../GameObject'
-import { Character } from '../Character'
-import { Map } from '../Map'
-import { TouchControls } from '../TouchControls'
-import { Popup } from '../Popup'
-import { CommandMenu } from '../CommandMenu'
-import { BattleView } from '../../views/BattleView'
+import { Map } from '~/components/Map'
 
-export const Game: React.FC = () => {
+export const GameView: React.FC = () => {
   const {
     playerStatus,
     setPlayerStatus,

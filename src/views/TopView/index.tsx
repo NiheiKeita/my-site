@@ -1,11 +1,11 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Game } from '../../components/Game'
 import { useSetAtom } from 'jotai'
 import { resetPlayerStatusAtom } from '../../store/player'
 import { getImagePath } from '../../utils/imagePath'
 import { enemies } from '../../data/enemies'
+import { GameView } from '../GameView'
 
 export const TopView = () => {
   const resetPlayerStatus = useSetAtom(resetPlayerStatusAtom)
@@ -41,7 +41,7 @@ export const TopView = () => {
   }, [])
 
   if (showGame) {
-    return <Game />
+    return <GameView />
   }
 
   return (
