@@ -12,6 +12,7 @@ describe('game types', () => {
   describe('GameObjectData', () => {
     it('正しいゲームオブジェクトを作成できる', () => {
       const gameObject: GameObjectData = {
+        id: 'pot',
         type: 'pot',
         position: { x: 1, y: 2 },
         message: 'テストメッセージ'
@@ -23,6 +24,7 @@ describe('game types', () => {
 
     it('階段オブジェクトに方向を設定できる', () => {
       const stairs: GameObjectData = {
+        id: 'stairs',
         type: 'stairs',
         position: { x: 1, y: 2 },
         message: '階段のメッセージ',

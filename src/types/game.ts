@@ -15,6 +15,7 @@ export interface AndroidApp {
 }
 
 export interface GameObjectData {
+  id: string
   type: GameObjectType
   position: Position
   message: ReactNode

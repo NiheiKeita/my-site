@@ -16,6 +16,7 @@ type Story = StoryObj<typeof meta>
 export const Pot: Story = {
   args: {
     object: {
+      id: "pot",
       type: 'pot',
       position: { x: 0, y: 0 },
       message: '壺の中に何かが入っている気がする...'
@@ -27,6 +28,7 @@ export const Pot: Story = {
 export const Chest: Story = {
   args: {
     object: {
+      id: "chest",
       type: 'chest',
       position: { x: 0, y: 0 },
       message: '宝箱の中に何かが入っている気がする...'

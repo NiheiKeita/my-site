@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { useState, useCallback, useEffect } from 'react'
 import { useAtom, useSetAtom } from 'jotai'
 import { playerStatusAtom, updatePlayerStatusAtom } from '../../store/player'
@@ -6,7 +6,7 @@ import { Enemy, BattleResult } from '../../types/enemy'
 import { MapData, GameObjectData } from '../../types/game'
 import { maps } from '../../data/maps'
 import { enemies } from '~/data/enemies'
-import { addBagItemAtom } from '~/store/bag'
+import { addBagItemAtom, addPickedItemAtom, pickedItemsAtom } from '~/store/bag'
 
 interface Position {
   x: number
@@ -26,6 +26,8 @@ export const useGameLogic = () => {
   const [currentMap, setCurrentMap] = useState<MapData>(maps[0])
   const [previousLevel, setPreviousLevel] = useState(playerStatus.level)
   const addBagItem = useSetAtom(addBagItemAtom)
+  const addPickedItem = useSetAtom(addPickedItemAtom)
+  const [pickedItems] = useAtom(pickedItemsAtom)
 
   // レベルアップのチェック
   useEffect(() => {
@@ -147,6 +149,19 @@ export const useGameLogic = () => {
     setPlayerPosition(newPosition)
   }, [showPopup, showCommandMenu, calculateNextPosition, checkObjectCollision, handleFountainCollision, handleStairCollision, handleRandomEncounter, setPlayerPosition, isInBattle, playerPosition])
 
+  // 拾ったアイテムをフィルタリングしたマップデータを生成
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const filteredMap = useMemo(() => ({
+    ...currentMap,
+    gameObjects: currentMap.gameObjects.filter(obj => {
+      if (obj.type !== 'item') return true
+
+      return !pickedItems.some(
+        item => item.mapId === currentMap.id && item.objectId === obj.id
+      )
+    })
+  }), [currentMap, pickedItems])
+
   const handleInteract = useCallback(() => {
     if (showPopup) return
 
@@ -166,10 +181,11 @@ export const useGameLogic = () => {
         break
     }
 
-    const object = currentMap.gameObjects.find(
+    // フィルタリングされたマップデータを使用してオブジェクトを検索
+    const object = filteredMap.gameObjects.find(
       obj => obj.position.x === frontPosition.x && obj.position.y === frontPosition.y
     )
-    const nowObject = currentMap.gameObjects.find(
+    const nowObject = filteredMap.gameObjects.find(
       obj => obj.position.x === playerPosition.x && obj.position.y === playerPosition.y
     )
 
@@ -178,9 +194,13 @@ export const useGameLogic = () => {
         // アイテムを拾った時
         setPopupContent(`${nowObject.itemId}を拾った`)
         setShowPopup(true)
-        //TODO: アイテムを拾った時の処理
         if (nowObject.itemId) {
           addBagItem(nowObject.itemId)
+          // 拾ったアイテムの情報を保存
+          addPickedItem({
+            mapId: currentMap.id,
+            objectId: nowObject.id
+          })
         }
       }
     } else if (object) {
@@ -189,7 +209,7 @@ export const useGameLogic = () => {
     } else {
       setShowCommandMenu(true)
     }
-  }, [playerPosition, playerDirection, showPopup, currentMap, addBagItem])
+  }, [playerPosition, playerDirection, showPopup, filteredMap, currentMap, addBagItem, addPickedItem])
 
   const handleBattleEnd = useCallback((result: BattleResult) => {
     if (result.isVictory) {
@@ -260,7 +280,7 @@ export const useGameLogic = () => {
     showPopup,
     popupContent,
     showCommandMenu,
-    currentMap,
+    currentMap: filteredMap,
     handleMove,
     handleInteract,
     handleBattleEnd,
