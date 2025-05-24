@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React from 'react'
 import { useState, useCallback, useEffect } from 'react'
 import { useAtom, useSetAtom } from 'jotai'
 import { playerStatusAtom, updatePlayerStatusAtom } from '../../store/player'
@@ -6,9 +6,9 @@ import { Enemy, BattleResult } from '../../types/enemy'
 import { GameObjectData } from '../../types/game'
 import { maps } from '../../data/maps'
 import { enemies } from '~/data/enemies'
-import { addBagItemAtom, addPickedItemAtom, pickedItemsAtom } from '~/store/bag'
+import { addBagItemAtom, addPickedItemAtom } from '~/store/bag'
 import { playerPositionAtom } from '~/store/playerPosition'
-import { currentMapAtom } from '~/store/currentMap'
+import { currentMapAtom, writeCurrentMapAtom } from '~/store/currentMap'
 
 interface Position {
   x: number
@@ -25,11 +25,11 @@ export const useGameLogic = () => {
   const [showPopup, setShowPopup] = useState(false)
   const [popupContent, setPopupContent] = useState<React.ReactNode>('')
   const [showCommandMenu, setShowCommandMenu] = useState(false)
-  const [currentMap, setCurrentMap] = useAtom(currentMapAtom)
+  const [currentMap] = useAtom(currentMapAtom)
+  const setCurrentMap = useSetAtom(writeCurrentMapAtom)
   const [previousLevel, setPreviousLevel] = useState(playerStatus.level)
   const addBagItem = useSetAtom(addBagItemAtom)
   const addPickedItem = useSetAtom(addPickedItemAtom)
-  const [pickedItems] = useAtom(pickedItemsAtom)
 
   // レベルアップのチェック
   useEffect(() => {
@@ -151,19 +151,6 @@ export const useGameLogic = () => {
     setPlayerPosition(newPosition)
   }, [showPopup, showCommandMenu, calculateNextPosition, checkObjectCollision, handleFountainCollision, handleStairCollision, handleRandomEncounter, setPlayerPosition, isInBattle, playerPosition])
 
-  // 拾ったアイテムをフィルタリングしたマップデータを生成
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const filteredMap = useMemo(() => ({
-    ...currentMap,
-    gameObjects: currentMap.gameObjects.filter(obj => {
-      if (obj.type !== 'item') return true
-
-      return !pickedItems.some(
-        item => item.mapId === currentMap.id && item.objectId === obj.id
-      )
-    })
-  }), [currentMap, pickedItems])
-
   const handleInteract = useCallback(() => {
     if (showPopup) return
 
@@ -184,10 +171,10 @@ export const useGameLogic = () => {
     }
 
     // フィルタリングされたマップデータを使用してオブジェクトを検索
-    const object = filteredMap.gameObjects.find(
+    const object = currentMap.gameObjects.find(
       obj => obj.position.x === frontPosition.x && obj.position.y === frontPosition.y
     )
-    const nowObject = filteredMap.gameObjects.find(
+    const nowObject = currentMap.gameObjects.find(
       obj => obj.position.x === playerPosition.x && obj.position.y === playerPosition.y
     )
 
@@ -211,7 +198,7 @@ export const useGameLogic = () => {
     } else {
       setShowCommandMenu(true)
     }
-  }, [playerPosition, playerDirection, showPopup, filteredMap, currentMap, addBagItem, addPickedItem])
+  }, [playerPosition, playerDirection, showPopup, currentMap, addBagItem, addPickedItem])
 
   const handleBattleEnd = useCallback((result: BattleResult) => {
     if (result.isVictory) {
@@ -283,7 +270,7 @@ export const useGameLogic = () => {
     showPopup,
     popupContent,
     showCommandMenu,
-    currentMap: filteredMap,
+    currentMap,
     handleMove,
     handleInteract,
     handleBattleEnd,
