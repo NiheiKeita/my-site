@@ -1,8 +1,4 @@
 import { atom } from 'jotai'
-
-interface Position {
-  x: number
-  y: number
-}
+import { Position } from '~/types/game'
 
 export const playerPositionAtom = atom<Position>({ x: 4, y: 4 }) 

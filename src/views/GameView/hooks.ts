@@ -3,17 +3,12 @@ import { useState, useCallback, useEffect } from 'react'
 import { useAtom, useSetAtom } from 'jotai'
 import { playerStatusAtom, updatePlayerStatusAtom } from '../../store/player'
 import { Enemy, BattleResult } from '../../types/enemy'
-import { GameObjectData } from '../../types/game'
+import { GameObjectData, Position } from '../../types/game'
 import { maps } from '../../data/maps'
 import { enemies } from '~/data/enemies'
 import { addBagItemAtom, addPickedItemAtom } from '~/store/bag'
 import { playerPositionAtom } from '~/store/playerPosition'
 import { currentMapAtom, writeCurrentMapAtom } from '~/store/currentMap'
-
-interface Position {
-  x: number
-  y: number
-}
 
 export const useGameLogic = () => {
   const [playerStatus, setPlayerStatus] = useAtom(playerStatusAtom)
