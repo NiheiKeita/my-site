@@ -3,11 +3,12 @@ import { useState, useCallback, useEffect } from 'react'
 import { useAtom, useSetAtom } from 'jotai'
 import { playerStatusAtom, updatePlayerStatusAtom } from '../../store/player'
 import { Enemy, BattleResult } from '../../types/enemy'
-import { MapData, GameObjectData } from '../../types/game'
+import { GameObjectData } from '../../types/game'
 import { maps } from '../../data/maps'
 import { enemies } from '~/data/enemies'
 import { addBagItemAtom, addPickedItemAtom, pickedItemsAtom } from '~/store/bag'
-import { playerPositionAtom } from '~/atoms/playerPosition'
+import { playerPositionAtom } from '~/store/playerPosition'
+import { currentMapAtom } from '~/store/currentMap'
 
 interface Position {
   x: number
@@ -24,7 +25,7 @@ export const useGameLogic = () => {
   const [showPopup, setShowPopup] = useState(false)
   const [popupContent, setPopupContent] = useState<React.ReactNode>('')
   const [showCommandMenu, setShowCommandMenu] = useState(false)
-  const [currentMap, setCurrentMap] = useState<MapData>(maps[0])
+  const [currentMap, setCurrentMap] = useAtom(currentMapAtom)
   const [previousLevel, setPreviousLevel] = useState(playerStatus.level)
   const addBagItem = useSetAtom(addBagItemAtom)
   const addPickedItem = useSetAtom(addPickedItemAtom)

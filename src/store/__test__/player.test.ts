@@ -1,4 +1,4 @@
-import { playerStatusAtom, updatePlayerStatusAtom } from './player'
+import { playerStatusAtom, updatePlayerStatusAtom } from '../player'
 import { createStore } from 'jotai/vanilla'
 
 describe('プレイヤーステータスの更新', () => {
