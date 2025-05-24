@@ -7,6 +7,7 @@ import { MapData, GameObjectData } from '../../types/game'
 import { maps } from '../../data/maps'
 import { enemies } from '~/data/enemies'
 import { addBagItemAtom, addPickedItemAtom, pickedItemsAtom } from '~/store/bag'
+import { playerPositionAtom } from '~/atoms/playerPosition'
 
 interface Position {
   x: number
@@ -18,7 +19,7 @@ export const useGameLogic = () => {
   const updatePlayerStatus = useSetAtom(updatePlayerStatusAtom)
   const [isInBattle, setIsInBattle] = useState(false)
   const [currentEnemy, setCurrentEnemy] = useState<Enemy | null>(null)
-  const [playerPosition, setPlayerPosition] = useState<Position>({ x: 4, y: 4 })
+  const [playerPosition, setPlayerPosition] = useAtom(playerPositionAtom)
   const [playerDirection, setPlayerDirection] = useState<'up' | 'down' | 'left' | 'right'>('down')
   const [showPopup, setShowPopup] = useState(false)
   const [popupContent, setPopupContent] = useState<React.ReactNode>('')
@@ -108,7 +109,7 @@ export const useGameLogic = () => {
         }
       }
     }
-  }, [currentMap])
+  }, [currentMap, setCurrentMap, setPlayerPosition])
 
   // エンカウント処理
   const handleRandomEncounter = useCallback(() => {
@@ -217,8 +218,8 @@ export const useGameLogic = () => {
         exp: playerStatus.exp + result.exp,
         gold: playerStatus.gold + result.gold,
       })
-    } else {
-      // 敗北時HPを全回復して、所持金を半分にするまたスタート地点に移動
+    } else if (!result.isEscaped) {
+      // 敗北時のみHPを全回復して、所持金を半分にするまたスタート地点に移動
       setPlayerStatus(prev => ({ ...prev, hp: prev.maxHp }))
       updatePlayerStatus({
         gold: Math.floor(playerStatus.gold / 2),
@@ -226,9 +227,10 @@ export const useGameLogic = () => {
       setCurrentMap(maps[0])
       setPlayerPosition({ x: 4, y: 4 })
     }
+    // 戦闘を終了
     setIsInBattle(false)
     setCurrentEnemy(null)
-  }, [updatePlayerStatus, playerStatus.exp, playerStatus.gold, setPlayerStatus])
+  }, [updatePlayerStatus, playerStatus.exp, playerStatus.gold, setPlayerStatus, setCurrentMap, setPlayerPosition])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

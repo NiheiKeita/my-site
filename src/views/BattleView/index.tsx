@@ -31,11 +31,12 @@ export const BattleView: React.FC<BattleViewProps> = ({ enemy, onBattleEnd, play
     if (showEndMessage && e.key === 'Enter') {
       onBattleEnd({
         isVictory: battleState.isVictory,
+        isEscaped: battleState.message === '逃げ出した！',
         exp: battleState.isVictory ? enemy.exp : 0,
         gold: battleState.isVictory ? enemy.gold : 0,
       })
     }
-  }, [showEndMessage, battleState.isVictory, enemy.exp, enemy.gold, onBattleEnd])
+  }, [showEndMessage, battleState.isVictory, battleState.message, enemy.exp, enemy.gold, onBattleEnd])
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown)
