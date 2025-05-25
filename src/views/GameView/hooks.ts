@@ -9,6 +9,7 @@ import { enemies } from '~/data/enemies'
 import { addBagItemAtom, addPickedItemAtom } from '~/store/bag'
 import { playerPositionAtom } from '~/store/playerPosition'
 import { currentMapAtom, writeCurrentMapAtom } from '~/store/currentMap'
+import { items } from '~/data/items'
 
 export const useGameLogic = () => {
   const [playerStatus, setPlayerStatus] = useAtom(playerStatusAtom)
@@ -146,6 +147,19 @@ export const useGameLogic = () => {
     setPlayerPosition(newPosition)
   }, [showPopup, showCommandMenu, calculateNextPosition, checkObjectCollision, handleFountainCollision, handleStairCollision, handleRandomEncounter, setPlayerPosition, isInBattle, playerPosition])
 
+  const pickUpItemName = useCallback((nowObject: GameObjectData) => {
+    const item = items.find(item => item.id === nowObject.itemId)
+    if (!item) return
+    setPopupContent(`${item?.name}を拾った`)
+    setShowPopup(true)
+    addBagItem(item.id)
+    // 拾ったアイテムの情報を保存
+    addPickedItem({
+      mapId: currentMap.id,
+      objectId: nowObject.id
+    })
+  }, [addBagItem, addPickedItem, currentMap.id])
+
   const handleInteract = useCallback(() => {
     if (showPopup) return
 
@@ -176,22 +190,13 @@ export const useGameLogic = () => {
     if (nowObject) {
       if (nowObject.type === 'item') {
         // アイテムを拾った時
-        setPopupContent(`${nowObject.itemId}を拾った`)
-        setShowPopup(true)
-        if (nowObject.itemId) {
-          addBagItem(nowObject.itemId)
-          // 拾ったアイテムの情報を保存
-          addPickedItem({
-            mapId: currentMap.id,
-            objectId: nowObject.id
-          })
-        }
+        pickUpItemName(nowObject)
       }
     } else if (object) {
       setPopupContent(object.message)
       setShowPopup(true)
     }
-  }, [playerPosition, playerDirection, showPopup, currentMap, addBagItem, addPickedItem])
+  }, [showPopup, playerPosition, playerDirection, currentMap.gameObjects, pickUpItemName])
 
   const handleBattleEnd = useCallback((result: BattleResult) => {
     if (result.isVictory) {
