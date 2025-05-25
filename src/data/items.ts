@@ -6,7 +6,6 @@ export const items: Item[] = [
     name: '銅の剣',
     description: '初心者向けの基本的な剣',
     type: 'weapon',
-    effect: { attack: 5 },
     value: 5,
     image: '/assets/items/copper_sword.png',
     consumable: false,

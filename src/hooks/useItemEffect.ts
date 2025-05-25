@@ -12,9 +12,13 @@ interface EffectResult {
  * @param currentStatus 現在のプレイヤーステータス
  * @returns 更新されるステータスとメッセージ
  */
-export const applyItemEffect = (effect: ItemEffect, currentStatus: PlayerStatus): EffectResult => {
+export const applyItemEffect = (effect: ItemEffect | undefined, currentStatus: PlayerStatus): EffectResult => {
   const updates: Partial<PlayerStatus> = {}
   const messages: string[] = []
+
+  if (!effect) {
+    return { updates, messages }
+  }
 
   // HP回復
   if (effect.hp) {

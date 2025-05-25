@@ -13,7 +13,7 @@ export interface Item {
   name: string
   description: string
   type: ItemType
-  effect: ItemEffect
+  effect?: ItemEffect
   value: number
   image: string
   consumable: boolean
