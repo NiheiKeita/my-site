@@ -10,6 +10,8 @@ export const initialPlayerStatus = {
   gold: 0,
   attack: 10,
   defense: 5,
+  mp: 0,
+  maxMp: 0,
 }
 
 const JotaiInitializer = ({ children }: { children: ReactNode }) => {

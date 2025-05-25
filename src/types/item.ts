@@ -16,4 +16,5 @@ export interface Item {
   effect: ItemEffect
   value: number
   image: string
+  consumable: boolean
 } 

@@ -75,7 +75,7 @@ export const firstObjects: GameObjectData[] = [
   {
     id: 'item_1',
     type: 'item',
-    itemId: 'copper_sword',
+    itemId: 'healing_potion',
     position: { x: 7, y: 1 },
     message: messageUtils.createMessage(
       <>

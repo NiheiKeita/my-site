@@ -9,6 +9,7 @@ export const items: Item[] = [
     effect: { attack: 5 },
     value: 5,
     image: '/assets/items/copper_sword.png',
+    consumable: false,
   },
   {
     id: 'wooden_shield',
@@ -18,6 +19,7 @@ export const items: Item[] = [
     effect: { defense: 3 },
     value: 3,
     image: '/assets/items/wooden_shield.png',
+    consumable: false,
   },
   {
     id: 'healing_potion',
@@ -27,6 +29,7 @@ export const items: Item[] = [
     effect: { hp: 30 },
     value: 30,
     image: '/assets/items/healing_potion.png',
+    consumable: true,
   },
   {
     id: 'macbook_pro',
@@ -36,6 +39,7 @@ export const items: Item[] = [
     effect: { attack: 20 },
     value: 20,
     image: '/assets/items/macbook_pro.png',
+    consumable: false,
   },
   {
     id: 'iphone_12',
@@ -45,6 +49,7 @@ export const items: Item[] = [
     effect: { attack: 15 },
     value: 15,
     image: '/assets/items/iphone_12.png',
+    consumable: false,
   },
   {
     id: 'mobile_battery',
@@ -54,6 +59,7 @@ export const items: Item[] = [
     effect: { mp: 50 },
     value: 50,
     image: '/assets/items/mobile_battery.png',
+    consumable: true,
   },
   {
     id: 'nintendo_switch',
@@ -63,6 +69,7 @@ export const items: Item[] = [
     effect: { attack: 12 },
     value: 12,
     image: '/assets/items/nintendo_switch.png',
+    consumable: false,
   },
   {
     id: 'gamecube',
@@ -72,6 +79,7 @@ export const items: Item[] = [
     effect: { attack: 10 },
     value: 10,
     image: '/assets/items/gamecube.png',
+    consumable: false,
   },
   {
     id: 'tech_books',
@@ -81,6 +89,7 @@ export const items: Item[] = [
     effect: { exp: 100 },
     value: 100,
     image: '/assets/items/tech_books.png',
+    consumable: true,
   },
   {
     id: 'raspberry_pi',
@@ -90,5 +99,6 @@ export const items: Item[] = [
     effect: { attack: 8 },
     value: 8,
     image: '/assets/items/raspberry_pi.png',
+    consumable: false,
   },
 ] 

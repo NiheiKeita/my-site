@@ -1,6 +1,5 @@
-
 import { items } from '../../data/items'
-import { bagItemsAtom } from '../../store/bag'
+import { bagItemsAtom, useItemAtom } from '../../store/bag'
 import { useAtom } from 'jotai'
 
 interface CommandDetailProps {
@@ -10,8 +9,15 @@ interface CommandDetailProps {
 
 export const CommandDetail = ({ type, onClose }: CommandDetailProps) => {
   const [bagItemIDs] = useAtom(bagItemsAtom)
+  const [, usedItem] = useAtom(useItemAtom)
+
+  const handleItemUse = (itemId: string) => {
+    usedItem(itemId)
+    onClose()
+  }
 
   const bagItems = bagItemIDs.map((id) => items.find((item) => item?.id === id)).filter(item => item !== undefined)
+
   // 仮のデータ
   const spellData = [
     { name: 'コピペ', mp: 1, description: '過去の知識を召喚して作業時間を短縮する' },
@@ -61,6 +67,7 @@ export const CommandDetail = ({ type, onClose }: CommandDetailProps) => {
     { slot: 'アクセサリー1', name: 'スマートウォッチ', defense: 2, description: '健康と通知を管理する万能ガジェット' },
     { slot: 'アクセサリー2', name: 'ブルーライトカットメガネ', defense: 2, description: '目の疲労を軽減する防御メガネ' },
   ]
+
   const skillData = [
     { name: 'フロントエンド', level: 9, description: 'Next.js、React、TypeScript、TailwindCSSを駆使して、高品質かつモダンなUIを構築。StorybookやJotaiで開発効率と状態管理も最適化' },
     { name: 'バックエンド', level: 7, description: 'LaravelとCakePHPを中心に、Djangoも扱う。RESTful APIや認証、非同期処理まで幅広く対応' },
@@ -98,9 +105,16 @@ export const CommandDetail = ({ type, onClose }: CommandDetailProps) => {
               <div key={bagItem?.name} className="rounded bg-gray-700 p-2">
                 <div className="flex justify-between text-white">
                   <span className="font-bold">{bagItem?.name}</span>
-                  {/* <span className="text-yellow-400">×{bagItem.count}</span> */}
                 </div>
                 <div className="text-sm text-gray-300">{bagItem?.description}</div>
+                {bagItem?.type === 'potion' && (
+                  <button
+                    onClick={() => handleItemUse(bagItem?.id)}
+                    className="mt-2 rounded bg-blue-600 px-3 py-1 text-sm text-white transition-colors hover:bg-blue-500"
+                  >
+                    使う
+                  </button>
+                )}
               </div>
             ))}
           </div>

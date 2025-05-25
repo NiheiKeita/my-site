@@ -8,6 +8,8 @@ export interface PlayerStatus {
   gold: number
   attack: number
   defense: number
+  mp: number
+  maxMp: number
 }
 
 // レベルアップに必要な経験値テーブル
@@ -27,6 +29,7 @@ const EXP_TABLE = [
 // レベルアップ時のステータス上昇値
 const LEVEL_UP_STATS = {
   maxHp: 10,
+  maxMp: 5,
   attack: 3,
   defense: 2,
 }
@@ -40,6 +43,8 @@ const initialStatus: PlayerStatus = {
   gold: 0,
   attack: 10,
   defense: 5,
+  mp: 5,
+  maxMp: 5,
 }
 
 export const playerStatusAtom = atom<PlayerStatus>(initialStatus)
