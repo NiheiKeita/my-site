@@ -26,7 +26,7 @@ export const useGameLogic = () => {
     if (playerStatus.level > state.previousLevel) {
       const levelUpMessage = [
         '✨ レベルアップ！ ✨',
-        `レベル ${playerStatus.level - 1} → ${playerStatus.level}`,
+        `レベル ${state.previousLevel} → ${playerStatus.level}`,
         `HP: ${playerStatus.maxHp - 20} → ${playerStatus.maxHp}`,
         `攻撃力: ${playerStatus.attack - 5} → ${playerStatus.attack}`,
         `防御力: ${playerStatus.defense - 3} → ${playerStatus.defense}`
