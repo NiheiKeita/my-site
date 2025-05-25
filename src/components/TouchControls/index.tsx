@@ -11,7 +11,7 @@ interface TouchControlsProps {
 export const TouchControls = ({ onMove, onInteract, onMenu }: TouchControlsProps) => {
   return (
     <>
-      <div className="fixed bottom-8 sm:left-8 left-2 flex flex-col items-center gap-2">
+      <div className="fixed bottom-4 sm:left-8 left-2 flex flex-col items-center gap-2">
         <button
           className="flex size-16 items-center justify-center rounded-full text-4xl bg-gray-700 text-white"
           onClick={() => onMenu()}
@@ -19,7 +19,7 @@ export const TouchControls = ({ onMove, onInteract, onMenu }: TouchControlsProps
           <IoMdMenu />
         </button>
       </div>
-      <div className="fixed bottom-8 sm:right-8 right-2 flex flex-col items-center gap-2">
+      <div className="fixed bottom-4 sm:right-8 right-2 flex flex-col items-center gap-2">
         <button
           className="flex size-16 items-center justify-center rounded-full bg-gray-700 text-white"
           onClick={() => onMove('up')}
