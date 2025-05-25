@@ -1,7 +1,7 @@
 import React from 'react'
 import type { Preview } from "@storybook/react"
-import { JotaiProvider } from '../src/stories/providers'
 import "../src/styles/globals.css";
+import { Provider } from 'jotai'
 
 const preview: Preview = {
   parameters: {
@@ -15,9 +15,9 @@ const preview: Preview = {
   },
   decorators: [
     (Story) => (
-      <JotaiProvider>
+      <Provider>
         <Story />
-      </JotaiProvider>
+      </Provider>
     ),
   ],
 }
