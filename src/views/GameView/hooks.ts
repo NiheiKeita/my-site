@@ -190,8 +190,6 @@ export const useGameLogic = () => {
     } else if (object) {
       setPopupContent(object.message)
       setShowPopup(true)
-    } else {
-      setShowCommandMenu(true)
     }
   }, [playerPosition, playerDirection, showPopup, currentMap, addBagItem, addPickedItem])
 
@@ -231,7 +229,7 @@ export const useGameLogic = () => {
           handleMove('right')
           break
         case 'z':
-          handleInteract()
+          setShowCommandMenu(!showCommandMenu)
           break
         case 'Enter':
           if (showPopup) {
@@ -243,9 +241,7 @@ export const useGameLogic = () => {
           }
           break
         case 'Escape':
-          if (showCommandMenu) {
-            setShowCommandMenu(false)
-          }
+          setShowCommandMenu(false)
           break
       }
     }
