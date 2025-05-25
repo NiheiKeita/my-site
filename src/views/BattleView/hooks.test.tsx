@@ -193,6 +193,7 @@ describe('useBattleLogic', () => {
     })
     expect(mockOnBattleEnd).toHaveBeenCalledWith({
       isVictory: true,
+      isEscaped: false,
       exp: mockEnemy.exp,
       gold: mockEnemy.gold,
     })

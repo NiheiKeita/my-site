@@ -37,6 +37,8 @@ describe('useGameLogic', () => {
         gold: 0,
         attack: 15,
         defense: 8,
+        mp: 0,
+        maxMp: 0,
       })
     })
 
@@ -66,6 +68,8 @@ describe('useGameLogic', () => {
         gold: 0,
         attack: 10,
         defense: 5,
+        mp: 0,
+        maxMp: 0,
       })
     })
 
@@ -87,6 +91,8 @@ describe('useGameLogic', () => {
         gold: 0,
         attack: 15,
         defense: 8,
+        mp: 0,
+        maxMp: 0,
       })
     })
 

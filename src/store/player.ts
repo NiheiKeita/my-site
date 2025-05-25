@@ -1,4 +1,5 @@
 import { atom } from 'jotai'
+import { initialPlayerStatus } from '~/data/initialPlayerStatus'
 
 export interface PlayerStatus {
   hp: number
@@ -8,6 +9,8 @@ export interface PlayerStatus {
   gold: number
   attack: number
   defense: number
+  mp: number
+  maxMp: number
 }
 
 // レベルアップに必要な経験値テーブル
@@ -27,22 +30,12 @@ const EXP_TABLE = [
 // レベルアップ時のステータス上昇値
 const LEVEL_UP_STATS = {
   maxHp: 10,
+  maxMp: 5,
   attack: 3,
   defense: 2,
 }
 
-// 初期ステータス
-const initialStatus: PlayerStatus = {
-  hp: 10,
-  maxHp: 10,
-  level: 1,
-  exp: 0,
-  gold: 0,
-  attack: 10,
-  defense: 5,
-}
-
-export const playerStatusAtom = atom<PlayerStatus>(initialStatus)
+export const playerStatusAtom = atom<PlayerStatus>(initialPlayerStatus)
 
 // プレイヤーのステータスを更新する関数
 export const updatePlayerStatusAtom = atom(
@@ -85,6 +78,6 @@ const calculateLevel = (exp: number): number => {
 export const resetPlayerStatusAtom = atom(
   null,
   (get, set) => {
-    set(playerStatusAtom, initialStatus)
+    set(playerStatusAtom, initialPlayerStatus)
   }
 ) 

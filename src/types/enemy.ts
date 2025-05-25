@@ -14,6 +14,7 @@ export interface Enemy {
 
 export interface BattleResult {
   isVictory: boolean
+  isEscaped: boolean
   exp: number
   gold: number
 }

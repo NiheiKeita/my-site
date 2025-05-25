@@ -1,10 +1,10 @@
-
 import { androidApps } from "~/data/objects"
 import { GameObjectData } from "~/types/game"
 import { createStairMessage, messageUtils } from "../messages"
 
 export const firstObjects: GameObjectData[] = [
   {
+    id: 'pot_1',
     type: 'pot',
     position: { x: 2, y: 2 },
     message: messageUtils.createMessage(
@@ -25,6 +25,7 @@ export const firstObjects: GameObjectData[] = [
       </>)
   },
   {
+    id: 'pot_2',
     type: 'pot',
     position: { x: 5, y: 2 },
     message: messageUtils.createMessage(
@@ -36,6 +37,7 @@ export const firstObjects: GameObjectData[] = [
     )
   },
   {
+    id: 'chest_1',
     type: 'chest',
     position: { x: 2, y: 5 },
     message: messageUtils.createMessage(
@@ -46,6 +48,7 @@ export const firstObjects: GameObjectData[] = [
     )
   },
   {
+    id: 'chest_2',
     type: 'chest',
     position: { x: 5, y: 5 },
     message: messageUtils.createMessage(
@@ -57,6 +60,7 @@ export const firstObjects: GameObjectData[] = [
     )
   },
   {
+    id: 'fountain_1',
     type: 'fountain',
     position: { x: 0, y: 0 },
     message: messageUtils.createMessage(
@@ -69,8 +73,9 @@ export const firstObjects: GameObjectData[] = [
     )
   },
   {
+    id: 'item_1',
     type: 'item',
-    itemId: 'copper_sword',
+    itemId: 'healing_potion',
     position: { x: 7, y: 1 },
     message: messageUtils.createMessage(
       <>
@@ -80,6 +85,7 @@ export const firstObjects: GameObjectData[] = [
     )
   },
   {
+    id: 'stairs_1',
     type: 'stairs',
     position: { x: 7, y: 7 },
     message: messageUtils.createMessage(createStairMessage('down')),

@@ -1,17 +1,18 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useSetAtom } from 'jotai'
 import { resetPlayerStatusAtom } from '../../store/player'
 import { getImagePath } from '../../utils/imagePath'
 import { enemies } from '../../data/enemies'
 import { GameView } from '../GameView'
+import { useMount } from 'react-use'
 
 export const TopView = () => {
   const resetPlayerStatus = useSetAtom(resetPlayerStatusAtom)
   const [showGame, setShowGame] = useState(false)
 
-  useEffect(() => {
+  useMount(() => {
     // プレイヤーステータスをリセット
     resetPlayerStatus()
 
@@ -20,10 +21,10 @@ export const TopView = () => {
     }, 5000)
 
     return () => clearTimeout(timer)
-  }, [resetPlayerStatus])
+  })
 
   // 画像をプリロード
-  useEffect(() => {
+  useMount(() => {
     // 主人公
     const directions = ["up", "down", "right", "left"] as const
     const steps = [0, 1] as const
@@ -38,7 +39,7 @@ export const TopView = () => {
       const img = new Image()
       img.src = getImagePath(enemy.defeatedImage)
     })
-  }, [])
+  })
 
   if (showGame) {
     return <GameView />
