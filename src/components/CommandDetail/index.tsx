@@ -1,6 +1,7 @@
 import { items } from '../../data/items'
-import { bagItemsAtom, useItemAtom } from '../../store/bag'
+import { bagItemsAtom, useItemAtom, itemEffectMessageAtom } from '../../store/bag'
 import { useAtom } from 'jotai'
+import { Popup } from '../Popup'
 
 interface CommandDetailProps {
   type: 'spell' | 'item' | 'status' | 'equip' | 'skill'
@@ -10,9 +11,14 @@ interface CommandDetailProps {
 export const CommandDetail = ({ type, onClose }: CommandDetailProps) => {
   const [bagItemIDs] = useAtom(bagItemsAtom)
   const [, usedItem] = useAtom(useItemAtom)
+  const [effectMessage, setEffectMessage] = useAtom(itemEffectMessageAtom)
 
   const handleItemUse = (itemId: string) => {
     usedItem(itemId)
+  }
+
+  const handleEffectClose = () => {
+    setEffectMessage(null)
     onClose()
   }
 
@@ -185,19 +191,31 @@ export const CommandDetail = ({ type, onClose }: CommandDetailProps) => {
   }
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="w-80 rounded-lg bg-gray-800 p-4 shadow-lg">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-white">{getTitle()}</h2>
-          <button
-            onClick={onClose}
-            className="rounded bg-gray-700 px-3 py-1 text-white transition-colors hover:bg-gray-600"
-          >
-            閉じる
-          </button>
+    <>
+      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="w-80 rounded-lg bg-gray-800 p-4 shadow-lg">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-xl font-bold text-white">{getTitle()}</h2>
+            <button
+              onClick={onClose}
+              className="rounded bg-gray-700 px-3 py-1 text-white transition-colors hover:bg-gray-600"
+            >
+              閉じる
+            </button>
+          </div>
+          {renderContent()}
         </div>
-        {renderContent()}
       </div>
-    </div>
+      {effectMessage && (
+        <Popup
+          content={
+            <div className="text-center">
+              <p className="whitespace-pre-line">{effectMessage}</p>
+            </div>
+          }
+          onClose={handleEffectClose}
+        />
+      )}
+    </>
   )
 } 
