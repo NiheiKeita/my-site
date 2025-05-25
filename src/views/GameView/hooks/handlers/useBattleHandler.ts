@@ -28,12 +28,15 @@ export const useBattleHandler = (
   }, [state.isInBattle, currentMap.enemies, dispatch])
 
   const handleBattleEnd = useCallback((result: BattleResult) => {
+    // 勝った時の処理
     if (result.isVictory) {
       updatePlayerStatus({
         exp: playerStatus.exp + result.exp,
         gold: playerStatus.gold + result.gold,
       })
-    } else if (!result.isEscaped) {
+    }
+    // 負けた時の処理
+    if (!result.isVictory && !result.isEscaped) {
       setPlayerStatus(prev => ({ ...prev, hp: prev.maxHp }))
       updatePlayerStatus({
         gold: Math.floor(playerStatus.gold / 2),

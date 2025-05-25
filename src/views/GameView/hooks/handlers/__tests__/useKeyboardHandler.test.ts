@@ -20,7 +20,7 @@ describe('useKeyboardHandler', () => {
     jest.clearAllMocks()
   })
 
-  it('should handle arrow key movements', () => {
+  it('矢印キーで移動できること', () => {
     renderHook(() => useKeyboardHandler(mockState, mockDispatch, mockOnMove, mockOnInteract))
 
     const arrowKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']
@@ -33,7 +33,7 @@ describe('useKeyboardHandler', () => {
     })
   })
 
-  it('should toggle command menu with z key', () => {
+  it('Zキーでコマンドメニューが切り替わること', () => {
     renderHook(() => useKeyboardHandler(mockState, mockDispatch, mockOnMove, mockOnInteract))
 
     const event = new KeyboardEvent('keydown', { key: 'z' })
@@ -42,7 +42,7 @@ describe('useKeyboardHandler', () => {
     expect(mockDispatch).toHaveBeenCalledWith({ type: 'TOGGLE_COMMAND_MENU' })
   })
 
-  it('should handle Enter key based on state', () => {
+  it('ポップアップ表示中にEnterキーを押すとポップアップが非表示になること', () => {
     const stateWithPopup = { ...mockState, showPopup: true }
     renderHook(() => useKeyboardHandler(stateWithPopup, mockDispatch, mockOnMove, mockOnInteract))
 
@@ -52,7 +52,7 @@ describe('useKeyboardHandler', () => {
     expect(mockDispatch).toHaveBeenCalledWith({ type: 'HIDE_POPUP' })
   })
 
-  it('should handle Enter key for command menu', () => {
+  it('コマンドメニュー表示中にEnterキーを押すとコマンドメニューが非表示になること', () => {
     const stateWithCommandMenu = { ...mockState, showCommandMenu: true }
     renderHook(() => useKeyboardHandler(stateWithCommandMenu, mockDispatch, mockOnMove, mockOnInteract))
 
@@ -62,7 +62,7 @@ describe('useKeyboardHandler', () => {
     expect(mockDispatch).toHaveBeenCalledWith({ type: 'HIDE_COMMAND_MENU' })
   })
 
-  it('should handle Enter key for interaction', () => {
+  it('Enterキーでインタラクションが実行されること', () => {
     renderHook(() => useKeyboardHandler(mockState, mockDispatch, mockOnMove, mockOnInteract))
 
     const event = new KeyboardEvent('keydown', { key: 'Enter' })
@@ -71,7 +71,7 @@ describe('useKeyboardHandler', () => {
     expect(mockOnInteract).toHaveBeenCalled()
   })
 
-  it('should handle Escape key', () => {
+  it('Escapeキーでコマンドメニューが非表示になること', () => {
     renderHook(() => useKeyboardHandler(mockState, mockDispatch, mockOnMove, mockOnInteract))
 
     const event = new KeyboardEvent('keydown', { key: 'Escape' })

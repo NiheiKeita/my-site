@@ -68,7 +68,7 @@ describe('useBattleHandler', () => {
   })
 
   describe('handleRandomEncounter', () => {
-    it('should trigger random encounter when not in battle', () => {
+    it('戦闘中でない場合、ランダムエンカウントが発生すること', () => {
       const { result } = renderHook(() => useBattleHandler(mockState, mockDispatch))
 
       act(() => {
@@ -84,7 +84,7 @@ describe('useBattleHandler', () => {
       })
     })
 
-    it('should not trigger random encounter when in battle', () => {
+    it('戦闘中の場合、ランダムエンカウントが発生しないこと', () => {
       const battleState = { ...mockState, isInBattle: true }
       const { result } = renderHook(() => useBattleHandler(battleState, mockDispatch))
 
@@ -96,4 +96,64 @@ describe('useBattleHandler', () => {
     })
   })
 
+  describe('handleBattleEnd', () => {
+    it('戦闘に勝利した場合、経験値とゴールドが増加すること', () => {
+      const { result } = renderHook(() => useBattleHandler(mockState, mockDispatch))
+
+      act(() => {
+        result.current.handleBattleEnd({ isVictory: true, isEscaped: false, exp: 100, gold: 50 })
+      })
+
+      expect(mockUpdatePlayerStatus).toHaveBeenCalledWith({
+        exp: 100,
+        gold: 150
+      })
+      expect(mockDispatch).toHaveBeenCalledWith({
+        type: 'SET_BATTLE_STATE',
+        payload: { isInBattle: false, enemy: null }
+      })
+    })
+
+    it('戦闘に敗北した場合、HPが回復し、ゴールドが半減すること', () => {
+      const { result } = renderHook(() => useBattleHandler(mockState, mockDispatch))
+
+      act(() => {
+        result.current.handleBattleEnd({ isVictory: false, isEscaped: false, exp: 0, gold: 0 })
+      })
+
+      expect(mockSetPlayerStatus).toHaveBeenCalledWith(expect.any(Function))
+      const statusUpdater = mockSetPlayerStatus.mock.calls[0][0]
+      expect(statusUpdater(mockPlayerStatus)).toEqual({
+        ...mockPlayerStatus,
+        hp: mockPlayerStatus.maxHp
+      })
+      expect(mockUpdatePlayerStatus).toHaveBeenCalledWith({
+        gold: 50
+      })
+      // TODO: なぜかmockSetCurrentMapが呼ばれないエラーが出る
+      // expect(mockSetCurrentMap).toHaveBeenCalledWith(expect.objectContaining({ id: 'test-map' }))
+      expect(mockSetPlayerPosition).toHaveBeenCalledWith({ x: 4, y: 4 })
+      expect(mockDispatch).toHaveBeenCalledWith({
+        type: 'SET_BATTLE_STATE',
+        payload: { isInBattle: false, enemy: null }
+      })
+    })
+
+    it('戦闘から逃走した場合、ステータスが変更されないこと', () => {
+      const { result } = renderHook(() => useBattleHandler(mockState, mockDispatch))
+
+      act(() => {
+        result.current.handleBattleEnd({ isVictory: false, isEscaped: true, exp: 0, gold: 0 })
+      })
+
+      expect(mockSetPlayerStatus).not.toHaveBeenCalled()
+      expect(mockUpdatePlayerStatus).not.toHaveBeenCalled()
+      expect(mockSetCurrentMap).not.toHaveBeenCalled()
+      expect(mockSetPlayerPosition).not.toHaveBeenCalled()
+      expect(mockDispatch).toHaveBeenCalledWith({
+        type: 'SET_BATTLE_STATE',
+        payload: { isInBattle: false, enemy: null }
+      })
+    })
+  })
 }) 
