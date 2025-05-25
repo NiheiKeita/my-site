@@ -12,8 +12,6 @@ import { Map } from '~/components/Map'
 
 export const GameView: React.FC = () => {
   const {
-    playerStatus,
-    setPlayerStatus,
     isInBattle,
     currentEnemy,
     playerPosition,
@@ -36,8 +34,6 @@ export const GameView: React.FC = () => {
       <BattleView
         enemy={currentEnemy}
         onBattleEnd={handleBattleEnd}
-        playerHp={playerStatus.hp}
-        setPlayerHp={(hp) => setPlayerStatus(prev => ({ ...prev, hp }))}
       />
     )
   }

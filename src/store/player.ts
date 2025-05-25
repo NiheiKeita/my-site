@@ -1,5 +1,6 @@
 import { atom } from 'jotai'
 import { initialPlayerStatus } from '~/data/initialPlayerStatus'
+import { Spell } from '~/types/battle'
 
 export interface PlayerStatus {
   hp: number
@@ -11,6 +12,7 @@ export interface PlayerStatus {
   defense: number
   mp: number
   maxMp: number
+  spells: Spell[]
 }
 
 // レベルアップに必要な経験値テーブル

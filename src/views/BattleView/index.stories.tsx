@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { fn } from '@storybook/test'
 import { BattleView } from './index'
-import { enemies } from '../../data/enemies'
+import { Enemy } from '../../types/enemy'
 
 const meta: Meta<typeof BattleView> = {
   title: 'Views/BattleView',
@@ -9,39 +8,57 @@ const meta: Meta<typeof BattleView> = {
   parameters: {
     layout: 'fullscreen',
   },
-  tags: ['autodocs'],
 }
 
 export default meta
 type Story = StoryObj<typeof BattleView>
 
-export const SlimeBattle: Story = {
+const mockEnemy: Enemy = {
+  id: 1,
+  name: 'テストモンスター',
+  level: 1,
+  hp: 100,
+  maxHp: 100,
+  attack: 10,
+  defense: 5,
+  exp: 10,
+  gold: 10,
+  image: '/assets/enemies/slime_default.png',
+  defeatedImage: '/assets/enemies/slime_defeated.png'
+}
+
+export const Default: Story = {
   args: {
-    enemy: enemies[0],
-    onBattleEnd: (result) => {
-      console.log('Battle ended:', result)
-    },
-    setPlayerHp: fn()
+    enemy: mockEnemy,
+    onBattleEnd: () => { },
   },
 }
 
-export const TomatoBattle: Story = {
+export const LowLevelEnemy: Story = {
   args: {
-    enemy: enemies[1],
-    onBattleEnd: (result) => {
-      console.log('Battle ended:', result)
+    enemy: {
+      ...mockEnemy,
+      level: 1,
+      hp: 50,
+      maxHp: 50,
+      attack: 5,
+      defense: 2,
     },
-    setPlayerHp: fn()
+    onBattleEnd: () => { },
   },
 }
 
-export const CheeseBattle: Story = {
+export const HighLevelEnemy: Story = {
   args: {
-    enemy: enemies[2],
-    onBattleEnd: (result) => {
-      console.log('Battle ended:', result)
+    enemy: {
+      ...mockEnemy,
+      level: 5,
+      hp: 200,
+      maxHp: 200,
+      attack: 20,
+      defense: 10,
     },
-    setPlayerHp: fn()
+    onBattleEnd: () => { },
   },
 }
 

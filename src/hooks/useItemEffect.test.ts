@@ -12,6 +12,7 @@ describe('useItemEffect', () => {
     gold: 0,
     attack: 10,
     defense: 5,
+    spells: [],
   }
 
   it('HP回復アイテムを使用すると、HPが回復し、メッセージが表示される', () => {

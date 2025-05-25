@@ -1,48 +1,56 @@
 'use client'
-import React from 'react'
-import { useCallback, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Enemy, BattleResult } from '../../types/enemy'
+import { Spell } from '../../types/battle'
+import { useAtom } from 'jotai'
+import { playerStatusAtom } from '../../store/player'
+import { BattleCommandMenu } from '../../components/Battle/BattleCommandMenu'
+import { SpellSelect } from '../../components/Battle/SpellSelect'
+import { ItemSelect } from '../../components/Battle/ItemSelect'
+import { useBattleLogic } from './hooks'
 import { getImagePath } from '../../utils/imagePath'
 import { motion } from 'framer-motion'
-import { useBattleLogic } from './hooks'
 
 interface BattleViewProps {
-  enemy: Enemy;
-  onBattleEnd: (result: BattleResult) => void;
-  playerHp: number;
-  setPlayerHp: (hp: number) => void;
+  enemy: Enemy
+  onBattleEnd: (result: BattleResult) => void
 }
 
-export const BattleView: React.FC<BattleViewProps> = ({ enemy, onBattleEnd, playerHp, setPlayerHp }) => {
+export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
+  const [playerStatus] = useAtom(playerStatusAtom)
+  const [playerHp, setPlayerHp] = useState(playerStatus.hp)
+
   const {
     enemyHp,
     battleState,
     showEndMessage,
     isEnemyDamaged,
-    isEscaping,
-    isEnemyAppeared,
     isPlayerDamaged,
-    handlePlayerAttack,
-    handleEscape,
-    playerStatus,
+    showSpellSelect,
+    showItemSelect,
+    handleCommandSelect,
+    handleSpellSelect,
+    setShowSpellSelect,
+    setShowItemSelect,
+    startAttackAnimation,
   } = useBattleLogic(enemy, onBattleEnd, playerHp, setPlayerHp)
 
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (showEndMessage && e.key === 'Enter') {
-      onBattleEnd({
-        isVictory: battleState.isVictory,
-        isEscaped: battleState.message === '逃げ出した！',
-        exp: battleState.isVictory ? enemy.exp : 0,
-        gold: battleState.isVictory ? enemy.gold : 0,
-      })
+  const handleSpellSelectWithClose = (spell: Spell) => {
+    handleSpellSelect(spell)
+    setShowSpellSelect(false)
+    if (spell.effect.type === 'damage') {
+      startAttackAnimation()
     }
-  }, [showEndMessage, battleState.isVictory, battleState.message, enemy.exp, enemy.gold, onBattleEnd])
+  }
 
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown)
+  const handleItemSelectWithClose = (itemId?: string) => {
+    setShowItemSelect(false)
+    if (itemId && itemId === 'potion') {
+      startAttackAnimation()
+    }
+  }
 
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [handleKeyDown])
+  const isCommandMenuVisible = !showEndMessage && battleState.isPlayerTurn && !battleState.isAttacking
 
   return (
     <div className="fixed inset-0 flex flex-col bg-gray-900 text-white">
@@ -58,6 +66,7 @@ export const BattleView: React.FC<BattleViewProps> = ({ enemy, onBattleEnd, play
         } : {}}
         initial={false}
       />
+
       {/* ステータス表示 */}
       <div className="flex justify-between p-4">
         <div>
@@ -69,16 +78,17 @@ export const BattleView: React.FC<BattleViewProps> = ({ enemy, onBattleEnd, play
             />
           </div>
           <p>HP: {playerHp}/{playerStatus.maxHp}</p>
+          <p>MP: {playerStatus.mp}/{playerStatus.maxMp}</p>
         </div>
         <div>
           <p>{enemy.name} Lv.{enemy.level}</p>
           <div className="h-4 sm:w-64 w-36 bg-gray-700 rounded">
             <div
               className="h-full bg-red-500 rounded"
-              style={{ width: `${(enemyHp / enemy.maxHp) * 100}%` }}
+              style={{ width: `${(enemyHp / enemy.hp) * 100}%` }}
             />
           </div>
-          <p>HP: {enemyHp}/{enemy.maxHp}</p>
+          <p>HP: {enemyHp}/{enemy.hp}</p>
         </div>
       </div>
 
@@ -124,33 +134,43 @@ export const BattleView: React.FC<BattleViewProps> = ({ enemy, onBattleEnd, play
         />
       </div>
 
-      {/* メッセージウィンドウ */}
-      <div className="h-32 bg-black/80 p-4">
-        <p className="text-xl">{battleState.message}</p>
-        {showEndMessage && (
-          <p className="text-lg mt-2 text-yellow-400 animate-blink">
-            {battleState.isVictory
-              ? `経験値${enemy.exp}と${enemy.gold}ゴールドを獲得！`
-              : ''}
-          </p>
-        )}
-      </div>
-
       {/* コマンド選択 */}
-      <div className={`grid grid-cols-2 gap-4 p-4 ${(battleState.isPlayerTurn && !battleState.isAttacking && !showEndMessage && !isEscaping && !isEnemyAppeared) ? '' : 'invisible'}`}>
-        <button
-          onClick={handlePlayerAttack}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        >
-          たたかう
-        </button>
-        <button
-          onClick={handleEscape}
-          className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-        >
-          にげる
-        </button>
-      </div>
+      {isCommandMenuVisible && (
+        <div className="p-4">
+          <BattleCommandMenu
+            phase={battleState.phase}
+            onCommandSelect={handleCommandSelect}
+          />
+        </div>
+      )}
+
+      {/* 呪文選択 */}
+      {showSpellSelect && (
+        <SpellSelect
+          spells={playerStatus.spells}
+          onSpellSelect={handleSpellSelectWithClose}
+          onClose={() => setShowSpellSelect(false)}
+        />
+      )}
+
+      {/* アイテム選択 */}
+      {showItemSelect && (
+        <ItemSelect onClose={handleItemSelectWithClose} />
+      )}
+
+      {/* バトルメッセージ */}
+      {battleState.message && !isCommandMenuVisible && (
+        <div className="h-32 bg-black/80 p-4">
+          <p className="text-xl">{battleState.message}</p>
+          {showEndMessage && (
+            <p className="text-lg mt-2 text-yellow-400 animate-blink">
+              {battleState.isVictory
+                ? `経験値${enemy.exp}と${enemy.gold}ゴールドを獲得！`
+                : ''}
+            </p>
+          )}
+        </div>
+      )}
     </div>
   )
 } 
