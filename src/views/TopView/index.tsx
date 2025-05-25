@@ -7,6 +7,7 @@ import { getImagePath } from '../../utils/imagePath'
 import { enemies } from '../../data/enemies'
 import { GameView } from '../GameView'
 import { useMount } from 'react-use'
+import { objectImages } from '~/data/objects'
 
 export const TopView = () => {
   const resetPlayerStatus = useSetAtom(resetPlayerStatusAtom)
@@ -33,6 +34,11 @@ export const TopView = () => {
       steps.forEach(step => {
         img.src = getImagePath(`/assets/characters/hero_${direction}_${step}.PNG`)
       })
+    })
+    //オブジェクト
+    Object.values(objectImages).forEach(object => {
+      const img = new Image()
+      img.src = getImagePath(object.image)
     })
     //敵のやられた姿
     enemies.forEach(enemy => {
