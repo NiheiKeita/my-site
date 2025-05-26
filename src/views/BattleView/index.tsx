@@ -138,8 +138,11 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
       {isCommandMenuVisible && (
         <div className="p-4">
           <BattleCommandMenu
+            playerStatus={playerStatus}
             phase={battleState.phase}
             onCommandSelect={handleCommandSelect}
+            onSpellSelect={handleSpellSelectWithClose}
+            onItemSelect={handleItemSelectWithClose}
           />
         </div>
       )}

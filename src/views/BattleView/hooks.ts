@@ -42,13 +42,6 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
       })
     }, 2000)
   }, [enemy, onBattleEnd])
-  const startAttackAnimation = useCallback(() => {
-    setBattleState(prev => ({
-      ...prev,
-      isAttacking: true,
-      isPlayerTurn: false,
-    }))
-  }, [])
 
   const handleDefeat = useCallback(() => {
     setBattleState(prev => ({
@@ -66,6 +59,14 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
       })
     }, 2000)
   }, [onBattleEnd])
+
+  const startAttackAnimation = useCallback(() => {
+    setBattleState(prev => ({
+      ...prev,
+      isAttacking: true,
+      isPlayerTurn: false,
+    }))
+  }, [])
 
   const handleEnemyAttack = useCallback(() => {
     const damage = Math.max(1, enemy.attack - playerStatus.defense)
@@ -97,6 +98,24 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
     }, ANIMATION_DURATION)
   }, [enemy.attack, enemy.name, playerStatus.defense, setPlayerHp, playerHp, handleDefeat])
 
+  const applyDamageToEnemy = useCallback((damage: number) => {
+    setEnemyHp(prev => Math.max(0, prev - damage))
+    setIsEnemyDamaged(true)
+    setBattleState(prev => ({
+      ...prev,
+      message: `${enemy.name}に${damage}のダメージ！`,
+    }))
+
+    setTimeout(() => {
+      setIsEnemyDamaged(false)
+      if (enemyHp <= damage) {
+        handleVictory()
+      } else {
+        handleEnemyAttack()
+      }
+    }, ANIMATION_DURATION)
+  }, [enemy.name, enemyHp, handleVictory, handleEnemyAttack])
+
   const handlePlayerAttack = useCallback(() => {
     const damage = Math.max(1, playerStatus.attack - enemy.defense)
     setBattleState(prev => ({
@@ -104,27 +123,10 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
       message: `攻撃！`,
     }))
 
-    // 剣のモーションが終わってからダメージを与える
     setTimeout(() => {
-      setEnemyHp(prev => Math.max(0, prev - damage))
-      setIsEnemyDamaged(true)
-      setBattleState(prev => ({
-        ...prev,
-        message: `${enemy.name}に${damage}のダメージ！`,
-      }))
-
-      setTimeout(() => {
-        setIsEnemyDamaged(false)
-        if (enemyHp <= damage) {
-          handleVictory()
-        } else {
-          handleEnemyAttack()
-        }
-      }, ANIMATION_DURATION)
+      applyDamageToEnemy(damage)
     }, SWORD_ANIMATION_DURATION)
-  }, [playerStatus.attack, enemy.defense, enemy.name, enemyHp, handleVictory, handleEnemyAttack, setBattleState])
-
-
+  }, [playerStatus.attack, enemy.defense, applyDamageToEnemy])
 
   const handleCommandSelect = useCallback((command: BattleCommand) => {
     switch (command) {
@@ -135,27 +137,33 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
         }))
         break
       case 'run':
-        if (Math.random() < ESCAPE_CHANCE) {
-          setBattleState(prev => ({
-            ...prev,
-            message: '逃げ出した！',
-          }))
-          setShowEndMessage(true)
-          setTimeout(() => {
-            onBattleEnd({
-              isVictory: false,
-              isEscaped: true,
-              exp: 0,
-              gold: 0,
-            })
-          }, 1000)
-        } else {
-          setBattleState(prev => ({
-            ...prev,
-            message: '逃げ出せなかった！',
-          }))
-          handleEnemyAttack()
-        }
+        setShowEndMessage(true)
+        setBattleState(prev => ({
+          ...prev,
+          message: '逃げ出そうとしている...',
+        }))
+        setTimeout(() => {
+          if (Math.random() < ESCAPE_CHANCE) {
+            setBattleState(prev => ({
+              ...prev,
+              message: '逃げ出した！',
+            }))
+            setTimeout(() => {
+              onBattleEnd({
+                isVictory: false,
+                isEscaped: true,
+                exp: 0,
+                gold: 0,
+              })
+            }, 1000)
+          } else {
+            setBattleState(prev => ({
+              ...prev,
+              message: '逃げ出せなかった！',
+            }))
+            handleEnemyAttack()
+          }
+        }, 1000)
         break
       case 'attack':
         startAttackAnimation()
@@ -194,23 +202,8 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
         message: `${spell.name}！`,
       }))
 
-      // 剣のモーションが終わってからダメージを与える
       setTimeout(() => {
-        setEnemyHp(prev => Math.max(0, prev - damage))
-        setIsEnemyDamaged(true)
-        setBattleState(prev => ({
-          ...prev,
-          message: `${enemy.name}に${damage}のダメージ！`,
-        }))
-
-        setTimeout(() => {
-          setIsEnemyDamaged(false)
-          if (enemyHp <= damage) {
-            handleVictory()
-          } else {
-            handleEnemyAttack()
-          }
-        }, ANIMATION_DURATION)
+        applyDamageToEnemy(damage)
       }, SWORD_ANIMATION_DURATION)
     } else if (spell.effect.type === 'heal') {
       const heal = spell.effect.value
@@ -221,7 +214,7 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
       }))
       handleEnemyAttack()
     }
-  }, [enemy.name, enemyHp, handleEnemyAttack, handleVictory, playerHp, playerStatus.maxHp, playerStatus.mp, setPlayerHp, startAttackAnimation])
+  }, [handleEnemyAttack, playerHp, playerStatus.maxHp, playerStatus.mp, setPlayerHp, startAttackAnimation, applyDamageToEnemy])
 
   return {
     enemyHp,

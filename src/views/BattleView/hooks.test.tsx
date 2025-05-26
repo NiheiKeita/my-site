@@ -111,6 +111,6 @@ describe('useBattleLogic', () => {
     })
 
     // 逃げるコマンドはランダムな結果を返すため、メッセージの確認のみ行う
-    expect(result.current.battleState.message).toBe('逃げ出した！')
+    expect(result.current.battleState.message).toBe('逃げ出そうとしている...')
   })
 }) 
