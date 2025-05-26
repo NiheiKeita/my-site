@@ -21,6 +21,7 @@ describe('useItemAtom', () => {
       gold: 0,
       attack: 10,
       defense: 5,
+      spells: [],
     })
 
     // アイテムを使用
@@ -56,6 +57,7 @@ describe('useItemAtom', () => {
       gold: 0,
       attack: 10,
       defense: 5,
+      spells: [],
     })
 
     // アイテムを使用
@@ -89,6 +91,7 @@ describe('useItemAtom', () => {
       gold: 0,
       attack: 10,
       defense: 5,
+      spells: [],
     })
 
     // 存在しないアイテムを使用
@@ -110,6 +113,7 @@ describe('useItemAtom', () => {
       gold: 0,
       attack: 10,
       defense: 5,
+      spells: [],
     })
 
     // メッセージが表示されていないことを確認

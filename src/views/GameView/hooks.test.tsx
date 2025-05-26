@@ -39,6 +39,7 @@ describe('useGameLogic', () => {
         defense: 8,
         mp: 0,
         maxMp: 0,
+        spells: []
       })
     })
 
@@ -70,6 +71,7 @@ describe('useGameLogic', () => {
         defense: 5,
         mp: 0,
         maxMp: 0,
+        spells: []
       })
     })
 
@@ -93,6 +95,7 @@ describe('useGameLogic', () => {
         defense: 8,
         mp: 0,
         maxMp: 0,
+        spells: []
       })
     })
 
