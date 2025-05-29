@@ -28,6 +28,7 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
     isPlayerDamaged,
     showSpellSelect,
     showItemSelect,
+    showCommandMenu,
     handleCommandSelect,
     handleSpellSelect,
     setShowSpellSelect,
@@ -50,7 +51,7 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
     }
   }
 
-  const isCommandMenuVisible = !showEndMessage && battleState.isPlayerTurn && !battleState.isAttacking
+  const isCommandMenuVisible = showCommandMenu && !showEndMessage && battleState.isPlayerTurn && !battleState.isAttacking
 
   return (
     <div className="fixed inset-0 flex flex-col bg-gray-900 text-white">

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { Enemy, BattleResult } from '../../types/enemy'
 import { useAtom } from 'jotai'
 import { playerStatusAtom } from '../../store/player'
@@ -16,7 +16,7 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
     isPlayerTurn: true,
     isAttacking: false,
     isVictory: false,
-    message: '',
+    message: `${enemy.name}が現れた！`,
     phase: 'initial',
     isBattleEnd: false,
   })
@@ -25,6 +25,16 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
   const [isPlayerDamaged, setIsPlayerDamaged] = useState(false)
   const [showSpellSelect, setShowSpellSelect] = useState(false)
   const [showItemSelect, setShowItemSelect] = useState(false)
+  const [showCommandMenu, setShowCommandMenu] = useState(false)
+
+  // バトル開始時のメッセージ表示後にコマンドメニューを表示
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowCommandMenu(true)
+    }, 1000)
+
+    return () => clearTimeout(timer)
+  }, [])
 
   const handleVictory = useCallback(() => {
     setBattleState(prev => ({
@@ -224,6 +234,7 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
     isPlayerDamaged,
     showSpellSelect,
     showItemSelect,
+    showCommandMenu,
     handleCommandSelect,
     handleSpellSelect,
     setShowSpellSelect,
