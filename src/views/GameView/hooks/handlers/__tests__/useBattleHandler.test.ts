@@ -101,7 +101,7 @@ describe('useBattleHandler', () => {
       const { result } = renderHook(() => useBattleHandler(mockState, mockDispatch))
 
       act(() => {
-        result.current.handleBattleEnd({ isVictory: true, isEscaped: false, exp: 100, gold: 50 })
+        result.current.handleBattleEnd({ isVictory: true, isEscaped: false, exp: 100, gold: 50, hp: 100, mp: 100 })
       })
 
       expect(mockUpdatePlayerStatus).toHaveBeenCalledWith({
@@ -118,7 +118,7 @@ describe('useBattleHandler', () => {
       const { result } = renderHook(() => useBattleHandler(mockState, mockDispatch))
 
       act(() => {
-        result.current.handleBattleEnd({ isVictory: false, isEscaped: false, exp: 0, gold: 0 })
+        result.current.handleBattleEnd({ isVictory: false, isEscaped: false, exp: 0, gold: 0, hp: 100, mp: 100 })
       })
 
       expect(mockSetPlayerStatus).toHaveBeenCalledWith(expect.any(Function))
@@ -143,7 +143,7 @@ describe('useBattleHandler', () => {
       const { result } = renderHook(() => useBattleHandler(mockState, mockDispatch))
 
       act(() => {
-        result.current.handleBattleEnd({ isVictory: false, isEscaped: true, exp: 0, gold: 0 })
+        result.current.handleBattleEnd({ isVictory: false, isEscaped: true, exp: 0, gold: 0, hp: 100, mp: 100 })
       })
 
       expect(mockSetPlayerStatus).not.toHaveBeenCalled()
