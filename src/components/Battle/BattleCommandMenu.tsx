@@ -87,6 +87,7 @@ export const BattleCommandMenu = ({
 
       {/* 呪文選択 */}
       {showSpellSelect && (
+        <SpellSelect
           spells={playerStatus.spells}
           onSpellSelect={handleSpellSelectWithClose}
           onClose={() => setShowSpellSelect(false)}

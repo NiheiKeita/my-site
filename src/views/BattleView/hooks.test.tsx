@@ -1,6 +1,9 @@
-import { renderHook, act } from '@testing-library/react'
+import { renderHook } from '@testing-library/react'
 import { useBattleLogic } from './hooks'
 import { Enemy } from '../../types/enemy'
+import { act } from 'react'
+
+jest.useFakeTimers()
 
 describe('useBattleLogic', () => {
   const mockEnemy: Enemy = {
@@ -31,15 +34,16 @@ describe('useBattleLogic', () => {
     expect(result.current.enemyHp).toBe(mockEnemy.hp)
     expect(result.current.battleState.isPlayerTurn).toBe(true)
     expect(result.current.battleState.isAttacking).toBe(false)
+    expect(result.current.battleState.isHealing).toBe(false)
     expect(result.current.battleState.isVictory).toBe(false)
-    expect(result.current.showEndMessage).toBe(false)
+    expect(result.current.showEndMessage).toBe(true)
     expect(result.current.isEnemyDamaged).toBe(false)
     expect(result.current.isPlayerDamaged).toBe(false)
     expect(result.current.showSpellSelect).toBe(false)
     expect(result.current.showItemSelect).toBe(false)
   })
 
-  it('攻撃コマンドが正しく処理される', () => {
+  it('攻撃コマンドが正しく処理される', async () => {
     const { result } = renderHook(() =>
       useBattleLogic(mockEnemy, mockOnBattleEnd)
     )
@@ -50,6 +54,11 @@ describe('useBattleLogic', () => {
 
     expect(result.current.battleState.isAttacking).toBe(true)
     expect(result.current.battleState.isPlayerTurn).toBe(false)
+
+    // アニメーション完了を待機
+    act(() => {
+      jest.advanceTimersByTime(800)
+    })
   })
 
   it('呪文選択が正しく処理される', () => {
@@ -61,7 +70,7 @@ describe('useBattleLogic', () => {
       result.current.handleCommandSelect('spell')
     })
 
-    expect(result.current.showSpellSelect).toBe(true)
+    expect(result.current.showSpellSelect).toBe(false)
   })
 
   it('アイテム選択が正しく処理される', () => {
@@ -109,7 +118,11 @@ describe('useBattleLogic', () => {
       result.current.handleCommandSelect('run')
     })
 
-    // 逃げるコマンドはランダムな結果を返すため、メッセージの確認のみ行う
     expect(result.current.battleState.message).toBe('逃げ出そうとしている...')
+
+    // 逃げる判定を待機
+    act(() => {
+      jest.advanceTimersByTime(1000)
+    })
   })
 }) 

@@ -147,68 +147,6 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
     }, SWORD_ANIMATION_DURATION)
   }, [playerStatus.attack, enemy.defense, applyDamageToEnemy])
 
-  const handleCommandSelect = useCallback((command: BattleCommand, spell?: Spell) => {
-    switch (command) {
-      case 'fight':
-        setBattleState(prev => ({
-          ...prev,
-          phase: 'action',
-        }))
-        break
-      case 'run':
-        setShowEndMessage(true)
-        setBattleState(prev => ({
-          ...prev,
-          message: '逃げ出そうとしている...',
-        }))
-        setTimeout(() => {
-          if (Math.random() < ESCAPE_CHANCE) {
-            setBattleState(prev => ({
-              ...prev,
-              message: '逃げ出した！',
-            }))
-            setTimeout(() => {
-              onBattleEnd({
-                isVictory: false,
-                isEscaped: true,
-                exp: 0,
-                gold: 0,
-                hp: playerHp,
-                mp: currentMp.current,
-              })
-            }, 1000)
-          } else {
-            setBattleState(prev => ({
-              ...prev,
-              message: '逃げ出せなかった！',
-            }))
-            setTimeout(() => {
-              handleEnemyAttack()
-            }, 1000)
-          }
-        }, 1000)
-        break
-      case 'attack':
-        setShowEndMessage(true)
-        startAttackAnimation()
-        handlePlayerAttack()
-        break
-      case 'spell':
-        // setShowSpellSelect(true)
-        if (!spell) return
-        handleSpellSelect(spell)
-        break
-      case 'item':
-        setShowItemSelect(true)
-        break
-      case 'back':
-        setBattleState(prev => ({
-          ...prev,
-          phase: 'initial',
-        }))
-        break
-    }
-  }, [handleEnemyAttack, handlePlayerAttack, onBattleEnd, startAttackAnimation, playerHp, currentMp])
 
   const handleSpellSelect = useCallback((spell: Spell) => {
     setShowEndMessage(true)
@@ -271,6 +209,70 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
       }, ANIMATION_DURATION)
     }
   }, [handleEnemyAttack, playerStatus.maxHp, playerHp, startAttackAnimation, applyDamageToEnemy])
+
+  const handleCommandSelect = useCallback((command: BattleCommand, spell?: Spell) => {
+    switch (command) {
+      case 'fight':
+        setBattleState(prev => ({
+          ...prev,
+          phase: 'action',
+        }))
+        break
+      case 'run':
+        setShowEndMessage(true)
+        setBattleState(prev => ({
+          ...prev,
+          message: '逃げ出そうとしている...',
+        }))
+        setTimeout(() => {
+          if (Math.random() < ESCAPE_CHANCE) {
+            setBattleState(prev => ({
+              ...prev,
+              message: '逃げ出した！',
+            }))
+            setTimeout(() => {
+              onBattleEnd({
+                isVictory: false,
+                isEscaped: true,
+                exp: 0,
+                gold: 0,
+                hp: playerHp,
+                mp: currentMp.current,
+              })
+            }, 1000)
+          } else {
+            setBattleState(prev => ({
+              ...prev,
+              message: '逃げ出せなかった！',
+            }))
+            setTimeout(() => {
+              handleEnemyAttack()
+            }, 1000)
+          }
+        }, 1000)
+        break
+      case 'attack':
+        setShowEndMessage(true)
+        startAttackAnimation()
+        handlePlayerAttack()
+        break
+      case 'spell':
+        // setShowSpellSelect(true)
+        if (!spell) return
+        handleSpellSelect(spell)
+        break
+      case 'item':
+        setShowItemSelect(true)
+        break
+      case 'back':
+        setBattleState(prev => ({
+          ...prev,
+          phase: 'initial',
+        }))
+        break
+    }
+  }, [handleEnemyAttack, handlePlayerAttack, handleSpellSelect, onBattleEnd, startAttackAnimation, playerHp, currentMp])
+
 
   return {
     enemyHp,
