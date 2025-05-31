@@ -1,66 +1,102 @@
 import React from 'react'
-import { PlayerStatus } from '../../types/player'
 import { Spell } from '../../types/battle'
+import { ItemSelect } from './ItemSelect'
+import { SpellSelect } from './SpellSelect'
+import { PlayerStatus } from '~/store/player'
 
 type BattleCommand = 'attack' | 'spell' | 'item' | 'run' | 'back' | 'fight'
 
 interface BattleCommandMenuProps {
   playerStatus: PlayerStatus
-  onCommandSelect: (command: BattleCommand) => void
-  onSpellSelect: (spell: Spell) => void
-  onItemSelect: (itemId?: string) => void
   phase: 'initial' | 'action'
+  onCommandSelect: (command: BattleCommand, spell?: Spell, itemId?: string) => void
+  showSpellSelect: boolean
+  showItemSelect: boolean
+  setShowSpellSelect: (show: boolean) => void
+  setShowItemSelect: (show: boolean) => void
 }
 
-export const BattleCommandMenu: React.FC<BattleCommandMenuProps> = ({
+export const BattleCommandMenu = ({
+  playerStatus,
+  phase,
   onCommandSelect,
-  phase
-}) => {
-  if (phase === 'initial') {
-    return (
-      <div className="grid grid-cols-2 gap-4">
-        <button
-          className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded"
-          onClick={() => onCommandSelect('fight')}
-        >
-          戦う
-        </button>
-        <button
-          className="bg-red-600 hover:bg-red-700 text-white p-4 rounded"
-          onClick={() => onCommandSelect('run')}
-        >
-          逃げる
-        </button>
-      </div>
-    )
+  showSpellSelect,
+  showItemSelect,
+  setShowSpellSelect,
+  setShowItemSelect,
+}: BattleCommandMenuProps) => {
+  const handleSpellSelectWithClose = (spell: Spell) => {
+    onCommandSelect('spell', spell)
+    setShowSpellSelect(false)
+  }
+
+  const handleItemSelectWithClose = (itemId?: string) => {
+    onCommandSelect('item', undefined, itemId)
+    setShowItemSelect(false)
   }
 
   return (
-    <div className="grid grid-cols-2 gap-4">
-      <button
-        className="bg-red-600 hover:bg-red-700 text-white p-4 rounded"
-        onClick={() => onCommandSelect('attack')}
-      >
-        攻撃
-      </button>
-      <button
-        className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded"
-        onClick={() => onCommandSelect('spell')}
-      >
-        呪文
-      </button>
-      <button
-        className="bg-green-600 hover:bg-green-700 text-white p-4 rounded"
-        onClick={() => onCommandSelect('item')}
-      >
-        道具
-      </button>
-      <button
-        className="bg-gray-600 hover:bg-gray-700 text-white p-4 rounded"
-        onClick={() => onCommandSelect('back')}
-      >
-        戻る
-      </button>
+    <div className="fixed bottom-0 inset-x-0 bg-black bg-opacity-80 p-4">
+      {phase === 'initial' ? (
+        <div className="flex justify-center space-x-4">
+          <button
+            onClick={() => onCommandSelect('fight')}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded"
+          >
+            たたかう
+          </button>
+          <button
+            onClick={() => onCommandSelect('run')}
+            className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded"
+          >
+            にげる
+          </button>
+        </div>
+      ) : (
+        <div className="flex justify-center space-x-4">
+          <button
+            onClick={() => onCommandSelect('attack')}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+          >
+            攻撃
+          </button>
+          <button
+            onClick={() => setShowSpellSelect(true)}
+            disabled={!playerStatus.spells?.length}
+            className={`px-4 py-2 rounded ${playerStatus.spells?.length
+              ? 'bg-green-500 hover:bg-green-600 text-white'
+              : 'bg-gray-500 text-gray-300 cursor-not-allowed'
+              }`}
+          >
+            呪文
+          </button>
+          <button
+            onClick={() => setShowItemSelect(true)}
+            className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded"
+          >
+            道具
+          </button>
+          <button
+            onClick={() => onCommandSelect('back')}
+            className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+          >
+            戻る
+          </button>
+        </div>
+      )}
+
+      {/* 呪文選択 */}
+      {showSpellSelect && (
+          spells={playerStatus.spells}
+          onSpellSelect={handleSpellSelectWithClose}
+          onClose={() => setShowSpellSelect(false)}
+        />
+      )}
+
+      {/* アイテム選択 */}
+      {showItemSelect && (
+        <ItemSelect onClose={handleItemSelectWithClose} />
+      )}
     </div>
   )
 } 

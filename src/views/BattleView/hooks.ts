@@ -24,17 +24,16 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
     phase: 'initial',
     isBattleEnd: false,
   })
-  const [showEndMessage, setShowEndMessage] = useState(false)
+  const [showEndMessage, setShowEndMessage] = useState(true)
   const [isEnemyDamaged, setIsEnemyDamaged] = useState(false)
   const [isPlayerDamaged, setIsPlayerDamaged] = useState(false)
   const [showSpellSelect, setShowSpellSelect] = useState(false)
   const [showItemSelect, setShowItemSelect] = useState(false)
-  const [showCommandMenu, setShowCommandMenu] = useState(false)
 
   // バトル開始時のメッセージ表示後にコマンドメニューを表示
   useEffect(() => {
     const timer = setTimeout(() => {
-      setShowCommandMenu(true)
+      setShowEndMessage(false)
     }, 1000)
 
     return () => clearTimeout(timer)
@@ -57,7 +56,7 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
         mp: currentMp.current,
       })
     }, 2000)
-  }, [enemy, onBattleEnd, playerHp, playerMp])
+  }, [enemy, onBattleEnd, playerHp, currentMp])
 
   const handleDefeat = useCallback(() => {
     setBattleState(prev => ({
@@ -148,7 +147,7 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
     }, SWORD_ANIMATION_DURATION)
   }, [playerStatus.attack, enemy.defense, applyDamageToEnemy])
 
-  const handleCommandSelect = useCallback((command: BattleCommand) => {
+  const handleCommandSelect = useCallback((command: BattleCommand, spell?: Spell) => {
     switch (command) {
       case 'fight':
         setBattleState(prev => ({
@@ -190,11 +189,14 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
         }, 1000)
         break
       case 'attack':
+        setShowEndMessage(true)
         startAttackAnimation()
         handlePlayerAttack()
         break
       case 'spell':
-        setShowSpellSelect(true)
+        // setShowSpellSelect(true)
+        if (!spell) return
+        handleSpellSelect(spell)
         break
       case 'item':
         setShowItemSelect(true)
@@ -209,6 +211,7 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
   }, [handleEnemyAttack, handlePlayerAttack, onBattleEnd, startAttackAnimation, playerHp, currentMp])
 
   const handleSpellSelect = useCallback((spell: Spell) => {
+    setShowEndMessage(true)
     if (currentMp.current < spell.mp) {
       setBattleState(prev => ({
         ...prev,
@@ -218,6 +221,7 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
         isPlayerTurn: true,
       }))
       setTimeout(() => {
+        setShowEndMessage(false)
         setBattleState(prev => ({
           ...prev,
           message: '',
@@ -276,12 +280,9 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
     isPlayerDamaged,
     showSpellSelect,
     showItemSelect,
-    showCommandMenu,
     handleCommandSelect,
-    handleSpellSelect,
     setShowSpellSelect,
     setShowItemSelect,
-    startAttackAnimation,
     playerHp,
     playerMp
   }
