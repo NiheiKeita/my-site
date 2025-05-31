@@ -67,7 +67,7 @@ export const firstObjects: GameObjectData[] = [
       <>
         <p className="text-lg mb-2">💫 神秘の泉 💫</p>
         <p>神秘的な力が宿る泉だ。</p>
-        <p className="text-sm mt-2">HPが全回復するかもしれない...</p>
+        <p className="text-sm mt-2">HP・MPが全回復する気がする...</p>
       </>,
       'text-blue-300'
     )

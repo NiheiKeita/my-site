@@ -52,9 +52,9 @@ export const useMovementHandler = (
     const fountain = currentMap.gameObjects.find(
       (obj) => obj.position.x === position.x && obj.position.y === position.y && obj.type === 'fountain'
     )
-    if (fountain && playerStatus.hp < playerStatus.maxHp) {
-      setPlayerStatus(prev => ({ ...prev, hp: prev.maxHp }))
-      dispatch({ type: 'SHOW_POPUP', payload: 'HPが全回復した！' })
+    if (fountain && (playerStatus.hp < playerStatus.maxHp || playerStatus.mp < playerStatus.maxMp)) {
+      setPlayerStatus(prev => ({ ...prev, hp: prev.maxHp, mp: prev.maxMp }))
+      dispatch({ type: 'SHOW_POPUP', payload: 'HP・MPが全回復した！' })
     }
   }, [currentMap, playerStatus, setPlayerStatus, dispatch])
 

@@ -33,6 +33,8 @@ export const useBattleHandler = (
       updatePlayerStatus({
         exp: playerStatus.exp + result.exp,
         gold: playerStatus.gold + result.gold,
+        hp: result.hp,
+        mp: result.mp,
       })
     }
     // 負けた時の処理
@@ -43,6 +45,13 @@ export const useBattleHandler = (
       })
       setCurrentMap(maps[0])
       setPlayerPosition({ x: 4, y: 4 })
+    }
+    // 逃げた時
+    if (result.isEscaped) {
+      updatePlayerStatus({
+        hp: result.hp,
+        mp: result.mp,
+      })
     }
     dispatch({ type: 'SET_BATTLE_STATE', payload: { isInBattle: false, enemy: null } })
   }, [updatePlayerStatus, playerStatus.exp, playerStatus.gold, setPlayerStatus, setCurrentMap, setPlayerPosition, dispatch])

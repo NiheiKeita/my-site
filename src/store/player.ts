@@ -56,6 +56,7 @@ export const updatePlayerStatusAtom = atom(
         newStatus.level = newLevel
         newStatus.maxHp += LEVEL_UP_STATS.maxHp * levelDiff
         newStatus.hp = newStatus.maxHp // HPを全回復
+        newStatus.mp = newStatus.maxMp // MPを全回復
         newStatus.attack += LEVEL_UP_STATS.attack * levelDiff
         newStatus.defense += LEVEL_UP_STATS.defense * levelDiff
       }
