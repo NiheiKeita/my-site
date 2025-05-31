@@ -41,6 +41,7 @@ export const GameView: React.FC = () => {
   return (
     <div className="relative flex size-full items-center justify-center">
       <div className="fixed inset-0 bg-gray-900" />
+      <div className="fixed top-1 left-1 text-white text-md font-bold">地下{currentMap.name}</div>
 
       <div className="fixed inset-0 flex items-start justify-center pt-8">
         <div className="relative">
