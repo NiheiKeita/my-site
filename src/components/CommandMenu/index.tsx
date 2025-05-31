@@ -60,6 +60,7 @@ export const CommandMenu = ({ onClose }: CommandMenuProps) => {
             />
           </div>
           <p>HP: {playerStatus.hp}/{playerStatus.maxHp}</p>
+          <p>MP: {playerStatus.mp}/{playerStatus.maxMp}</p>
           <p>EXP: {playerStatus.exp}</p>
           <p>GOLD: {playerStatus.gold}</p>
         </div>
