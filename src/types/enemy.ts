@@ -17,6 +17,8 @@ export interface BattleResult {
   isEscaped: boolean
   exp: number
   gold: number
+  hp: number
+  mp: number
 }
 
 export interface BattleState {

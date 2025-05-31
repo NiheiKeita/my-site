@@ -18,7 +18,6 @@ describe('useBattleLogic', () => {
   }
 
   const mockOnBattleEnd = jest.fn()
-  const mockSetPlayerHp = jest.fn()
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -26,7 +25,7 @@ describe('useBattleLogic', () => {
 
   it('初期状態が正しく設定される', () => {
     const { result } = renderHook(() =>
-      useBattleLogic(mockEnemy, mockOnBattleEnd, 100, mockSetPlayerHp)
+      useBattleLogic(mockEnemy, mockOnBattleEnd)
     )
 
     expect(result.current.enemyHp).toBe(mockEnemy.hp)
@@ -42,7 +41,7 @@ describe('useBattleLogic', () => {
 
   it('攻撃コマンドが正しく処理される', () => {
     const { result } = renderHook(() =>
-      useBattleLogic(mockEnemy, mockOnBattleEnd, 100, mockSetPlayerHp)
+      useBattleLogic(mockEnemy, mockOnBattleEnd)
     )
 
     act(() => {
@@ -55,7 +54,7 @@ describe('useBattleLogic', () => {
 
   it('呪文選択が正しく処理される', () => {
     const { result } = renderHook(() =>
-      useBattleLogic(mockEnemy, mockOnBattleEnd, 100, mockSetPlayerHp)
+      useBattleLogic(mockEnemy, mockOnBattleEnd)
     )
 
     act(() => {
@@ -67,7 +66,7 @@ describe('useBattleLogic', () => {
 
   it('アイテム選択が正しく処理される', () => {
     const { result } = renderHook(() =>
-      useBattleLogic(mockEnemy, mockOnBattleEnd, 100, mockSetPlayerHp)
+      useBattleLogic(mockEnemy, mockOnBattleEnd)
     )
 
     act(() => {
@@ -79,7 +78,7 @@ describe('useBattleLogic', () => {
 
   it('戻るコマンドが正しく処理される', () => {
     const { result } = renderHook(() =>
-      useBattleLogic(mockEnemy, mockOnBattleEnd, 100, mockSetPlayerHp)
+      useBattleLogic(mockEnemy, mockOnBattleEnd)
     )
 
     act(() => {
@@ -91,7 +90,7 @@ describe('useBattleLogic', () => {
 
   it('戦うコマンドが正しく処理される', () => {
     const { result } = renderHook(() =>
-      useBattleLogic(mockEnemy, mockOnBattleEnd, 100, mockSetPlayerHp)
+      useBattleLogic(mockEnemy, mockOnBattleEnd)
     )
 
     act(() => {
@@ -103,7 +102,7 @@ describe('useBattleLogic', () => {
 
   it('逃げるコマンドが正しく処理される', () => {
     const { result } = renderHook(() =>
-      useBattleLogic(mockEnemy, mockOnBattleEnd, 100, mockSetPlayerHp)
+      useBattleLogic(mockEnemy, mockOnBattleEnd)
     )
 
     act(() => {

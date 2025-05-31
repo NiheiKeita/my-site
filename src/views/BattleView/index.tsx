@@ -33,7 +33,8 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
     setShowSpellSelect,
     setShowItemSelect,
     startAttackAnimation,
-    playerHp
+    playerHp,
+    playerMp
   } = useBattleLogic(enemy, onBattleEnd)
 
   const handleSpellSelectWithClose = (spell: Spell) => {
@@ -79,7 +80,7 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
             />
           </div>
           <p>HP: {playerHp}/{playerStatus.maxHp}</p>
-          <p>MP: {playerStatus.mp}/{playerStatus.maxMp}</p>
+          <p>MP: {playerMp}/{playerStatus.maxMp}</p>
         </div>
         <div>
           <p>{enemy.name} Lv.{enemy.level}</p>
