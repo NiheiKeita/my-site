@@ -1,11 +1,11 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { Enemy, BattleResult } from '../../types/enemy'
 import { useAtom } from 'jotai'
 import { playerStatusAtom } from '../../store/player'
 import { BattleCommand, BattleState, Spell } from '../../types/battle'
 
 // 定数
-const ESCAPE_CHANCE = 0.1
+const ESCAPE_CHANCE = 0.4
 const ANIMATION_DURATION = 800
 const SWORD_ANIMATION_DURATION = 800
 
@@ -13,6 +13,7 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
   const [playerStatus] = useAtom(playerStatusAtom)
   const [playerHp, setPlayerHp] = useState(playerStatus.hp)
   const [playerMp, setPlayerMp] = useState(playerStatus.mp)
+  const currentMp = useRef(playerStatus.mp)
   const [enemyHp, setEnemyHp] = useState(enemy.hp)
   const [battleState, setBattleState] = useState<BattleState>({
     isPlayerTurn: true,
@@ -53,7 +54,7 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
         exp: enemy.exp,
         gold: enemy.gold,
         hp: playerHp,
-        mp: playerMp,
+        mp: currentMp.current,
       })
     }, 2000)
   }, [enemy, onBattleEnd, playerHp, playerMp])
@@ -72,10 +73,10 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
         exp: 0,
         gold: 0,
         hp: playerHp,
-        mp: playerMp,
+        mp: currentMp.current,
       })
     }, 2000)
-  }, [onBattleEnd, playerHp, playerMp])
+  }, [onBattleEnd, playerHp, currentMp])
 
   const startAttackAnimation = useCallback(() => {
     setBattleState(prev => ({
@@ -174,7 +175,7 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
                 exp: 0,
                 gold: 0,
                 hp: playerHp,
-                mp: playerMp,
+                mp: currentMp.current,
               })
             }, 1000)
           } else {
@@ -205,11 +206,10 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
         }))
         break
     }
-  }, [handleEnemyAttack, handlePlayerAttack, onBattleEnd, startAttackAnimation, playerHp, playerMp])
+  }, [handleEnemyAttack, handlePlayerAttack, onBattleEnd, startAttackAnimation, playerHp, currentMp])
 
   const handleSpellSelect = useCallback((spell: Spell) => {
-    if (playerMp < spell.mp) {
-      console.log("MPが足りない")
+    if (currentMp.current < spell.mp) {
       setBattleState(prev => ({
         ...prev,
         message: 'MPが足りない！',
@@ -239,7 +239,8 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
       }))
 
       setTimeout(() => {
-        setPlayerMp((prevMp) => Math.max(0, prevMp - spell.mp))
+        currentMp.current = Math.max(0, currentMp.current - spell.mp)
+        setPlayerMp(currentMp.current)
         applyDamageToEnemy(damage)
       }, SWORD_ANIMATION_DURATION)
     } else if (spell.effect.type === 'heal') {
@@ -252,8 +253,10 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
         isPlayerTurn: true,
       }))
       setTimeout(() => {
-        setPlayerHp((prevHp) => Math.min(playerStatus.maxHp, prevHp + heal))
-        setPlayerMp((prevMp) => Math.max(0, prevMp - spell.mp))
+        const newHp = Math.min(playerStatus.maxHp, playerHp + heal)
+        currentMp.current = Math.max(0, currentMp.current - spell.mp)
+        setPlayerHp(newHp)
+        setPlayerMp(currentMp.current)
         setBattleState(prev => ({
           ...prev,
           message: `HPが${heal}回復した！`,
@@ -263,7 +266,7 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
         }, ANIMATION_DURATION)
       }, ANIMATION_DURATION)
     }
-  }, [handleEnemyAttack, playerMp, playerStatus.maxHp, setPlayerHp, startAttackAnimation, applyDamageToEnemy])
+  }, [handleEnemyAttack, playerStatus.maxHp, playerHp, startAttackAnimation, applyDamageToEnemy])
 
   return {
     enemyHp,
