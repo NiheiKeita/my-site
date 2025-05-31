@@ -5,7 +5,7 @@ import { playerStatusAtom } from '../../store/player'
 import { BattleCommand, BattleState, Spell } from '../../types/battle'
 
 // 定数
-const ESCAPE_CHANCE = 0.5
+const ESCAPE_CHANCE = 0.1
 const ANIMATION_DURATION = 800
 const SWORD_ANIMATION_DURATION = 800
 
@@ -97,6 +97,7 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
         if (playerHp <= damage) {
           handleDefeat()
         } else {
+          setShowEndMessage(false)
           setBattleState(prev => ({
             ...prev,
             isPlayerTurn: true,
@@ -171,7 +172,9 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
               ...prev,
               message: '逃げ出せなかった！',
             }))
-            handleEnemyAttack()
+            setTimeout(() => {
+              handleEnemyAttack()
+            }, 1000)
           }
         }, 1000)
         break
