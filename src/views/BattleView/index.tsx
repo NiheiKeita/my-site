@@ -40,9 +40,9 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
   const handleSpellSelectWithClose = (spell: Spell) => {
     handleSpellSelect(spell)
     setShowSpellSelect(false)
-    if (spell.effect.type === 'damage') {
-      startAttackAnimation()
-    }
+    // if (spell.effect.type === 'damage') {
+    //   startAttackAnimation()
+    // }
   }
 
   const handleItemSelectWithClose = (itemId?: string) => {

@@ -239,6 +239,7 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
       }))
 
       setTimeout(() => {
+        setPlayerMp((prevMp) => Math.max(0, prevMp - spell.mp))
         applyDamageToEnemy(damage)
       }, SWORD_ANIMATION_DURATION)
     } else if (spell.effect.type === 'heal') {
