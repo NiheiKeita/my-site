@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import { Spell } from '../../types/battle'
-import { ItemSelect } from './ItemSelect'
-import { SpellSelect } from './SpellSelect'
 import { PlayerStatus } from '~/store/player'
+import { Spell } from '~/types/battle'
+import { ItemSelect } from '../ItemSelect'
+import { SpellSelect } from '../SpellSelect'
 
 type BattleCommand = 'attack' | 'spell' | 'item' | 'run' | 'back' | 'fight'
 

@@ -3,10 +3,10 @@ import React from 'react'
 import { Enemy, BattleResult } from '../../types/enemy'
 import { useAtom } from 'jotai'
 import { playerStatusAtom } from '../../store/player'
-import { BattleCommandMenu } from '../../components/Battle/BattleCommandMenu'
 import { useBattleLogic } from './hooks'
 import { getImagePath } from '../../utils/imagePath'
 import { motion } from 'framer-motion'
+import { BattleCommandMenu } from '~/components/Battle/BattleCommandMenu'
 
 interface BattleViewProps {
   enemy: Enemy
