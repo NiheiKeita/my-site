@@ -27,8 +27,6 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
   const [showEndMessage, setShowEndMessage] = useState(true)
   const [isEnemyDamaged, setIsEnemyDamaged] = useState(false)
   const [isPlayerDamaged, setIsPlayerDamaged] = useState(false)
-  const [showSpellSelect, setShowSpellSelect] = useState(false)
-  const [showItemSelect, setShowItemSelect] = useState(false)
 
   // バトル開始時のメッセージ表示後にコマンドメニューを表示
   useEffect(() => {
@@ -257,12 +255,11 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
         handlePlayerAttack()
         break
       case 'spell':
-        // setShowSpellSelect(true)
         if (!spell) return
         handleSpellSelect(spell)
         break
       case 'item':
-        setShowItemSelect(true)
+        // アイテム選択の状態管理はBattleCommandMenuに移動
         break
       case 'back':
         setBattleState(prev => ({
@@ -280,11 +277,7 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
     showEndMessage,
     isEnemyDamaged,
     isPlayerDamaged,
-    showSpellSelect,
-    showItemSelect,
     handleCommandSelect,
-    setShowSpellSelect,
-    setShowItemSelect,
     playerHp,
     playerMp
   }

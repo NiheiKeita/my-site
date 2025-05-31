@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Spell } from '../../types/battle'
 import { ItemSelect } from './ItemSelect'
 import { SpellSelect } from './SpellSelect'
@@ -10,21 +10,16 @@ interface BattleCommandMenuProps {
   playerStatus: PlayerStatus
   phase: 'initial' | 'action'
   onCommandSelect: (command: BattleCommand, spell?: Spell, itemId?: string) => void
-  showSpellSelect: boolean
-  showItemSelect: boolean
-  setShowSpellSelect: (show: boolean) => void
-  setShowItemSelect: (show: boolean) => void
 }
 
 export const BattleCommandMenu = ({
   playerStatus,
   phase,
   onCommandSelect,
-  showSpellSelect,
-  showItemSelect,
-  setShowSpellSelect,
-  setShowItemSelect,
 }: BattleCommandMenuProps) => {
+  const [showSpellSelect, setShowSpellSelect] = useState(false)
+  const [showItemSelect, setShowItemSelect] = useState(false)
+
   const handleSpellSelectWithClose = (spell: Spell) => {
     onCommandSelect('spell', spell)
     setShowSpellSelect(false)

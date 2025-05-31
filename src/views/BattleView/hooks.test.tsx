@@ -39,8 +39,6 @@ describe('useBattleLogic', () => {
     expect(result.current.showEndMessage).toBe(true)
     expect(result.current.isEnemyDamaged).toBe(false)
     expect(result.current.isPlayerDamaged).toBe(false)
-    expect(result.current.showSpellSelect).toBe(false)
-    expect(result.current.showItemSelect).toBe(false)
   })
 
   it('攻撃コマンドが正しく処理される', async () => {
@@ -69,8 +67,6 @@ describe('useBattleLogic', () => {
     act(() => {
       result.current.handleCommandSelect('spell')
     })
-
-    expect(result.current.showSpellSelect).toBe(false)
   })
 
   it('アイテム選択が正しく処理される', () => {
@@ -81,8 +77,6 @@ describe('useBattleLogic', () => {
     act(() => {
       result.current.handleCommandSelect('item')
     })
-
-    expect(result.current.showItemSelect).toBe(true)
   })
 
   it('戻るコマンドが正しく処理される', () => {

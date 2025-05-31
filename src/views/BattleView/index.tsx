@@ -22,11 +22,7 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
     showEndMessage,
     isEnemyDamaged,
     isPlayerDamaged,
-    showSpellSelect,
-    showItemSelect,
     handleCommandSelect,
-    setShowSpellSelect,
-    setShowItemSelect,
     playerHp,
     playerMp
   } = useBattleLogic(enemy, onBattleEnd)
@@ -119,10 +115,6 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
           playerStatus={playerStatus}
           phase={battleState.phase}
           onCommandSelect={handleCommandSelect}
-          showSpellSelect={showSpellSelect}
-          showItemSelect={showItemSelect}
-          setShowSpellSelect={setShowSpellSelect}
-          setShowItemSelect={setShowItemSelect}
         />
       )}
 
