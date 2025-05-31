@@ -1,9 +1,14 @@
 import { renderHook } from '@testing-library/react'
 import { useBattleLogic } from './hooks'
 import { Enemy } from '../../types/enemy'
+import { enemies } from '../../data/enemies'
+import { items } from '../../data/items'
+import { Provider } from 'jotai'
 import { act } from 'react'
 
 jest.useFakeTimers()
+
+const mockOnBattleEnd = jest.fn(() => { })
 
 describe('useBattleLogic', () => {
   const mockEnemy: Enemy = {
@@ -19,8 +24,6 @@ describe('useBattleLogic', () => {
     image: '/test.png',
     defeatedImage: '/test-defeated.png'
   }
-
-  const mockOnBattleEnd = jest.fn()
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -118,5 +121,85 @@ describe('useBattleLogic', () => {
     act(() => {
       jest.advanceTimersByTime(1000)
     })
+  })
+})
+
+describe('アイテム使用', () => {
+  it('回復薬を使用するとHPが回復し、アイテムが消費される', () => {
+    const healingPotion = items.find(item => item.id === 'healing_potion')
+    if (!healingPotion) throw new Error('healing_potion not found')
+
+    const { result } = renderHook(() => useBattleLogic(enemies[0], mockOnBattleEnd), {
+      wrapper: ({ children }) => (
+        <Provider>
+          {children}
+        </Provider>
+      )
+    })
+
+    // 戦闘開始
+    act(() => {
+      result.current.handleCommandSelect('fight')
+    })
+
+    // アイテム使用
+    act(() => {
+      result.current.handleCommandSelect('item', undefined, 'healing_potion')
+    })
+
+    // HPが回復していることを確認
+    expect(result.current.playerHp).toBe(10) // 50 + 30
+  })
+
+  it('MP回復アイテムを使用するとMPが回復する', () => {
+    const mobileBattery = items.find(item => item.id === 'mobile_battery')
+    if (!mobileBattery) throw new Error('mobile_battery not found')
+
+    const { result } = renderHook(() => useBattleLogic(enemies[0], mockOnBattleEnd), {
+      wrapper: ({ children }) => (
+        <Provider>
+          {children}
+        </Provider>
+      )
+    })
+
+    // 戦闘開始
+    act(() => {
+      result.current.handleCommandSelect('fight')
+    })
+
+    // アイテム使用
+    act(() => {
+      result.current.handleCommandSelect('item', undefined, 'mobile_battery')
+    })
+
+    // MPが回復していることを確認
+    expect(result.current.playerMp).toBe(5) // 20 + 50
+  })
+
+  it('消費不可アイテムを使用しても消費されない', () => {
+    const macbookPro = items.find(item => item.id === 'macbook_pro')
+    if (!macbookPro) throw new Error('macbook_pro not found')
+
+    const { result } = renderHook(() => useBattleLogic(enemies[0], mockOnBattleEnd), {
+      wrapper: ({ children }) => (
+        <Provider>
+          {children}
+        </Provider>
+      )
+    })
+
+    // 戦闘開始
+    act(() => {
+      result.current.handleCommandSelect('fight')
+    })
+
+    // アイテム使用
+    act(() => {
+      result.current.handleCommandSelect('item', undefined, 'macbook_pro')
+    })
+
+    // バッグにアイテムが残っていることを確認
+    expect(result.current.battleState.message).toContain(macbookPro.name)
   })
 }) 

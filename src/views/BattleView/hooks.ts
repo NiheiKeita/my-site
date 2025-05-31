@@ -2,7 +2,9 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import { Enemy, BattleResult } from '../../types/enemy'
 import { useAtom } from 'jotai'
 import { playerStatusAtom } from '../../store/player'
+import { bagItemsAtom } from '../../store/bag'
 import { BattleCommand, BattleState, Spell } from '../../types/battle'
+import { items } from '../../data/items'
 
 // 定数
 const ESCAPE_CHANCE = 0.4
@@ -11,6 +13,7 @@ const SWORD_ANIMATION_DURATION = 800
 
 export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult) => void) => {
   const [playerStatus] = useAtom(playerStatusAtom)
+  const [bagItems, setBagItems] = useAtom(bagItemsAtom)
   const [playerHp, setPlayerHp] = useState(playerStatus.hp)
   const [playerMp, setPlayerMp] = useState(playerStatus.mp)
   const currentMp = useRef(playerStatus.mp)
@@ -208,7 +211,49 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
     }
   }, [handleEnemyAttack, playerStatus.maxHp, playerHp, startAttackAnimation, applyDamageToEnemy])
 
-  const handleCommandSelect = useCallback((command: BattleCommand, spell?: Spell) => {
+  const handleItemUse = useCallback((itemId: string) => {
+    const item = items.find(i => i.id === itemId)
+    if (!item || !item.effect) return false
+
+    // アイテムの効果を適用
+    if (item.effect.hp) {
+      setShowEndMessage(true)
+      const heal = item.effect.hp
+      setPlayerHp(prev => Math.min(playerStatus.maxHp, prev + heal))
+      setBattleState(prev => ({
+        ...prev,
+        message: `${item.name}を使用した！HPが${heal}回復した！`,
+        isHealing: true,
+      }))
+
+      // アイテムを消費
+      if (item.consumable) {
+        const newBagItems = bagItems.filter(id => id !== itemId)
+        setBagItems(newBagItems)
+      }
+
+      // 敵の攻撃
+      setTimeout(() => {
+        handleEnemyAttack()
+      }, ANIMATION_DURATION)
+
+      return true
+    } else {
+      setShowEndMessage(true)
+      setBattleState(prev => ({
+        ...prev,
+        message: `${item.name}を使用しても効果がない・・・`,
+      }))
+      // 敵の攻撃
+      setTimeout(() => {
+        setShowEndMessage(false)
+      }, ANIMATION_DURATION)
+    }
+
+    return false
+  }, [playerStatus.maxHp, handleEnemyAttack, bagItems, setBagItems])
+
+  const handleCommandSelect = useCallback((command: BattleCommand, spell?: Spell, itemId?: string) => {
     switch (command) {
       case 'fight':
         setBattleState(prev => ({
@@ -259,7 +304,8 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
         handleSpellSelect(spell)
         break
       case 'item':
-        // アイテム選択の状態管理はBattleCommandMenuに移動
+        if (!itemId) return
+        handleItemUse(itemId)
         break
       case 'back':
         setBattleState(prev => ({
@@ -268,7 +314,7 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
         }))
         break
     }
-  }, [handleEnemyAttack, handlePlayerAttack, handleSpellSelect, onBattleEnd, startAttackAnimation, playerHp, currentMp])
+  }, [handleEnemyAttack, handlePlayerAttack, handleSpellSelect, handleItemUse, onBattleEnd, startAttackAnimation, playerHp, currentMp])
 
 
   return {

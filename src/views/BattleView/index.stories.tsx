@@ -1,6 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { BattleView } from './index'
 import { Enemy } from '../../types/enemy'
+import { Provider } from 'jotai'
+import { bagItemsAtom } from '../../store/bag'
+import { playerStatusAtom } from '../../store/player'
+import { initialPlayerStatus } from '../../data/initialPlayerStatus'
+import { createStore } from 'jotai/vanilla'
 
 const meta: Meta<typeof BattleView> = {
   title: 'Views/BattleView',
@@ -8,6 +13,13 @@ const meta: Meta<typeof BattleView> = {
   parameters: {
     layout: 'fullscreen',
   },
+  decorators: [
+    (Story) => (
+      <Provider>
+        <Story />
+      </Provider>
+    ),
+  ],
 }
 
 export default meta
@@ -32,6 +44,26 @@ export const Default: Story = {
     enemy: mockEnemy,
     onBattleEnd: () => { },
   },
+}
+
+export const WithItems: Story = {
+  args: {
+    enemy: mockEnemy,
+    onBattleEnd: () => { },
+  },
+  decorators: [
+    (Story) => {
+      const store = createStore()
+      store.set(bagItemsAtom, ['healing_potion', 'mobile_battery', 'macbook_pro'])
+      store.set(playerStatusAtom, { ...initialPlayerStatus, hp: 50, maxHp: 100, mp: 20, maxMp: 100 })
+      
+return (
+        <Provider store={store}>
+          <Story />
+        </Provider>
+      )
+    },
+  ],
 }
 
 export const LowLevelEnemy: Story = {
