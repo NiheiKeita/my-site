@@ -5,6 +5,7 @@ export interface BattleState {
   phase: BattlePhase
   isPlayerTurn: boolean
   isAttacking: boolean
+  isHealing: boolean
   message: string
   isBattleEnd: boolean
   isVictory: boolean

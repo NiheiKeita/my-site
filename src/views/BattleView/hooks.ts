@@ -9,12 +9,14 @@ const ESCAPE_CHANCE = 0.1
 const ANIMATION_DURATION = 800
 const SWORD_ANIMATION_DURATION = 800
 
-export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult) => void, playerHp: number, setPlayerHp: (hp: number) => void) => {
+export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult) => void) => {
   const [playerStatus] = useAtom(playerStatusAtom)
+  const [playerHp, setPlayerHp] = useState(playerStatus.hp)
   const [enemyHp, setEnemyHp] = useState(enemy.hp)
   const [battleState, setBattleState] = useState<BattleState>({
     isPlayerTurn: true,
     isAttacking: false,
+    isHealing: false,
     isVictory: false,
     message: `${enemy.name}が現れた！`,
     phase: 'initial',
@@ -90,7 +92,7 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
         ...prev,
         message: `${damage}のダメージ！`,
       }))
-      setPlayerHp(Math.max(0, playerHp - damage))
+      setPlayerHp((prevHp) => Math.max(0, prevHp - damage))
       setIsPlayerDamaged(true)
       setTimeout(() => {
         setIsPlayerDamaged(false)
@@ -102,6 +104,7 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
             ...prev,
             isPlayerTurn: true,
             isAttacking: false,
+            isHealing: false,
             phase: 'initial',
           }))
         }
@@ -220,12 +223,23 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
       }, SWORD_ANIMATION_DURATION)
     } else if (spell.effect.type === 'heal') {
       const heal = spell.effect.value
-      setPlayerHp(Math.min(playerStatus.maxHp, playerHp + heal))
       setBattleState(prev => ({
         ...prev,
-        message: `${spell.name}！HPが${heal}回復した！`,
+        message: `${spell.name}！`,
+        isAttacking: false,
+        isHealing: true,
+        isPlayerTurn: true,
       }))
-      handleEnemyAttack()
+      setTimeout(() => {
+        setPlayerHp(Math.min(playerStatus.maxHp, playerHp + heal))
+        setBattleState(prev => ({
+          ...prev,
+          message: `HPが${heal}回復した！`,
+        }))
+        setTimeout(() => {
+          handleEnemyAttack()
+        }, ANIMATION_DURATION)
+      }, ANIMATION_DURATION)
     }
   }, [handleEnemyAttack, playerHp, playerStatus.maxHp, playerStatus.mp, setPlayerHp, startAttackAnimation, applyDamageToEnemy])
 
@@ -243,5 +257,6 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
     setShowSpellSelect,
     setShowItemSelect,
     startAttackAnimation,
+    playerHp
   }
 } 

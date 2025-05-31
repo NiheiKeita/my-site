@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React from 'react'
 import { Enemy, BattleResult } from '../../types/enemy'
 import { Spell } from '../../types/battle'
 import { useAtom } from 'jotai'
@@ -18,7 +18,6 @@ interface BattleViewProps {
 
 export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
   const [playerStatus] = useAtom(playerStatusAtom)
-  const [playerHp, setPlayerHp] = useState(playerStatus.hp)
 
   const {
     enemyHp,
@@ -34,7 +33,8 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
     setShowSpellSelect,
     setShowItemSelect,
     startAttackAnimation,
-  } = useBattleLogic(enemy, onBattleEnd, playerHp, setPlayerHp)
+    playerHp
+  } = useBattleLogic(enemy, onBattleEnd)
 
   const handleSpellSelectWithClose = (spell: Spell) => {
     handleSpellSelect(spell)
@@ -51,7 +51,7 @@ export const BattleView = ({ enemy, onBattleEnd }: BattleViewProps) => {
     }
   }
 
-  const isCommandMenuVisible = showCommandMenu && !showEndMessage && battleState.isPlayerTurn && !battleState.isAttacking
+  const isCommandMenuVisible = showCommandMenu && !showEndMessage && battleState.isPlayerTurn && (!battleState.isAttacking && !battleState.isHealing)
 
   return (
     <div className="fixed inset-0 flex flex-col bg-gray-900 text-white">
