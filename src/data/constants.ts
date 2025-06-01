@@ -1,0 +1,5 @@
+
+export const ENEMY_ENCOUNTER_RATE = 0.04
+export const ESCAPE_CHANCE = 0.4
+export const ANIMATION_DURATION = 800
+export const SWORD_ANIMATION_DURATION = 800

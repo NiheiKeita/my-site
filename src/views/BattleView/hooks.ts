@@ -5,11 +5,8 @@ import { playerStatusAtom } from '../../store/player'
 import { bagItemsAtom } from '../../store/bag'
 import { BattleCommand, BattleState, Spell } from '../../types/battle'
 import { items } from '../../data/items'
+import { ANIMATION_DURATION, SWORD_ANIMATION_DURATION, ESCAPE_CHANCE } from '~/data/constants'
 
-// 定数
-const ESCAPE_CHANCE = 0.4
-const ANIMATION_DURATION = 800
-const SWORD_ANIMATION_DURATION = 800
 
 export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult) => void) => {
   const [playerStatus] = useAtom(playerStatusAtom)

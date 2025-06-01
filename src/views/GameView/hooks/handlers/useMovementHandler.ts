@@ -6,6 +6,7 @@ import { playerStatusAtom } from '~/store/player'
 import { maps } from '~/data/maps'
 import type { Position } from '~/types/game'
 import type { GameState } from '../types'
+import { ENEMY_ENCOUNTER_RATE } from '~/data/constants'
 
 export const useMovementHandler = (
   state: GameState,
@@ -94,7 +95,7 @@ export const useMovementHandler = (
       return
     }
 
-    const isEncounter = Math.random() < 0.04 && !state.isInBattle
+    const isEncounter = Math.random() < ENEMY_ENCOUNTER_RATE && !state.isInBattle
     if (isEncounter) {
       onRandomEncounter()
 
