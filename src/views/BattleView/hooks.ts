@@ -14,6 +14,7 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
   const [playerHp, setPlayerHp] = useState(playerStatus.hp)
   const [playerMp, setPlayerMp] = useState(playerStatus.mp)
   const currentMp = useRef(playerStatus.mp)
+  const currentHp = useRef(playerStatus.hp)
   const [enemyHp, setEnemyHp] = useState(enemy.hp)
   const [battleState, setBattleState] = useState<BattleState>({
     isPlayerTurn: true,
@@ -50,11 +51,11 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
         isEscaped: false,
         exp: enemy.exp,
         gold: enemy.gold,
-        hp: playerHp,
+        hp: currentHp.current,
         mp: currentMp.current,
       })
     }, 2000)
-  }, [enemy, onBattleEnd, playerHp, currentMp])
+  }, [enemy, onBattleEnd, currentHp, currentMp])
 
   const handleDefeat = useCallback(() => {
     setBattleState(prev => ({
@@ -69,11 +70,11 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
         isEscaped: false,
         exp: 0,
         gold: 0,
-        hp: playerHp,
+        hp: currentHp.current,
         mp: currentMp.current,
       })
     }, 2000)
-  }, [onBattleEnd, playerHp, currentMp])
+  }, [onBattleEnd, currentHp, currentMp])
 
   const startAttackAnimation = useCallback(() => {
     setBattleState(prev => ({
@@ -95,11 +96,12 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
         ...prev,
         message: `${damage}のダメージ！`,
       }))
-      setPlayerHp((prevHp) => Math.max(0, prevHp - damage))
+      currentHp.current = Math.max(0, currentHp.current - damage)
+      setPlayerHp(currentHp.current)
       setIsPlayerDamaged(true)
       setTimeout(() => {
         setIsPlayerDamaged(false)
-        if (playerHp <= damage) {
+        if (currentHp.current <= damage) {
           handleDefeat()
         } else {
           setShowEndMessage(false)
@@ -113,7 +115,7 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
         }
       }, ANIMATION_DURATION)
     }, ANIMATION_DURATION)
-  }, [enemy.attack, enemy.name, playerStatus.defense, setPlayerHp, playerHp, handleDefeat])
+  }, [enemy.attack, enemy.name, playerStatus.defense, setPlayerHp, currentHp, handleDefeat])
 
   const applyDamageToEnemy = useCallback((damage: number) => {
     setEnemyHp(prev => Math.max(0, prev - damage))
@@ -193,9 +195,9 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
         isPlayerTurn: true,
       }))
       setTimeout(() => {
-        const newHp = Math.min(playerStatus.maxHp, playerHp + heal)
+        currentHp.current = Math.min(playerStatus.maxHp, currentHp.current + heal)
         currentMp.current = Math.max(0, currentMp.current - spell.mp)
-        setPlayerHp(newHp)
+        setPlayerHp(currentHp.current)
         setPlayerMp(currentMp.current)
         setBattleState(prev => ({
           ...prev,
@@ -206,7 +208,7 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
         }, ANIMATION_DURATION)
       }, ANIMATION_DURATION)
     }
-  }, [handleEnemyAttack, playerStatus.maxHp, playerHp, startAttackAnimation, applyDamageToEnemy])
+  }, [handleEnemyAttack, playerStatus.maxHp, currentHp, startAttackAnimation, applyDamageToEnemy])
 
   const handleItemUse = useCallback((itemId: string) => {
     const item = items.find(i => i.id === itemId)
@@ -216,7 +218,8 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
     if (item.effect.hp) {
       setShowEndMessage(true)
       const heal = item.effect.hp
-      setPlayerHp(prev => Math.min(playerStatus.maxHp, prev + heal))
+      currentHp.current = Math.min(playerStatus.maxHp, currentHp.current + heal)
+      setPlayerHp(currentHp.current)
       setBattleState(prev => ({
         ...prev,
         message: `${item.name}を使用した！HPが${heal}回復した！`,
@@ -276,7 +279,7 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
                 isEscaped: true,
                 exp: 0,
                 gold: 0,
-                hp: playerHp,
+                hp: currentHp.current,
                 mp: currentMp.current,
               })
             }, 1000)
@@ -311,7 +314,7 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
         }))
         break
     }
-  }, [handleEnemyAttack, handlePlayerAttack, handleSpellSelect, handleItemUse, onBattleEnd, startAttackAnimation, playerHp, currentMp])
+  }, [handleEnemyAttack, handlePlayerAttack, handleSpellSelect, handleItemUse, onBattleEnd, startAttackAnimation, currentHp, currentMp])
 
 
   return {
