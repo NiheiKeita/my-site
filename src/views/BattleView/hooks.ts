@@ -96,7 +96,7 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
         ...prev,
         message: `${damage}のダメージ！`,
       }))
-      currentHp.current = Math.min(0, currentHp.current - damage)
+      currentHp.current = Math.max(0, currentHp.current - damage)
       setPlayerHp(currentHp.current)
       setIsPlayerDamaged(true)
       setTimeout(() => {
@@ -195,9 +195,9 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
         isPlayerTurn: true,
       }))
       setTimeout(() => {
-        const newHp = Math.min(playerStatus.maxHp, currentHp.current + heal)
+        currentHp.current = Math.min(playerStatus.maxHp, currentHp.current + heal)
         currentMp.current = Math.max(0, currentMp.current - spell.mp)
-        setPlayerHp(newHp)
+        setPlayerHp(currentHp.current)
         setPlayerMp(currentMp.current)
         setBattleState(prev => ({
           ...prev,
