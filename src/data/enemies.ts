@@ -55,7 +55,7 @@ export const enemies: Enemy[] = [
   },
   {
     id: 5,
-    name: 'みに食いトマト',
+    name: 'mini食いトマト',
     level: 4,
     hp: 60,
     maxHp: 60,
@@ -81,7 +81,7 @@ export const enemies: Enemy[] = [
   },
   {
     id: 7,
-    name: 'ミノタウロス',
+    name: 'メタルらーめ',
     level: 5,
     hp: 70,
     maxHp: 70,
