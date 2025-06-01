@@ -31,7 +31,7 @@ export const fifthObjects: GameObjectData[] = [
   {
     id: 'item_1',
     type: 'item',
-    itemId: 'mana_potion',
+    itemId: 'raspberry_pi',
     position: { x: 5, y: 5 },
     message: messageUtils.createMessage(
       <>
