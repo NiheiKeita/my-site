@@ -101,7 +101,7 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
       setIsPlayerDamaged(true)
       setTimeout(() => {
         setIsPlayerDamaged(false)
-        if (currentHp.current <= damage) {
+        if (currentHp.current <= 0) {
           handleDefeat()
         } else {
           setShowEndMessage(false)
