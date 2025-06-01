@@ -94,7 +94,7 @@ export const useMovementHandler = (
       return
     }
 
-    const isEncounter = Math.random() < 0.00 && !state.isInBattle
+    const isEncounter = Math.random() < 0.04 && !state.isInBattle
     if (isEncounter) {
       onRandomEncounter()
 
