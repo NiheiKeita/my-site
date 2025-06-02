@@ -19,7 +19,7 @@ export const GameObject = ({ object, gridSize }: GameObjectProps) => {
       }}
     >
       <img
-        src={getImagePath(getObjectImage(object.type, object.direction))}
+        src={getImagePath(getObjectImage(object.type, object.direction, object.isOpened))}
         alt={object.type}
         className="size-full object-contain"
       />

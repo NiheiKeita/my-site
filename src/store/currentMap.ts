@@ -2,6 +2,7 @@ import { atom } from 'jotai'
 import { maps } from '~/data/maps'
 import { pickedItemsAtom } from './bag'
 import type { MapData } from '~/types/game'
+import { openedChestAtom } from './chest'
 
 // 初期値としてmaps[0]を設定
 const baseMapAtom = atom<MapData>(maps[0])
@@ -10,6 +11,16 @@ const baseMapAtom = atom<MapData>(maps[0])
 export const currentMapAtom = atom<MapData>((get) => {
   const currentMap = get(baseMapAtom)
   const pickedItems = get(pickedItemsAtom)
+
+  // チェストが開いているかどうかを修正
+  currentMap.gameObjects = get(baseMapAtom).gameObjects.map(obj => {
+    if (obj.type !== 'chest') return obj
+
+    return {
+      ...obj,
+      isOpened: get(openedChestAtom).some(chest => chest.mapId === currentMap.id && chest.objectId === obj.id)
+    }
+  })
 
   return {
     ...currentMap,

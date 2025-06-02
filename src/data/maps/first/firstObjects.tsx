@@ -39,13 +39,21 @@ export const firstObjects: GameObjectData[] = [
   {
     id: 'chest_1',
     type: 'chest',
-    position: { x: 2, y: 5 },
+    position: { x: 3, y: 3 },
     message: messageUtils.createMessage(
       <>
-        <p className="text-lg mb-2">宝箱</p>
-        <p>宝箱は固く閉ざされている。</p>
-      </>
-    )
+        <p className="text-lg mb-2">✨ 練習用の宝箱 ✨</p>
+        <p>初心者向けの宝箱だ。</p>
+      </>,
+      'text-yellow-300'
+    ),
+    requiredKey: 'bronze_key',
+    contents: [
+      {
+        itemId: 'healing_potion',
+        quantity: 2
+      }
+    ]
   },
   {
     id: 'chest_2',
@@ -75,8 +83,8 @@ export const firstObjects: GameObjectData[] = [
   {
     id: 'item_1',
     type: 'item',
-    itemId: 'healing_potion',
-    position: { x: 7, y: 1 },
+    itemId: 'bronze_key',
+    position: { x: 6, y: 2 },
     message: messageUtils.createMessage(
       <>
         <p>何かが落ちている</p>

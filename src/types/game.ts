@@ -14,14 +14,20 @@ export interface AndroidApp {
   url: string
 }
 
-export interface GameObjectData {
+export type GameObjectData = {
   id: string
   type: GameObjectType
   position: Position
   message: ReactNode
-  direction?: StairDirection
-  app?: AndroidApp
+  direction?: 'up' | 'down'
   itemId?: string
+  requiredKey?: string
+  // requiredKey?: 'bronze' | 'silver' | 'gold' | 'mythril' | 'legendary'
+  contents?: {
+    itemId: string
+    quantity: number
+  }[]
+  isOpened?: boolean
 }
 
 export interface StairData {

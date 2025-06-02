@@ -26,7 +26,18 @@ export const eighthObjects: GameObjectData[] = [
         <p>神話に語り継がれる宝箱だ。</p>
       </>,
       'text-yellow-300'
-    )
+    ),
+    requiredKey: 'legendary',
+    contents: [
+      {
+        itemId: 'legendary_sword',
+        quantity: 1
+      },
+      {
+        itemId: 'elixir',
+        quantity: 5
+      }
+    ]
   },
   {
     id: 'fountain_1',

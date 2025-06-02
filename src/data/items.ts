@@ -100,4 +100,59 @@ export const items: Item[] = [
     image: '/assets/items/raspberry_pi.png',
     consumable: false,
   },
+  {
+    id: 'bronze_key',
+    name: '銅の鍵',
+    description: '古びた宝箱を開けることができる鍵',
+    type: 'key',
+    image: '/assets/items/bronze_key.png',
+    price: 100,
+    sellPrice: 50,
+    value: 0,
+    consumable: false
+  },
+  {
+    id: 'silver_key',
+    name: '銀の鍵',
+    description: '魔法の宝箱を開けることができる鍵',
+    type: 'key',
+    image: '/assets/items/silver_key.png',
+    price: 300,
+    sellPrice: 150,
+    value: 0,
+    consumable: false
+  },
+  {
+    id: 'gold_key',
+    name: '金の鍵',
+    description: '封印された宝箱を開けることができる鍵',
+    type: 'key',
+    image: '/assets/items/gold_key.png',
+    price: 500,
+    sellPrice: 250,
+    value: 0,
+    consumable: false
+  },
+  {
+    id: 'mythril_key',
+    name: 'ミスリルの鍵',
+    description: '古代の宝箱を開けることができる鍵',
+    type: 'key',
+    image: '/assets/items/mythril_key.png',
+    price: 1000,
+    sellPrice: 500,
+    value: 0,
+    consumable: false
+  },
+  {
+    id: 'legendary_key',
+    name: '伝説の鍵',
+    description: '神話の宝箱を開けることができる鍵',
+    type: 'key',
+    image: '/assets/items/legendary_key.png',
+    price: 2000,
+    sellPrice: 1000,
+    value: 0,
+    consumable: false
+  }
 ] 

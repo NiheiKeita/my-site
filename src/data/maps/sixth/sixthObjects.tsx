@@ -26,7 +26,18 @@ export const sixthObjects: GameObjectData[] = [
         <p>強力な封印が施された宝箱だ。</p>
       </>,
       'text-yellow-300'
-    )
+    ),
+    requiredKey: 'gold',
+    contents: [
+      {
+        itemId: 'elixir',
+        quantity: 2
+      },
+      {
+        itemId: 'mythril_key',
+        quantity: 1
+      }
+    ]
   },
   {
     id: 'fountain_1',
