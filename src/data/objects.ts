@@ -40,9 +40,12 @@ export const objectImages: Partial<Record<GameObjectType, ObjectImageConfig>> = 
   },
 }
 
-export const getObjectImage = (type: GameObjectType, direction?: 'up' | 'down'): string => {
+export const getObjectImage = (type: GameObjectType, direction?: 'up' | 'down', isOpened?: boolean): string => {
   if (type === 'stairs' && direction) {
     return `/assets/objects/stairs_${direction}.png`
+  }
+  if (type === "chest") {
+    return isOpened ? '/assets/objects/opened_chest.png' : objectImages["chest"]?.image || '/assets/objects/default.png'
   }
 
   return objectImages[type]?.image || '/assets/objects/default.png'

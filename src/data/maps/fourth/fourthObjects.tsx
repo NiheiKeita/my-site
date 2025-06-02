@@ -26,7 +26,18 @@ export const fourthObjects: GameObjectData[] = [
         <p>長い年月を経た宝箱だ。</p>
       </>,
       'text-yellow-300'
-    )
+    ),
+    requiredKey: 'bronze',
+    contents: [
+      {
+        itemId: 'health_potion',
+        quantity: 2
+      },
+      {
+        itemId: 'mana_potion',
+        quantity: 1
+      }
+    ]
   },
   {
     id: 'fountain_1',

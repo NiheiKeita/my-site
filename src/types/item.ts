@@ -17,4 +17,6 @@ export interface Item {
   value: number
   image: string
   consumable: boolean
+  price?: number
+  sellPrice?: number
 } 

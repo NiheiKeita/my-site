@@ -26,12 +26,23 @@ export const seventhObjects: GameObjectData[] = [
         <p>古代の文明が残した宝箱だ。</p>
       </>,
       'text-yellow-300'
-    )
+    ),
+    requiredKey: 'mythril',
+    contents: [
+      {
+        itemId: 'legendary_key',
+        quantity: 1
+      },
+      {
+        itemId: 'elixir',
+        quantity: 3
+      }
+    ]
   },
   {
     id: 'item_1',
     type: 'item',
-    itemId: 'gamecube',
+    itemId: 'elixir',
     position: { x: 5, y: 5 },
     message: messageUtils.createMessage(
       <>

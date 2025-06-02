@@ -23,8 +23,8 @@ describe('プレイヤーステータスの更新', () => {
     const newStatus = store.get(playerStatusAtom)
     expect(newStatus.level).toBe(2)
     expect(newStatus.maxHp).toBe(20) // +20
-    expect(newStatus.attack).toBe(13) // +3
-    expect(newStatus.defense).toBe(7) // +2
+    expect(newStatus.attack).toBe(12) // +2
+    expect(newStatus.defense).toBe(6) // +1
     expect(newStatus.hp).toBe(20) // HP全回復
   })
 
@@ -74,8 +74,8 @@ describe('プレイヤーステータスの更新', () => {
     const newStatus = store.get(playerStatusAtom)
     expect(newStatus.level).toBe(3)
     expect(newStatus.maxHp).toBe(30) // +10 * 2
-    expect(newStatus.attack).toBe(16) // +3 * 2
-    expect(newStatus.defense).toBe(9) // +2 * 2
+    expect(newStatus.attack).toBe(14) // +2 * 2
+    expect(newStatus.defense).toBe(7) // +1 * 2
     expect(newStatus.hp).toBe(30) // HP全回復
   })
 }) 

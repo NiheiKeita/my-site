@@ -183,7 +183,12 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
       setTimeout(() => {
         currentMp.current = Math.max(0, currentMp.current - spell.mp)
         setPlayerMp(currentMp.current)
-        applyDamageToEnemy(damage)
+        if (enemy.id === 7) {
+          // メタルラーメは０ダメージ
+          applyDamageToEnemy(0)
+        } else {
+          applyDamageToEnemy(damage)
+        }
       }, SWORD_ANIMATION_DURATION)
     } else if (spell.effect.type === 'heal') {
       const heal = spell.effect.value

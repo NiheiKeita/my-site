@@ -15,5 +15,23 @@ export const thirdObjects: GameObjectData[] = [
     position: { x: 0, y: 0 },
     message: messageUtils.createMessage(createStairMessage('up')),
     direction: 'down'
-  }
+  },
+  {
+    id: 'chest_1',
+    type: 'chest',
+    position: { x: 7, y: 7 },
+    message: messageUtils.createMessage(
+      <>
+        <p className="text-lg mb-2">✨ 宝箱 ✨</p>
+        <p>中に何かが入っている </p>
+      </>,
+      'text-yellow-300'
+    ),
+    contents: [
+      {
+        itemId: 'healing_potion',
+        quantity: 1
+      }
+    ]
+  },
 ]
