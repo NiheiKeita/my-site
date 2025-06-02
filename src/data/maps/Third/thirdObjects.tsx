@@ -19,7 +19,7 @@ export const thirdObjects: GameObjectData[] = [
   {
     id: 'chest_1',
     type: 'chest',
-    position: { x: 3, y: 3 },
+    position: { x: 7, y: 7 },
     message: messageUtils.createMessage(
       <>
         <p className="text-lg mb-2">✨ 宝箱 ✨</p>
