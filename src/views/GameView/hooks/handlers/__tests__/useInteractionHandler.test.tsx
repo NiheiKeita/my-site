@@ -93,13 +93,15 @@ describe('useInteractionHandler', () => {
         if (atom === bagItemsAtom) {
           return [['bronze_key'], mockSetBagItems]
         }
-        return [null, jest.fn()]
+        
+return [null, jest.fn()]
       })
       ; (useSetAtom as jest.Mock).mockImplementation((atom) => {
         if (atom === addBagItemAtom) return mockAddBagItem
         if (atom === addPickedItemAtom) return mockAddPickedItem
         if (atom === addOpenedChestAtom) return mockAddOpenedChest
-        return jest.fn()
+        
+return jest.fn()
       })
   })
 
@@ -127,7 +129,7 @@ describe('useInteractionHandler', () => {
     })
 
     it('既に開けられた宝箱は開けない', () => {
-      ; (useAtom as jest.Mock).mockImplementation((atom) => {
+       (useAtom as jest.Mock).mockImplementation((atom) => {
         if (atom === currentMapAtom) {
           return [{
             id: 'first-floor',
@@ -137,7 +139,8 @@ describe('useInteractionHandler', () => {
         if (atom === bagItemsAtom) {
           return [['bronze_key'], mockSetBagItems]
         }
-        return [null, jest.fn()]
+        
+return [null, jest.fn()]
       })
 
       const { result } = renderHook(() =>
@@ -159,7 +162,7 @@ describe('useInteractionHandler', () => {
     })
 
     it('鍵が必要な宝箱を鍵なしで開こうとするとメッセージを表示', () => {
-      ; (useAtom as jest.Mock).mockImplementation((atom) => {
+       (useAtom as jest.Mock).mockImplementation((atom) => {
         if (atom === currentMapAtom) {
           return [{
             id: 'first-floor',
@@ -169,7 +172,8 @@ describe('useInteractionHandler', () => {
         if (atom === bagItemsAtom) {
           return [[], mockSetBagItems] // 鍵を持っていない状態
         }
-        return [null, jest.fn()]
+        
+return [null, jest.fn()]
       })
 
       const { result } = renderHook(() =>
@@ -191,7 +195,7 @@ describe('useInteractionHandler', () => {
     })
 
     it('鍵を持っている場合は宝箱を開けることができる', () => {
-      ; (useAtom as jest.Mock).mockImplementation((atom) => {
+       (useAtom as jest.Mock).mockImplementation((atom) => {
         if (atom === currentMapAtom) {
           return [{
             id: 'first-floor',
@@ -201,7 +205,8 @@ describe('useInteractionHandler', () => {
         if (atom === bagItemsAtom) {
           return [['silver'], mockSetBagItems] // 銀の鍵を持っている状態
         }
-        return [null, jest.fn()]
+        
+return [null, jest.fn()]
       })
 
       const { result } = renderHook(() =>
