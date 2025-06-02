@@ -49,7 +49,7 @@ export const useInteractionHandler = (
       )
 
       if (!hasKey) {
-        dispatch({ type: 'SHOW_POPUP', payload: 'この宝箱を開けるには特別な鍵が必要だ' })
+        dispatch({ type: 'SHOW_POPUP', payload: gameObject.message })
 
         return
       }
