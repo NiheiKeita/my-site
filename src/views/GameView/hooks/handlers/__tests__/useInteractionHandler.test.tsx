@@ -188,7 +188,7 @@ describe('useInteractionHandler', () => {
 
       expect(mockDispatch).toHaveBeenCalledWith({
         type: 'SHOW_POPUP',
-        payload: 'この宝箱を開けるには特別な鍵が必要だ'
+        payload: '宝箱だ'
       })
       expect(mockSetBagItems).not.toHaveBeenCalled()
       expect(mockAddOpenedChest).not.toHaveBeenCalled()

@@ -43,7 +43,7 @@ export const firstObjects: GameObjectData[] = [
     message: messageUtils.createMessage(
       <>
         <p className="text-lg mb-2">✨ 宝箱 ✨</p>
-        <p>中に何かが入っている</p>
+        <p>中に何かが入っている ブロンズの鍵で開けれるかも？</p>
       </>,
       'text-yellow-300'
     ),
@@ -62,7 +62,7 @@ export const firstObjects: GameObjectData[] = [
     message: messageUtils.createMessage(
       <>
         <p className="text-lg mb-2">✨ 輝く宝箱 ✨</p>
-        <p>宝箱の中から光が漏れている...</p>
+        <p>宝箱の中から光が漏れている... いい鍵が必要かも？？</p>
       </>,
       'text-yellow-300'
     ),
