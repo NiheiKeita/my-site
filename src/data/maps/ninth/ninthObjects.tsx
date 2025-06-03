@@ -41,7 +41,7 @@ export const ninthObjects: GameObjectData[] = [
     )
   },
   {
-    id: 'item_1',
+    id: 'item_2',
     type: 'item',
     itemId: 'legendary_sword',
     position: { x: 5, y: 5 },
