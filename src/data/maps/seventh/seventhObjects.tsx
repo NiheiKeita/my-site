@@ -42,7 +42,7 @@ export const seventhObjects: GameObjectData[] = [
   {
     id: 'item_1',
     type: 'item',
-    itemId: 'elixir',
+    itemId: 'macbook_pro',
     position: { x: 5, y: 5 },
     message: messageUtils.createMessage(
       <>

@@ -27,15 +27,15 @@ export const eighthObjects: GameObjectData[] = [
       </>,
       'text-yellow-300'
     ),
-    requiredKey: 'legendary',
+    requiredKey: 'legendary_key',
     contents: [
       {
-        itemId: 'legendary_sword',
+        itemId: 'nintendo_switch',
         quantity: 1
       },
       {
-        itemId: 'elixir',
-        quantity: 5
+        itemId: 'mobile_battery',
+        quantity: 1
       }
     ]
   },
