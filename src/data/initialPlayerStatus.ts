@@ -13,16 +13,16 @@ export const initialPlayerStatus: PlayerStatus = {
   spells: [
     {
       id: 'fire',
-      name: 'メラ',
+      name: 'タイポ',
       mp: 4,
-      description: '敵に炎のダメージを与える',
+      description: '敵にタイポの精神的ダメージを与える',
       effect: { type: 'damage', value: 20 },
     },
     {
       id: 'heal',
-      name: 'ホイミ',
+      name: 'LGTM',
       mp: 4,
-      description: 'HPを回復する',
+      description: '気分が良くなりHPが回復する',
       effect: { type: 'heal', value: 30 },
     },
   ],
