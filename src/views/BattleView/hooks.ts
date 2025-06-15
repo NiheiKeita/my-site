@@ -213,7 +213,7 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
         }, ANIMATION_DURATION)
       }, ANIMATION_DURATION)
     }
-  }, [handleEnemyAttack, playerStatus.maxHp, currentHp, startAttackAnimation, applyDamageToEnemy])
+  }, [startAttackAnimation, enemy.id, applyDamageToEnemy, playerStatus.maxHp, handleEnemyAttack])
 
   const handleItemUse = useCallback((itemId: string) => {
     const item = items.find(i => i.id === itemId)

@@ -45,5 +45,18 @@ export const tenthObjects: GameObjectData[] = [
       </>,
       'text-yellow-300'
     )
-  }
+  },
+  {
+    id: 'boss_1',
+    type: 'enemy',
+    position: { x: 4, y: 4 },
+    message: messageUtils.createMessage(
+      <>
+        <p className="text-lg mb-2">👹 ボス 👹</p>
+        <p>強そうな敵が現れた！</p>
+      </>,
+      'text-red-500'
+    ),
+    enemyId: 12
+  },
 ] 

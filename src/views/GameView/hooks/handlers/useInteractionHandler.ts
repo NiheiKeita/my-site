@@ -6,6 +6,8 @@ import { items } from '~/data/items'
 import type { GameObjectData } from '~/types/game'
 import type { GameState } from '../types'
 import { addOpenedChestAtom } from '~/store/chest'
+import { ANIMATION_DURATION } from '~/data/constants'
+import { enemies } from '~/data/enemies'
 
 export const useInteractionHandler = (
   state: GameState,
@@ -102,6 +104,12 @@ export const useInteractionHandler = (
       pickUpItemName(nowObject)
     } else if (object?.type === 'chest') {
       handleChestOpen(object)
+    } else if (object?.type === 'enemy') {
+      dispatch({ type: 'SHOW_POPUP', payload: object.message })
+      setTimeout(() => {
+        const enemy = enemies.find(enemy => enemy.id === object.enemyId)
+        dispatch({ type: 'SET_BATTLE_STATE', payload: { isInBattle: true, enemy: enemy } })
+      }, ANIMATION_DURATION)
     } else if (object) {
       dispatch({ type: 'SHOW_POPUP', payload: object.message })
     }
