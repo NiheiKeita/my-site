@@ -22,22 +22,9 @@ export const tenthObjects: GameObjectData[] = [
     )
   },
   {
-    id: 'fountain_1',
-    type: 'fountain',
-    position: { x: 4, y: 4 },
-    message: messageUtils.createMessage(
-      <>
-        <p className="text-lg mb-2">💫 究極の泉 💫</p>
-        <p>究極の力が宿る泉だ。</p>
-        <p className="text-sm mt-2">HP・MPが全回復する気がする...</p>
-      </>,
-      'text-blue-300'
-    )
-  },
-  {
     id: 'boss_chest',
     type: 'chest',
-    position: { x: 7, y: 7 },
+    position: { x: 5, y: 3 },
     message: messageUtils.createMessage(
       <>
         <p className="text-lg mb-2">✨ ボスの宝箱 ✨</p>
@@ -58,5 +45,173 @@ export const tenthObjects: GameObjectData[] = [
       'text-red-500'
     ),
     enemyId: 12
+  },
+  {
+    id: 'pot_1',
+    type: 'pot',
+    position: { x: 5, y: 2 },
+    message: messageUtils.createMessage(
+      <>
+        <p className="text-lg mb-2">ただの壺</p>
+        <p>何も入っていない</p>
+      </>,
+      'text-yellow-300'
+    )
+  },
+  {
+    id: 'pot_2',
+    type: 'pot',
+    position: { x: 6, y: 2 },
+    message: messageUtils.createMessage(
+      <>
+        <p className="text-lg mb-2">ただの壺</p>
+        <p>何も入っていない</p>
+      </>,
+      'text-yellow-300'
+    )
+  },
+  {
+    id: 'pot_3',
+    type: 'pot',
+    position: { x: 6, y: 5 },
+    message: messageUtils.createMessage(
+      <>
+        <p className="text-lg mb-2">ただの壺</p>
+        <p>何も入っていない</p>
+      </>,
+      'text-yellow-300'
+    )
+  },
+  {
+    id: 'pot_4',
+    type: 'pot',
+    position: { x: 6, y: 4 },
+    message: messageUtils.createMessage(
+      <>
+        <p className="text-lg mb-2">ただの壺</p>
+        <p>何も入っていない</p>
+      </>,
+      'text-yellow-300'
+    )
+  },
+  {
+    id: 'pot_5',
+    type: 'pot',
+    position: { x: 6, y: 3 },
+    message: messageUtils.createMessage(
+      <>
+        <p className="text-lg mb-2">ただの壺</p>
+        <p>何も入っていない</p>
+      </>,
+      'text-yellow-300'
+    )
+  },
+  {
+    id: 'pot_5',
+    type: 'pot',
+    position: { x: 6, y: 3 },
+    message: messageUtils.createMessage(
+      <>
+        <p className="text-lg mb-2">ただの壺</p>
+        <p>何も入っていない</p>
+      </>,
+      'text-yellow-300'
+    )
+  },
+  {
+    id: 'pot_6',
+    type: 'pot',
+    position: { x: 5, y: 5 },
+    message: messageUtils.createMessage(
+      <>
+        <p className="text-lg mb-2">ただの壺</p>
+        <p>何も入っていない</p>
+      </>,
+      'text-yellow-300'
+    )
+  },
+  {
+    id: 'pot_7',
+    type: 'pot',
+    position: { x: 3, y: 5 },
+    message: messageUtils.createMessage(
+      <>
+        <p className="text-lg mb-2">ただの壺</p>
+        <p>何も入っていない</p>
+      </>,
+      'text-yellow-300'
+    )
+  },
+  {
+    id: 'pot_8',
+    type: 'pot',
+    position: { x: 2, y: 5 },
+    message: messageUtils.createMessage(
+      <>
+        <p className="text-lg mb-2">ただの壺</p>
+        <p>何も入っていない</p>
+      </>,
+      'text-yellow-300'
+    )
+  },
+  {
+    id: 'pot_9',
+    type: 'pot',
+    position: { x: 2, y: 4 },
+    message: messageUtils.createMessage(
+      <>
+        <p className="text-lg mb-2">ただの壺</p>
+        <p>何も入っていない</p>
+      </>,
+      'text-yellow-300'
+    )
+  },
+  {
+    id: 'pot_10',
+    type: 'pot',
+    position: { x: 2, y: 3 },
+    message: messageUtils.createMessage(
+      <>
+        <p className="text-lg mb-2">ただの壺</p>
+        <p>何も入っていない</p>
+      </>,
+      'text-yellow-300'
+    )
+  },
+  {
+    id: 'pot_11',
+    type: 'pot',
+    position: { x: 2, y: 2 },
+    message: messageUtils.createMessage(
+      <>
+        <p className="text-lg mb-2">ただの壺</p>
+        <p>何も入っていない</p>
+      </>,
+      'text-yellow-300'
+    )
+  },
+  {
+    id: 'pot_12',
+    type: 'pot',
+    position: { x: 3, y: 2 },
+    message: messageUtils.createMessage(
+      <>
+        <p className="text-lg mb-2">ただの壺</p>
+        <p>何も入っていない</p>
+      </>,
+      'text-yellow-300'
+    )
+  },
+  {
+    id: 'pot_13',
+    type: 'pot',
+    position: { x: 4, y: 2 },
+    message: messageUtils.createMessage(
+      <>
+        <p className="text-lg mb-2">ただの壺</p>
+        <p>何も入っていない</p>
+      </>,
+      'text-yellow-300'
+    )
   },
 ] 
