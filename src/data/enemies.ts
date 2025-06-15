@@ -146,7 +146,7 @@ export const enemies: Enemy[] = [
   },
   {
     id: 12,
-    name: 'かんぴ二ャクタ',
+    name: 'かんぴ爆二ャム',
     level: 10,
     hp: 300,
     maxHp: 300,
