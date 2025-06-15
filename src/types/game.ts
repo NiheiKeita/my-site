@@ -5,13 +5,20 @@ export interface Position {
   y: number
 }
 
-export type GameObjectType = 'pot' | 'chest' | 'fountain' | 'stairs' | 'npc' | 'item' | 'android'
+export type GameObjectType = 'pot' | 'chest' | 'fountain' | 'stairs' | 'npc' | 'item' | 'android' | 'enemy'
 export type StairDirection = 'up' | 'down'
 
 export interface AndroidApp {
   id: string
   name: string
   url: string
+}
+
+export interface EnemyData {
+  name: string
+  hp: number
+  attack: number
+  defense: number
 }
 
 export type GameObjectData = {
@@ -28,6 +35,7 @@ export type GameObjectData = {
     quantity: number
   }[]
   isOpened?: boolean
+  enemyId?: number
 }
 
 export interface StairData {

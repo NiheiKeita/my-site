@@ -49,7 +49,7 @@ describe('useInteractionHandler', () => {
   const mockChest: GameObjectData = {
     id: 'chest_1',
     type: 'chest',
-    position: { x: 0, y: -1 }, // プレイヤーの前方
+    position: { x: 0, y: -1 },
     message: '宝箱だ',
     contents: [
       {
@@ -57,6 +57,14 @@ describe('useInteractionHandler', () => {
         quantity: 2
       }
     ]
+  }
+
+  const mockBoss: GameObjectData = {
+    id: 'boss_1',
+    type: 'enemy',
+    position: { x: 5, y: 5 },
+    message: 'ボスが現れた！',
+    enemyId: 12
   }
 
   const mockOpenedChest: GameObjectData = {
@@ -126,6 +134,32 @@ describe('useInteractionHandler', () => {
         type: 'SHOW_POPUP',
         payload: '回復薬を2個手に入れた！'
       })
+    })
+
+    it('ボスと対話すると戦闘が開始される', () => {
+      (useAtom as jest.Mock).mockImplementation((atom) => {
+        if (atom === currentMapAtom) {
+          return [{
+            id: 'first-floor',
+            gameObjects: [mockBoss]
+          }]
+        }
+        if (atom === bagItemsAtom) {
+          return [['bronze_key'], mockSetBagItems]
+        }
+
+        return [null, jest.fn()]
+      })
+
+      const { result } = renderHook(() =>
+        useInteractionHandler(
+          mockGameState,
+          mockDispatch,
+          { x: 5, y: 5 } // ボスの位置
+        )
+      )
+
+      result.current.handleInteract()
     })
 
     it('既に開けられた宝箱は開けない', () => {

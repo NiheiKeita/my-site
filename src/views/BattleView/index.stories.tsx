@@ -6,12 +6,14 @@ import { bagItemsAtom } from '../../store/bag'
 import { playerStatusAtom } from '../../store/player'
 import { initialPlayerStatus } from '../../data/initialPlayerStatus'
 import { createStore } from 'jotai/vanilla'
+import { enemies } from '~/data/enemies'
 
 const meta: Meta<typeof BattleView> = {
   title: 'Views/BattleView',
   component: BattleView,
+  tags: ['autodocs'],
   parameters: {
-    layout: 'fullscreen',
+    layout: 'centered',
   },
   decorators: [
     (Story) => (
@@ -38,10 +40,13 @@ const mockEnemy: Enemy = {
   image: '/assets/enemies/slime_default.png',
   defeatedImage: '/assets/enemies/slime_defeated.png'
 }
+const findEnemy = (id: number) => {
+  return enemies.find(enemy => enemy.id === id)
+}
 
 export const Default: Story = {
   args: {
-    enemy: mockEnemy,
+    enemy: findEnemy(4),
     onBattleEnd: () => { },
   },
 }
@@ -56,8 +61,8 @@ export const WithItems: Story = {
       const store = createStore()
       store.set(bagItemsAtom, ['healing_potion', 'mobile_battery', 'macbook_pro'])
       store.set(playerStatusAtom, { ...initialPlayerStatus, hp: 50, maxHp: 100, mp: 20, maxMp: 100 })
-      
-return (
+
+      return (
         <Provider store={store}>
           <Story />
         </Provider>
