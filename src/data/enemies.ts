@@ -50,8 +50,8 @@ export const enemies: Enemy[] = [
     defense: 4,
     exp: 20,
     gold: 10,
-    image: '/assets/enemies/mark_question.png',
-    defeatedImage: '/assets/enemies/mark_question.png',
+    image: '/assets/enemies/pakupakuti_default.png',
+    defeatedImage: '/assets/enemies/pakupakuti_defeated.png',
   },
   {
     id: 5,
@@ -146,7 +146,7 @@ export const enemies: Enemy[] = [
   },
   {
     id: 12,
-    name: 'かんぴ爆二ャム',
+    name: 'かんぴろ爆二ャム',
     level: 10,
     hp: 300,
     maxHp: 300,
@@ -154,7 +154,7 @@ export const enemies: Enemy[] = [
     defense: 50,
     exp: 1500,
     gold: 2000,
-    image: '/assets/enemies/mark_question.png',
-    defeatedImage: '/assets/enemies/mark_question.png',
+    image: '/assets/enemies/kanpirobakunyamu_default.png',
+    defeatedImage: '/assets/enemies/kanpirobakunyamu_defeated.png',
   }
 ] 
