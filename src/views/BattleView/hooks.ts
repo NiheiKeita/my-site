@@ -273,7 +273,11 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
           message: '逃げ出そうとしている...',
         }))
         setTimeout(() => {
-          if (Math.random() < ESCAPE_CHANCE) {
+          let escapeChance = Math.random()
+          if (enemy.id === 12) {
+            escapeChance = 1
+          }
+          if (escapeChance < ESCAPE_CHANCE) {
             setBattleState(prev => ({
               ...prev,
               message: '逃げ出した！',

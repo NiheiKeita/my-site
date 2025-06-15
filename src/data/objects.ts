@@ -47,6 +47,9 @@ export const getObjectImage = (type: GameObjectType, direction?: 'up' | 'down', 
   if (type === "chest") {
     return isOpened ? '/assets/objects/opened_chest.png' : objectImages["chest"]?.image || '/assets/objects/default.png'
   }
+  if (type === "enemy") {
+    return '/assets/objects/boss.png'
+  }
 
   return objectImages[type]?.image || '/assets/objects/default.png'
 } 
