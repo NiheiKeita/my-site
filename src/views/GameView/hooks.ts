@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useAtom } from 'jotai'
 import { useMachine } from '@xstate/react'
 import { playerPositionAtom } from '~/store/playerPosition'
@@ -12,9 +12,23 @@ import { gameMachine } from './machine'
 
 export const useGameLogic = () => {
   const [state, send] = useMachine(gameMachine)
+  const { context } = state
+  const {
+    currentEnemy,
+    playerDirection,
+    showPopup,
+    popupContent,
+    showCommandMenu,
+    previousLevel,
+  } = context
+  const isInBattle = state.matches('battle')
   const [playerStatus, setPlayerStatus] = useAtom(playerStatusAtom)
   const [playerPosition] = useAtom(playerPositionAtom)
   const [currentMap] = useAtom(currentMapAtom)
+
+  const emitPopup = useCallback((content: string) => {
+    send({ type: 'SHOW_POPUP', content })
+  }, [send])
 
   const { handleRandomEncounter, handleBattleEnd } = useBattleHandler(state, send)
   const { handleMove } = useMovementHandler(state, send, handleRandomEncounter)
@@ -23,53 +37,55 @@ export const useGameLogic = () => {
   useKeyboardHandler(state, send, handleMove, handleInteract)
 
   useEffect(() => {
-    if (playerStatus.level > state.context.previousLevel) {
-      const levelUpMessage = [
-        '✨ レベルアップ！ ✨',
-        `レベル ${state.context.previousLevel} → ${playerStatus.level}`,
-        `HP: ${playerStatus.maxHp - 20} → ${playerStatus.maxHp}`,
-        `攻撃力: ${playerStatus.attack - 5} → ${playerStatus.attack}`,
-        `防御力: ${playerStatus.defense - 3} → ${playerStatus.defense}`,
-      ].join('\n')
-      send({ type: 'SHOW_POPUP', content: `${levelUpMessage}` })
-      send({ type: 'SET_PREVIOUS_LEVEL', level: playerStatus.level })
-    }
+    if (playerStatus.level <= previousLevel) return
+
+    const levelUpMessage = [
+      '✨ レベルアップ！ ✨',
+      `レベル ${previousLevel} → ${playerStatus.level}`,
+      `HP: ${playerStatus.maxHp - 20} → ${playerStatus.maxHp}`,
+      `攻撃力: ${playerStatus.attack - 5} → ${playerStatus.attack}`,
+      `防御力: ${playerStatus.defense - 3} → ${playerStatus.defense}`,
+    ].join('\n')
+
+    emitPopup(levelUpMessage)
+    send({ type: 'SET_PREVIOUS_LEVEL', level: playerStatus.level })
   }, [
+    previousLevel,
+    emitPopup,
     playerStatus.attack,
     playerStatus.defense,
     playerStatus.level,
     playerStatus.maxHp,
     send,
-    state.context.previousLevel,
   ])
+
+  const setShowPopup = useCallback((show: boolean) => {
+    if (show) {
+      emitPopup('')
+    } else {
+      send({ type: 'HIDE_POPUP' })
+    }
+  }, [emitPopup, send])
+
+  const setShowCommandMenu = useCallback((show: boolean) => {
+    send({ type: show ? 'OPEN_MENU' : 'CLOSE_MENU' })
+  }, [send])
 
   return {
     playerStatus,
     setPlayerStatus,
-    isInBattle: state.matches('battle'),
-    currentEnemy: state.context.currentEnemy,
+    isInBattle,
+    currentEnemy,
     playerPosition,
-    playerDirection: state.context.playerDirection,
-    showPopup: state.context.showPopup,
-    popupContent: state.context.popupContent,
-    showCommandMenu: state.context.showCommandMenu,
+    playerDirection,
+    showPopup,
+    popupContent,
+    showCommandMenu,
     currentMap,
     handleMove,
     handleInteract,
     handleBattleEnd,
-    setShowPopup: (show: boolean) => {
-      if (show) {
-        send({ type: 'SHOW_POPUP', content: '' })
-      } else {
-        send({ type: 'HIDE_POPUP' })
-      }
-    },
-    setShowCommandMenu: (show: boolean) => {
-      if (show) {
-        send({ type: 'OPEN_MENU' })
-      } else {
-        send({ type: 'CLOSE_MENU' })
-      }
-    },
+    setShowPopup,
+    setShowCommandMenu,
   }
 }

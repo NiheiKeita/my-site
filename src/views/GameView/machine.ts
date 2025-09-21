@@ -37,6 +37,41 @@ export const gameMachine = setup({
     context: {} as GameContext,
     events: {} as GameEvent,
   },
+  actions: {
+    setDirection: assign(({ event }) => {
+      if (event.type !== 'SET_DIRECTION') return {}
+      
+return { playerDirection: event.direction }
+    }),
+    showPopup: assign(({ event }) => {
+      if (event.type !== 'SHOW_POPUP') return {}
+      
+return { showPopup: true, popupContent: event.content }
+    }),
+    hidePopup: assign(() => ({
+      showPopup: false,
+      popupContent: '',
+    })),
+    openMenu: assign(() => ({
+      showCommandMenu: true,
+    })),
+    closeMenu: assign(() => ({
+      showCommandMenu: false,
+    })),
+    setEnemy: assign(({ event }) => {
+      if (event.type !== 'ENTER_BATTLE') return {}
+      
+return { currentEnemy: event.enemy }
+    }),
+    clearEnemy: assign(() => ({
+      currentEnemy: null,
+    })),
+    setPreviousLevel: assign(({ event }) => {
+      if (event.type !== 'SET_PREVIOUS_LEVEL') return {}
+      
+return { previousLevel: event.level }
+    }),
+  },
 }).createMachine({
   id: 'game',
   context: initialGameContext,
@@ -46,19 +81,13 @@ export const gameMachine = setup({
       on: {
         ENTER_BATTLE: {
           target: 'battle',
-          actions: assign(({ event }) => ({
-            currentEnemy: event.enemy,
-          })),
+          actions: ['setEnemy'],
         },
       },
     },
     battle: {
-      entry: assign({
-        showCommandMenu: () => false,
-      }),
-      exit: assign({
-        currentEnemy: () => null,
-      }),
+      entry: ['closeMenu'],
+      exit: ['clearEnemy'],
       on: {
         END_BATTLE: 'exploration',
       },
@@ -66,36 +95,22 @@ export const gameMachine = setup({
   },
   on: {
     SET_DIRECTION: {
-      actions: assign(({ event }) => ({
-        playerDirection: event.direction,
-      })),
+      actions: ['setDirection'],
     },
     SHOW_POPUP: {
-      actions: assign(({ event }) => ({
-        showPopup: true,
-        popupContent: event.content,
-      })),
+      actions: ['showPopup'],
     },
     HIDE_POPUP: {
-      actions: assign(() => ({
-        showPopup: false,
-        popupContent: '',
-      })),
+      actions: ['hidePopup'],
     },
     OPEN_MENU: {
-      actions: assign(() => ({
-        showCommandMenu: true,
-      })),
+      actions: ['openMenu'],
     },
     CLOSE_MENU: {
-      actions: assign(() => ({
-        showCommandMenu: false,
-      })),
+      actions: ['closeMenu'],
     },
     SET_PREVIOUS_LEVEL: {
-      actions: assign(({ event }) => ({
-        previousLevel: event.level,
-      })),
+      actions: ['setPreviousLevel'],
     },
   },
 })

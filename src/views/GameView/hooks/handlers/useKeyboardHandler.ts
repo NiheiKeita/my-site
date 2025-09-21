@@ -9,8 +9,14 @@ export const useKeyboardHandler = (
   onInteract: () => void
 ) => {
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      switch (e.key) {
+    const handleCloseMenu = () => send({ type: 'CLOSE_MENU' })
+    const handleOpenMenu = () => send({ type: 'OPEN_MENU' })
+    const handleHidePopup = () => send({ type: 'HIDE_POPUP' })
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const { showPopup, showCommandMenu } = state.context
+
+      switch (event.key) {
         case 'ArrowUp':
           onMove('up')
           break
@@ -24,24 +30,24 @@ export const useKeyboardHandler = (
           onMove('right')
           break
         case 'z':
-          if (state.context.showCommandMenu) {
-            send({ type: 'CLOSE_MENU' })
+          if (showCommandMenu) {
+            handleCloseMenu()
           } else {
-            send({ type: 'OPEN_MENU' })
+            handleOpenMenu()
           }
           break
         case 'Enter':
-          if (state.context.showPopup) {
-            send({ type: 'HIDE_POPUP' })
-          } else if (state.context.showCommandMenu) {
-            send({ type: 'CLOSE_MENU' })
+          if (showPopup) {
+            handleHidePopup()
+          } else if (showCommandMenu) {
+            handleCloseMenu()
           } else {
             onInteract()
           }
           break
         case 'Escape':
-          if (state.context.showCommandMenu) {
-            send({ type: 'CLOSE_MENU' })
+          if (showCommandMenu) {
+            handleCloseMenu()
           }
           break
       }
@@ -50,5 +56,5 @@ export const useKeyboardHandler = (
     window.addEventListener('keydown', handleKeyDown)
 
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [onMove, onInteract, state.context.showPopup, state.context.showCommandMenu, send])
+  }, [state.context, onMove, onInteract, send])
 }

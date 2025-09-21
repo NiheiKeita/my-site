@@ -18,51 +18,59 @@ export const useBattleHandler = (
   const [currentMap] = useAtom(currentMapAtom)
   const setCurrentMap = useSetAtom(writeCurrentMapAtom)
 
+  const pickRandomEnemy = useCallback(() => {
+    const pool = currentMap.enemies
+    if (!pool.length) return null
+    const randomEncounter = pool[Math.floor(Math.random() * pool.length)]
+    
+return enemies.find(candidate => candidate.id === randomEncounter.id) ?? null
+  }, [currentMap.enemies])
+
   const handleRandomEncounter = useCallback(() => {
-    if (!state.matches('battle')) {
-      const randomEnemy = currentMap.enemies[Math.floor(Math.random() * currentMap.enemies.length)]
-      const targetEnemy = enemies.find(enemy => enemy.id === randomEnemy.id)
-      if (!targetEnemy) throw new Error('enemy not find')
-      send({ type: 'ENTER_BATTLE', enemy: targetEnemy })
-    }
-  }, [state, currentMap.enemies, send])
+    if (state.matches('battle')) return
+
+    const targetEnemy = pickRandomEnemy()
+    if (!targetEnemy) return
+
+    send({ type: 'ENTER_BATTLE', enemy: targetEnemy })
+  }, [state, pickRandomEnemy, send])
+
+  const handleDefeat = useCallback(() => {
+    setPlayerStatus(prev => ({ ...prev, hp: prev.maxHp }))
+    updatePlayerStatus({
+      gold: Math.floor(playerStatus.gold / 2),
+    })
+    setCurrentMap(maps[0])
+    setPlayerPosition({ x: 4, y: 4 })
+  }, [playerStatus.gold, setPlayerPosition, setPlayerStatus, setCurrentMap, updatePlayerStatus])
+
+  const handleVictory = useCallback((result: BattleResult) => {
+    updatePlayerStatus({
+      exp: playerStatus.exp + result.exp,
+      gold: playerStatus.gold + result.gold,
+      hp: result.hp,
+      mp: result.mp,
+    })
+  }, [playerStatus.exp, playerStatus.gold, updatePlayerStatus])
+
+  const handleEscape = useCallback((result: BattleResult) => {
+    updatePlayerStatus({
+      hp: result.hp,
+      mp: result.mp,
+    })
+  }, [updatePlayerStatus])
 
   const handleBattleEnd = useCallback((result: BattleResult) => {
     if (result.isVictory) {
-      updatePlayerStatus({
-        exp: playerStatus.exp + result.exp,
-        gold: playerStatus.gold + result.gold,
-        hp: result.hp,
-        mp: result.mp,
-      })
-    }
-
-    if (!result.isVictory && !result.isEscaped) {
-      setPlayerStatus(prev => ({ ...prev, hp: prev.maxHp }))
-      updatePlayerStatus({
-        gold: Math.floor(playerStatus.gold / 2),
-      })
-      setCurrentMap(maps[0])
-      setPlayerPosition({ x: 4, y: 4 })
-    }
-
-    if (result.isEscaped) {
-      updatePlayerStatus({
-        hp: result.hp,
-        mp: result.mp,
-      })
+      handleVictory(result)
+    } else if (!result.isEscaped) {
+      handleDefeat()
+    } else {
+      handleEscape(result)
     }
 
     send({ type: 'END_BATTLE' })
-  }, [
-    updatePlayerStatus,
-    playerStatus.exp,
-    playerStatus.gold,
-    setPlayerStatus,
-    setCurrentMap,
-    setPlayerPosition,
-    send,
-  ])
+  }, [handleVictory, handleDefeat, handleEscape, send])
 
   return {
     handleRandomEncounter,
