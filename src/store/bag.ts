@@ -53,13 +53,17 @@ export const useItemAtom = atom(
 
     // アイテムの効果を適用
     const { updates, messages } = applyItemEffect(item.effect, currentStatus)
-    set(updatePlayerStatusAtom, updates)
+    const hasEffect = Object.keys(updates).length > 0
 
-    // 効果メッセージを設定
-    set(itemEffectMessageAtom, messages.join('\n'))
+    if (hasEffect) {
+      set(updatePlayerStatusAtom, updates)
+    }
 
-    // 消費可能なアイテムの場合のみ消費
-    if (item.consumable) {
+    if (messages.length > 0) {
+      set(itemEffectMessageAtom, messages.join('\n'))
+    }
+
+    if (item.consumable && hasEffect) {
       set(removeBagItemAtom, itemId)
     }
   }

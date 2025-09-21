@@ -23,20 +23,25 @@ export const applyItemEffect = (effect: ItemEffect | undefined, currentStatus: P
   // HP回復
   if (effect.hp) {
     const newHp = Math.min(currentStatus.hp + effect.hp, currentStatus.maxHp)
-    updates.hp = newHp
     const hpDiff = newHp - currentStatus.hp
+
     if (hpDiff > 0) {
+      updates.hp = newHp
       messages.push(`HPが${hpDiff}回復した！`)
+    } else {
+      messages.push('HPはすでに満タンだ！')
     }
   }
 
   // MP回復
   if (effect.mp) {
     const newMp = Math.min(currentStatus.mp + effect.mp, currentStatus.maxMp)
-    updates.mp = newMp
     const mpDiff = newMp - currentStatus.mp
     if (mpDiff > 0) {
+      updates.mp = newMp
       messages.push(`MPが${mpDiff}回復した！`)
+    } else {
+      messages.push('MPはすでに満タンだ！')
     }
   }
 

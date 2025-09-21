@@ -221,6 +221,21 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
 
     // アイテムの効果を適用
     if (item.effect.hp) {
+      if (currentHp.current >= playerStatus.maxHp) {
+        setShowEndMessage(true)
+        setBattleState(prev => ({
+          ...prev,
+          message: 'HPはすでに満タンだ！',
+          isHealing: false,
+        }))
+
+        setTimeout(() => {
+          setShowEndMessage(false)
+        }, ANIMATION_DURATION)
+
+        return false
+      }
+
       setShowEndMessage(true)
       const heal = item.effect.hp
       currentHp.current = Math.min(playerStatus.maxHp, currentHp.current + heal)

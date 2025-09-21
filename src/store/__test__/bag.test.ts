@@ -73,7 +73,7 @@ describe('useItemAtom', () => {
 
     // メッセージが表示されることを確認
     const message = store.get(itemEffectMessageAtom)
-    expect(message).toBe('')
+    expect(message).toBeNull()
   })
 
   it('存在しないアイテムを使用しようとすると、何も起こらない', () => {
@@ -120,4 +120,30 @@ describe('useItemAtom', () => {
     const message = store.get(itemEffectMessageAtom)
     expect(message).toBeNull()
   })
-}) 
+
+  it('HPが満タンの状態では回復アイテムが消費されずメッセージが表示される', () => {
+    const store = createStore()
+
+    store.set(bagItemsAtom, ['healing_potion'])
+    store.set(playerStatusAtom, {
+      hp: 100,
+      maxHp: 100,
+      mp: 20,
+      maxMp: 50,
+      level: 1,
+      exp: 0,
+      gold: 0,
+      attack: 10,
+      defense: 5,
+      spells: [],
+    })
+
+    store.set(useItemAtom, 'healing_potion')
+
+    const remainingItems = store.get(bagItemsAtom)
+    expect(remainingItems).toEqual(['healing_potion'])
+
+    const message = store.get(itemEffectMessageAtom)
+    expect(message).toBe('HPはすでに満タンだ！')
+  })
+})

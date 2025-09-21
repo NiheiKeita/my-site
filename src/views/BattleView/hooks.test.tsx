@@ -151,6 +151,29 @@ describe('アイテム使用', () => {
     expect(result.current.playerHp).toBe(10) // 50 + 30
   })
 
+  it('HPが満タンの時に回復薬を使用しても消費されずメッセージが表示される', () => {
+    const { result } = renderHook(() => useBattleLogic(enemies[0], mockOnBattleEnd), {
+      wrapper: ({ children }) => (
+        <Provider>
+          {children}
+        </Provider>
+      )
+    })
+
+    act(() => {
+      result.current.handleCommandSelect('item', undefined, 'healing_potion')
+    })
+
+    const maxHp = result.current.playerHp
+
+    act(() => {
+      result.current.handleCommandSelect('item', undefined, 'healing_potion')
+    })
+
+    expect(result.current.playerHp).toBe(maxHp)
+    expect(result.current.battleState.message).toBe('HPはすでに満タンだ！')
+  })
+
   it('MP回復アイテムを使用するとMPが回復する', () => {
     const mobileBattery = items.find(item => item.id === 'mobile_battery')
     if (!mobileBattery) throw new Error('mobile_battery not found')

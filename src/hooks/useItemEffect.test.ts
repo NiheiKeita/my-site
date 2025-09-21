@@ -31,6 +31,15 @@ describe('useItemEffect', () => {
     expect(messages).toContain('HPが50回復した！')
   })
 
+  it('HPが満タンの場合は回復せず、警告メッセージが表示される', () => {
+    const effect = { hp: 30 }
+    const fullStatus = { ...initialStatus, hp: initialStatus.maxHp }
+    const { updates, messages } = applyItemEffect(effect, fullStatus)
+
+    expect(updates).not.toHaveProperty('hp')
+    expect(messages).toContain('HPはすでに満タンだ！')
+  })
+
   it('MP回復アイテムを使用すると、MPが回復し、メッセージが表示される', () => {
     const effect = { mp: 20 }
     const { updates, messages } = applyItemEffect(effect, initialStatus)
@@ -45,6 +54,15 @@ describe('useItemEffect', () => {
 
     expect(updates.mp).toBe(50) // maxMp
     expect(messages).toContain('MPが30回復した！')
+  })
+
+  it('MPが満タンの場合は回復せず、警告メッセージが表示される', () => {
+    const effect = { mp: 20 }
+    const fullStatus = { ...initialStatus, mp: initialStatus.maxMp }
+    const { updates, messages } = applyItemEffect(effect, fullStatus)
+
+    expect(updates).not.toHaveProperty('mp')
+    expect(messages).toContain('MPはすでに満タンだ！')
   })
 
   it('攻撃力上昇アイテムを使用すると、攻撃力が上がり、メッセージが表示される', () => {
