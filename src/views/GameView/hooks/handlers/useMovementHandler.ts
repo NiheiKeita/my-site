@@ -1,16 +1,17 @@
-import React, { useCallback } from 'react'
+import { useCallback } from 'react'
 import { useAtom, useSetAtom } from 'jotai'
 import { playerPositionAtom } from '~/store/playerPosition'
 import { currentMapAtom, writeCurrentMapAtom } from '~/store/currentMap'
 import { playerStatusAtom } from '~/store/player'
 import { maps } from '~/data/maps'
 import type { Position } from '~/types/game'
-import type { GameState } from '../types'
 import { ENEMY_ENCOUNTER_RATE } from '~/data/constants'
+import type { GameSend, GameState } from '../types'
+import type { Direction } from '../../machine'
 
 export const useMovementHandler = (
   state: GameState,
-  dispatch: React.Dispatch<any>,
+  send: GameSend,
   onRandomEncounter: () => void
 ) => {
   const [playerPosition, setPlayerPosition] = useAtom(playerPositionAtom)
@@ -18,8 +19,7 @@ export const useMovementHandler = (
   const setCurrentMap = useSetAtom(writeCurrentMapAtom)
   const [playerStatus, setPlayerStatus] = useAtom(playerStatusAtom)
 
-  // 移動先の座標を計算
-  const calculateNextPosition = useCallback((direction: 'up' | 'down' | 'left' | 'right'): Position => {
+  const calculateNextPosition = useCallback((direction: Direction): Position => {
     const newPosition = { ...playerPosition }
 
     switch (direction) {
@@ -40,7 +40,6 @@ export const useMovementHandler = (
     return newPosition
   }, [playerPosition, currentMap])
 
-  // オブジェクトとの衝突チェック
   const checkObjectCollision = useCallback((position: Position) => {
     return currentMap.gameObjects.find(
       (obj) => obj.position.x === position.x && obj.position.y === position.y &&
@@ -48,18 +47,16 @@ export const useMovementHandler = (
     )
   }, [currentMap])
 
-  // 泉との衝突処理
   const handleFountainCollision = useCallback((position: Position) => {
     const fountain = currentMap.gameObjects.find(
       (obj) => obj.position.x === position.x && obj.position.y === position.y && obj.type === 'fountain'
     )
     if (fountain && (playerStatus.hp < playerStatus.maxHp || playerStatus.mp < playerStatus.maxMp)) {
       setPlayerStatus(prev => ({ ...prev, hp: prev.maxHp, mp: prev.maxMp }))
-      dispatch({ type: 'SHOW_POPUP', payload: 'HP・MPが全回復した！' })
+      send({ type: 'SHOW_POPUP', content: 'HP・MPが全回復した！' })
     }
-  }, [currentMap, playerStatus, setPlayerStatus, dispatch])
+  }, [currentMap, playerStatus, setPlayerStatus, send])
 
-  // 階段との衝突処理
   const handleStairCollision = useCallback((position: Position) => {
     const stairs = currentMap.gameObjects.find(
       (obj) => obj.position.x === position.x && obj.position.y === position.y && obj.type === 'stairs'
@@ -81,10 +78,10 @@ export const useMovementHandler = (
     }
   }, [currentMap, setCurrentMap, setPlayerPosition])
 
-  const handleMove = useCallback((direction: 'up' | 'down' | 'left' | 'right') => {
-    if (state.showPopup || state.showCommandMenu) return
+  const handleMove = useCallback((direction: Direction) => {
+    if (state.context.showPopup || state.context.showCommandMenu) return
 
-    dispatch({ type: 'SET_PLAYER_DIRECTION', payload: direction })
+    send({ type: 'SET_DIRECTION', direction })
     const newPosition = calculateNextPosition(direction)
     if (playerPosition.x === newPosition.x && playerPosition.y === newPosition.y) {
       return
@@ -95,7 +92,7 @@ export const useMovementHandler = (
       return
     }
 
-    const isEncounter = Math.random() < ENEMY_ENCOUNTER_RATE && !state.isInBattle
+    const isEncounter = Math.random() < ENEMY_ENCOUNTER_RATE && !state.matches('battle')
     if (isEncounter) {
       onRandomEncounter()
 
@@ -106,9 +103,7 @@ export const useMovementHandler = (
     handleStairCollision(newPosition)
     setPlayerPosition(newPosition)
   }, [
-    state.showPopup,
-    state.showCommandMenu,
-    state.isInBattle,
+    state,
     calculateNextPosition,
     checkObjectCollision,
     handleFountainCollision,
@@ -116,7 +111,7 @@ export const useMovementHandler = (
     onRandomEncounter,
     setPlayerPosition,
     playerPosition,
-    dispatch
+    send,
   ])
 
   return {
@@ -124,6 +119,6 @@ export const useMovementHandler = (
     calculateNextPosition,
     checkObjectCollision,
     handleFountainCollision,
-    handleStairCollision
+    handleStairCollision,
   }
-} 
+}

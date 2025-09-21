@@ -7,44 +7,46 @@ import { addOpenedChestAtom } from '~/store/chest'
 import type { GameState } from '../../types'
 import type { GameObjectData } from '~/types/game'
 
-// jotaiのモック
 jest.mock('jotai', () => ({
   useAtom: jest.fn(),
   useSetAtom: jest.fn(),
-  atom: jest.fn((initialValue) => initialValue)
+  atom: jest.fn((initialValue) => initialValue),
 }))
 
-// モジュールのモック
 jest.mock('~/store/currentMap', () => ({
-  currentMapAtom: 'currentMapAtom'
+  currentMapAtom: 'currentMapAtom',
 }))
 
 jest.mock('~/store/bag', () => ({
   addBagItemAtom: 'addBagItemAtom',
   addPickedItemAtom: 'addPickedItemAtom',
-  bagItemsAtom: 'bagItemsAtom'
+  bagItemsAtom: 'bagItemsAtom',
 }))
 
 jest.mock('~/store/chest', () => ({
-  addOpenedChestAtom: 'addOpenedChestAtom'
+  addOpenedChestAtom: 'addOpenedChestAtom',
 }))
 
 describe('useInteractionHandler', () => {
-  const mockDispatch = jest.fn()
+  const mockSend = jest.fn()
   const mockAddBagItem = jest.fn()
   const mockAddPickedItem = jest.fn()
   const mockAddOpenedChest = jest.fn()
   const mockSetBagItems = jest.fn()
 
-  const mockGameState: GameState = {
-    isInBattle: false,
-    currentEnemy: null,
-    playerDirection: 'up',
-    showPopup: false,
-    popupContent: '',
-    showCommandMenu: false,
-    previousLevel: 1
-  }
+  const createMockState = (contextOverrides: Partial<GameState['context']> = {}): GameState => ({
+    value: 'exploration',
+    context: {
+      currentEnemy: null,
+      playerDirection: 'up',
+      showPopup: false,
+      popupContent: '',
+      showCommandMenu: false,
+      previousLevel: 1,
+      ...contextOverrides,
+    },
+    matches: () => false,
+  }) as unknown as GameState
 
   const mockChest: GameObjectData = {
     id: 'chest_1',
@@ -54,17 +56,17 @@ describe('useInteractionHandler', () => {
     contents: [
       {
         itemId: 'healing_potion',
-        quantity: 2
-      }
-    ]
+        quantity: 2,
+      },
+    ],
   }
 
   const mockBoss: GameObjectData = {
     id: 'boss_1',
     type: 'enemy',
-    position: { x: 5, y: 5 },
+    position: { x: 5, y: 4 },
     message: 'ボスが現れた！',
-    enemyId: 12
+    enemyId: 12,
   }
 
   const mockOpenedChest: GameObjectData = {
@@ -72,7 +74,7 @@ describe('useInteractionHandler', () => {
     type: 'chest',
     position: { x: 0, y: -1 },
     message: '宝箱だ',
-    isOpened: true
+    isOpened: true,
   }
 
   const mockLockedChest: GameObjectData = {
@@ -84,43 +86,44 @@ describe('useInteractionHandler', () => {
     contents: [
       {
         itemId: 'healing_potion',
-        quantity: 2
-      }
-    ]
+        quantity: 2,
+      },
+    ],
   }
 
   beforeEach(() => {
     jest.clearAllMocks()
-      ; (useAtom as jest.Mock).mockImplementation((atom) => {
-        if (atom === currentMapAtom) {
-          return [{
-            id: 'first-floor',
-            gameObjects: [mockChest]
-          }]
-        }
-        if (atom === bagItemsAtom) {
-          return [['bronze_key'], mockSetBagItems]
-        }
+    jest.useRealTimers()
+    ;(useAtom as jest.Mock).mockImplementation((atom) => {
+      if (atom === currentMapAtom) {
+        return [{
+          id: 'first-floor',
+          gameObjects: [mockChest],
+        }]
+      }
+      if (atom === bagItemsAtom) {
+        return [['bronze_key'], mockSetBagItems]
+      }
 
-        return [null, jest.fn()]
-      })
-      ; (useSetAtom as jest.Mock).mockImplementation((atom) => {
-        if (atom === addBagItemAtom) return mockAddBagItem
-        if (atom === addPickedItemAtom) return mockAddPickedItem
-        if (atom === addOpenedChestAtom) return mockAddOpenedChest
+      return [null, jest.fn()]
+    })
+    ;(useSetAtom as jest.Mock).mockImplementation((atom) => {
+      if (atom === addBagItemAtom) return mockAddBagItem
+      if (atom === addPickedItemAtom) return mockAddPickedItem
+      if (atom === addOpenedChestAtom) return mockAddOpenedChest
 
-        return jest.fn()
-      })
+      return jest.fn()
+    })
   })
 
   describe('handleInteract', () => {
     it('宝箱を開いてアイテムを追加する', () => {
       const { result } = renderHook(() =>
         useInteractionHandler(
-          mockGameState,
-          mockDispatch,
-          { x: 0, y: 0 }
-        )
+          createMockState(),
+          mockSend,
+          { x: 0, y: 0 },
+        ),
       )
 
       result.current.handleInteract()
@@ -128,20 +131,21 @@ describe('useInteractionHandler', () => {
       expect(mockSetBagItems).toHaveBeenCalled()
       expect(mockAddOpenedChest).toHaveBeenCalledWith({
         mapId: 'first-floor',
-        objectId: 'chest_1'
+        objectId: 'chest_1',
       })
-      expect(mockDispatch).toHaveBeenCalledWith({
+      expect(mockSend).toHaveBeenCalledWith({
         type: 'SHOW_POPUP',
-        payload: '回復薬を2個手に入れた！'
+        content: '回復薬を2個手に入れた！',
       })
     })
 
     it('ボスと対話すると戦闘が開始される', () => {
-      (useAtom as jest.Mock).mockImplementation((atom) => {
+      jest.useFakeTimers()
+      ;(useAtom as jest.Mock).mockImplementation((atom) => {
         if (atom === currentMapAtom) {
           return [{
             id: 'first-floor',
-            gameObjects: [mockBoss]
+            gameObjects: [mockBoss],
           }]
         }
         if (atom === bagItemsAtom) {
@@ -153,13 +157,24 @@ describe('useInteractionHandler', () => {
 
       const { result } = renderHook(() =>
         useInteractionHandler(
-          mockGameState,
-          mockDispatch,
-          { x: 5, y: 5 } // ボスの位置
-        )
+          createMockState(),
+          mockSend,
+          { x: 5, y: 5 },
+        ),
       )
 
       result.current.handleInteract()
+
+      expect(mockSend).toHaveBeenCalledWith({
+        type: 'SHOW_POPUP',
+        content: 'ボスが現れた！',
+      })
+
+      jest.runAllTimers()
+
+      expect(mockSend).toHaveBeenCalledWith(expect.objectContaining({
+        type: 'ENTER_BATTLE',
+      }))
     })
 
     it('既に開けられた宝箱は開けない', () => {
@@ -167,7 +182,7 @@ describe('useInteractionHandler', () => {
         if (atom === currentMapAtom) {
           return [{
             id: 'first-floor',
-            gameObjects: [mockOpenedChest]
+            gameObjects: [mockOpenedChest],
           }]
         }
         if (atom === bagItemsAtom) {
@@ -179,17 +194,17 @@ describe('useInteractionHandler', () => {
 
       const { result } = renderHook(() =>
         useInteractionHandler(
-          mockGameState,
-          mockDispatch,
-          { x: 0, y: 0 }
-        )
+          createMockState(),
+          mockSend,
+          { x: 0, y: 0 },
+        ),
       )
 
       result.current.handleInteract()
 
-      expect(mockDispatch).toHaveBeenCalledWith({
+      expect(mockSend).toHaveBeenCalledWith({
         type: 'SHOW_POPUP',
-        payload: 'この宝箱は既に開けられている'
+        content: 'この宝箱は既に開けられている',
       })
       expect(mockSetBagItems).not.toHaveBeenCalled()
       expect(mockAddOpenedChest).not.toHaveBeenCalled()
@@ -200,11 +215,11 @@ describe('useInteractionHandler', () => {
         if (atom === currentMapAtom) {
           return [{
             id: 'first-floor',
-            gameObjects: [mockLockedChest]
+            gameObjects: [mockLockedChest],
           }]
         }
         if (atom === bagItemsAtom) {
-          return [[], mockSetBagItems] // 鍵を持っていない状態
+          return [[], mockSetBagItems]
         }
 
         return [null, jest.fn()]
@@ -212,17 +227,17 @@ describe('useInteractionHandler', () => {
 
       const { result } = renderHook(() =>
         useInteractionHandler(
-          mockGameState,
-          mockDispatch,
-          { x: 0, y: 0 }
-        )
+          createMockState(),
+          mockSend,
+          { x: 0, y: 0 },
+        ),
       )
 
       result.current.handleInteract()
 
-      expect(mockDispatch).toHaveBeenCalledWith({
+      expect(mockSend).toHaveBeenCalledWith({
         type: 'SHOW_POPUP',
-        payload: '宝箱だ'
+        content: '宝箱だ',
       })
       expect(mockSetBagItems).not.toHaveBeenCalled()
       expect(mockAddOpenedChest).not.toHaveBeenCalled()
@@ -233,11 +248,11 @@ describe('useInteractionHandler', () => {
         if (atom === currentMapAtom) {
           return [{
             id: 'first-floor',
-            gameObjects: [mockLockedChest]
+            gameObjects: [mockLockedChest],
           }]
         }
         if (atom === bagItemsAtom) {
-          return [['silver'], mockSetBagItems] // 銀の鍵を持っている状態
+          return [['silver'], mockSetBagItems]
         }
 
         return [null, jest.fn()]
@@ -245,10 +260,10 @@ describe('useInteractionHandler', () => {
 
       const { result } = renderHook(() =>
         useInteractionHandler(
-          mockGameState,
-          mockDispatch,
-          { x: 0, y: 0 }
-        )
+          createMockState(),
+          mockSend,
+          { x: 0, y: 0 },
+        ),
       )
 
       result.current.handleInteract()
@@ -256,12 +271,12 @@ describe('useInteractionHandler', () => {
       expect(mockSetBagItems).toHaveBeenCalled()
       expect(mockAddOpenedChest).toHaveBeenCalledWith({
         mapId: 'first-floor',
-        objectId: 'chest_1'
+        objectId: 'chest_1',
       })
-      expect(mockDispatch).toHaveBeenCalledWith({
+      expect(mockSend).toHaveBeenCalledWith({
         type: 'SHOW_POPUP',
-        payload: '回復薬を2個手に入れた！'
+        content: '回復薬を2個手に入れた！',
       })
     })
   })
-}) 
+})

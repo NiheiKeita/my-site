@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import { useCallback } from 'react'
 import { useAtom, useSetAtom } from 'jotai'
 import { playerStatusAtom, updatePlayerStatusAtom } from '~/store/player'
 import { playerPositionAtom } from '~/store/playerPosition'
@@ -6,11 +6,11 @@ import { currentMapAtom, writeCurrentMapAtom } from '~/store/currentMap'
 import { maps } from '~/data/maps'
 import { enemies } from '~/data/enemies'
 import type { BattleResult } from '~/types/enemy'
-import type { GameState } from '../types'
+import type { GameSend, GameState } from '../types'
 
 export const useBattleHandler = (
   state: GameState,
-  dispatch: React.Dispatch<any>
+  send: GameSend
 ) => {
   const [playerStatus, setPlayerStatus] = useAtom(playerStatusAtom)
   const updatePlayerStatus = useSetAtom(updatePlayerStatusAtom)
@@ -19,16 +19,15 @@ export const useBattleHandler = (
   const setCurrentMap = useSetAtom(writeCurrentMapAtom)
 
   const handleRandomEncounter = useCallback(() => {
-    if (!state.isInBattle) {
+    if (!state.matches('battle')) {
       const randomEnemy = currentMap.enemies[Math.floor(Math.random() * currentMap.enemies.length)]
       const targetEnemy = enemies.find(enemy => enemy.id === randomEnemy.id)
-      if (!targetEnemy) throw new Error("enemy not find")
-      dispatch({ type: 'SET_BATTLE_STATE', payload: { isInBattle: true, enemy: targetEnemy } })
+      if (!targetEnemy) throw new Error('enemy not find')
+      send({ type: 'ENTER_BATTLE', enemy: targetEnemy })
     }
-  }, [state.isInBattle, currentMap.enemies, dispatch])
+  }, [state, currentMap.enemies, send])
 
   const handleBattleEnd = useCallback((result: BattleResult) => {
-    // 勝った時の処理
     if (result.isVictory) {
       updatePlayerStatus({
         exp: playerStatus.exp + result.exp,
@@ -37,7 +36,7 @@ export const useBattleHandler = (
         mp: result.mp,
       })
     }
-    // 負けた時の処理
+
     if (!result.isVictory && !result.isEscaped) {
       setPlayerStatus(prev => ({ ...prev, hp: prev.maxHp }))
       updatePlayerStatus({
@@ -46,18 +45,27 @@ export const useBattleHandler = (
       setCurrentMap(maps[0])
       setPlayerPosition({ x: 4, y: 4 })
     }
-    // 逃げた時
+
     if (result.isEscaped) {
       updatePlayerStatus({
         hp: result.hp,
         mp: result.mp,
       })
     }
-    dispatch({ type: 'SET_BATTLE_STATE', payload: { isInBattle: false, enemy: null } })
-  }, [updatePlayerStatus, playerStatus.exp, playerStatus.gold, setPlayerStatus, setCurrentMap, setPlayerPosition, dispatch])
+
+    send({ type: 'END_BATTLE' })
+  }, [
+    updatePlayerStatus,
+    playerStatus.exp,
+    playerStatus.gold,
+    setPlayerStatus,
+    setCurrentMap,
+    setPlayerPosition,
+    send,
+  ])
 
   return {
     handleRandomEncounter,
-    handleBattleEnd
+    handleBattleEnd,
   }
-} 
+}

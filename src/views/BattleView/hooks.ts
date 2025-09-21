@@ -323,7 +323,7 @@ export const useBattleLogic = (enemy: Enemy, onBattleEnd: (result: BattleResult)
         }))
         break
     }
-  }, [handleEnemyAttack, handlePlayerAttack, handleSpellSelect, handleItemUse, onBattleEnd, startAttackAnimation, currentHp, currentMp])
+  }, [handleEnemyAttack, handlePlayerAttack, handleSpellSelect, handleItemUse, onBattleEnd, startAttackAnimation, currentHp, currentMp, enemy.id])
 
 
   return {

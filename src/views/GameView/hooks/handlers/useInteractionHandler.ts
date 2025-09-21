@@ -1,17 +1,17 @@
-import React, { useCallback } from 'react'
+import { useCallback } from 'react'
 import { useAtom, useSetAtom } from 'jotai'
 import { currentMapAtom } from '~/store/currentMap'
 import { addBagItemAtom, addPickedItemAtom, bagItemsAtom } from '~/store/bag'
 import { items } from '~/data/items'
 import type { GameObjectData } from '~/types/game'
-import type { GameState } from '../types'
+import type { GameSend, GameState } from '../types'
 import { addOpenedChestAtom } from '~/store/chest'
 import { ANIMATION_DURATION } from '~/data/constants'
 import { enemies } from '~/data/enemies'
 
 export const useInteractionHandler = (
   state: GameState,
-  dispatch: React.Dispatch<any>,
+  send: GameSend,
   playerPosition: { x: number; y: number }
 ) => {
   const [currentMap] = useAtom(currentMapAtom)
@@ -20,38 +20,37 @@ export const useInteractionHandler = (
   const [bagItems, setBagItems] = useAtom(bagItemsAtom)
   const addOpenedChest = useSetAtom(addOpenedChestAtom)
 
-
   const openChest = useCallback((gameObject: GameObjectData) => {
     gameObject.contents?.forEach(content => {
       const item = items.find(i => i.id === content.itemId)
       if (item) {
         setBagItems(prev => [
           ...prev,
-          item.id
+          item.id,
         ])
-        dispatch({ type: 'SHOW_POPUP', payload: `${item.name}を${content.quantity}個手に入れた！` })
+        send({ type: 'SHOW_POPUP', content: `${item.name}を${content.quantity}個手に入れた！` })
       }
     })
     addOpenedChest({
       mapId: currentMap.id,
-      objectId: gameObject.id
+      objectId: gameObject.id,
     })
-  }, [addOpenedChest, currentMap.id, dispatch, setBagItems])
+  }, [addOpenedChest, currentMap.id, send, setBagItems])
 
   const handleChestOpen = useCallback((gameObject: GameObjectData) => {
     if (gameObject.isOpened) {
-      dispatch({ type: 'SHOW_POPUP', payload: 'この宝箱は既に開けられている' })
+      send({ type: 'SHOW_POPUP', content: 'この宝箱は既に開けられている' })
 
       return
     }
 
     if (gameObject.requiredKey) {
       const hasKey = bagItems.some(item =>
-        item === gameObject.requiredKey
+        item === gameObject.requiredKey,
       )
 
       if (!hasKey) {
-        dispatch({ type: 'SHOW_POPUP', payload: gameObject.message })
+        send({ type: 'SHOW_POPUP', content: gameObject.message })
 
         return
       }
@@ -61,24 +60,24 @@ export const useInteractionHandler = (
     if (gameObject.contents) {
       openChest(gameObject)
     }
-  }, [bagItems, openChest, dispatch])
+  }, [bagItems, openChest, send])
 
   const pickUpItemName = useCallback((nowObject: GameObjectData) => {
     const item = items.find(item => item.id === nowObject.itemId)
     if (!item) return
-    dispatch({ type: 'SHOW_POPUP', payload: `${item.name}を拾った` })
+    send({ type: 'SHOW_POPUP', content: `${item.name}を拾った` })
     addBagItem(item.id)
     addPickedItem({
       mapId: currentMap.id,
-      objectId: nowObject.id
+      objectId: nowObject.id,
     })
-  }, [addBagItem, addPickedItem, currentMap.id, dispatch])
+  }, [addBagItem, addPickedItem, currentMap.id, send])
 
   const handleInteract = useCallback(() => {
-    if (state.showPopup) return
+    if (state.context.showPopup) return
 
     const frontPosition = { ...playerPosition }
-    switch (state.playerDirection) {
+    switch (state.context.playerDirection) {
       case 'up':
         frontPosition.y -= 1
         break
@@ -94,10 +93,10 @@ export const useInteractionHandler = (
     }
 
     const object = currentMap.gameObjects.find(
-      obj => obj.position.x === frontPosition.x && obj.position.y === frontPosition.y
+      obj => obj.position.x === frontPosition.x && obj.position.y === frontPosition.y,
     )
     const nowObject = currentMap.gameObjects.find(
-      obj => obj.position.x === playerPosition.x && obj.position.y === playerPosition.y
+      obj => obj.position.x === playerPosition.x && obj.position.y === playerPosition.y,
     )
 
     if (nowObject?.type === 'item') {
@@ -105,18 +104,27 @@ export const useInteractionHandler = (
     } else if (object?.type === 'chest') {
       handleChestOpen(object)
     } else if (object?.type === 'enemy') {
-      dispatch({ type: 'SHOW_POPUP', payload: object.message })
+      send({ type: 'SHOW_POPUP', content: object.message })
       setTimeout(() => {
         const enemy = enemies.find(enemy => enemy.id === object.enemyId)
-        dispatch({ type: 'SET_BATTLE_STATE', payload: { isInBattle: true, enemy: enemy } })
+        if (!enemy) return
+        send({ type: 'ENTER_BATTLE', enemy })
       }, ANIMATION_DURATION)
     } else if (object) {
-      dispatch({ type: 'SHOW_POPUP', payload: object.message })
+      send({ type: 'SHOW_POPUP', content: object.message })
     }
-  }, [state.showPopup, state.playerDirection, playerPosition, currentMap.gameObjects, pickUpItemName, dispatch, handleChestOpen])
+  }, [
+    state.context.showPopup,
+    state.context.playerDirection,
+    playerPosition,
+    currentMap.gameObjects,
+    pickUpItemName,
+    send,
+    handleChestOpen,
+  ])
 
   return {
     handleInteract,
-    pickUpItemName
+    pickUpItemName,
   }
-} 
+}

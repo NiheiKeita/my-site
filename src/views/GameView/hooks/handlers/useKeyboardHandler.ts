@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react'
-import type { GameState } from '../types'
+import { useEffect } from 'react'
+import type { GameSend, GameState } from '../types'
+import type { Direction } from '../../machine'
 
 export const useKeyboardHandler = (
   state: GameState,
-  dispatch: React.Dispatch<any>,
-  onMove: (direction: 'up' | 'down' | 'left' | 'right') => void,
+  send: GameSend,
+  onMove: (direction: Direction) => void,
   onInteract: () => void
 ) => {
   useEffect(() => {
@@ -23,19 +24,25 @@ export const useKeyboardHandler = (
           onMove('right')
           break
         case 'z':
-          dispatch({ type: 'TOGGLE_COMMAND_MENU' })
+          if (state.context.showCommandMenu) {
+            send({ type: 'CLOSE_MENU' })
+          } else {
+            send({ type: 'OPEN_MENU' })
+          }
           break
         case 'Enter':
-          if (state.showPopup) {
-            dispatch({ type: 'HIDE_POPUP' })
-          } else if (state.showCommandMenu) {
-            dispatch({ type: 'HIDE_COMMAND_MENU' })
+          if (state.context.showPopup) {
+            send({ type: 'HIDE_POPUP' })
+          } else if (state.context.showCommandMenu) {
+            send({ type: 'CLOSE_MENU' })
           } else {
             onInteract()
           }
           break
         case 'Escape':
-          dispatch({ type: 'HIDE_COMMAND_MENU' })
+          if (state.context.showCommandMenu) {
+            send({ type: 'CLOSE_MENU' })
+          }
           break
       }
     }
@@ -43,5 +50,5 @@ export const useKeyboardHandler = (
     window.addEventListener('keydown', handleKeyDown)
 
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [onMove, onInteract, state.showPopup, state.showCommandMenu, dispatch])
-} 
+  }, [onMove, onInteract, state.context.showPopup, state.context.showCommandMenu, send])
+}
