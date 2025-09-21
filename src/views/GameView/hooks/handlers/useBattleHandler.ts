@@ -61,8 +61,18 @@ return enemies.find(candidate => candidate.id === randomEncounter.id) ?? null
   }, [updatePlayerStatus])
 
   const handleBattleEnd = useCallback((result: BattleResult) => {
+    let rewardMessage: string | null = null
+
     if (result.isVictory) {
       handleVictory(result)
+      const rewards: string[] = []
+      if (result.exp > 0) {
+        rewards.push(`${result.exp}の経験値を獲得した！`)
+      }
+      if (result.gold > 0) {
+        rewards.push(`${result.gold}ゴールドを手に入れた！`)
+      }
+      rewardMessage = rewards.length ? rewards.join('\n') : null
     } else if (!result.isEscaped) {
       handleDefeat()
     } else {
@@ -70,6 +80,10 @@ return enemies.find(candidate => candidate.id === randomEncounter.id) ?? null
     }
 
     send({ type: 'END_BATTLE' })
+
+    if (rewardMessage) {
+      send({ type: 'SHOW_POPUP', content: rewardMessage })
+    }
   }, [handleVictory, handleDefeat, handleEscape, send])
 
   return {

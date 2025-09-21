@@ -115,7 +115,11 @@ return v === value
         hp: 90,
         mp: 40,
       })
-      expect(mockSend).toHaveBeenCalledWith({ type: 'END_BATTLE' })
+      expect(mockSend).toHaveBeenNthCalledWith(1, { type: 'END_BATTLE' })
+      expect(mockSend).toHaveBeenNthCalledWith(2, {
+        type: 'SHOW_POPUP',
+        content: '100の経験値を獲得した！\n50ゴールドを手に入れた！',
+      })
     })
 
     it('戦闘に敗北した場合、HPが回復し、ゴールドが半減すること', () => {
@@ -135,7 +139,7 @@ return v === value
         gold: 50,
       })
       expect(mockSetPlayerPosition).toHaveBeenCalledWith({ x: 4, y: 4 })
-      expect(mockSend).toHaveBeenCalledWith({ type: 'END_BATTLE' })
+      expect(mockSend).toHaveBeenLastCalledWith({ type: 'END_BATTLE' })
     })
 
     it('戦闘から逃走した場合、ステータスが更新されること', () => {
@@ -152,6 +156,17 @@ return v === value
       expect(mockSetCurrentMap).not.toHaveBeenCalled()
       expect(mockSetPlayerPosition).not.toHaveBeenCalled()
       expect(mockSend).toHaveBeenCalledWith({ type: 'END_BATTLE' })
+    })
+
+    it('報酬がゼロの場合はポップアップを表示しない', () => {
+      const { result } = renderHook(() => useBattleHandler(createMockState(), mockSend))
+
+      act(() => {
+        result.current.handleBattleEnd({ isVictory: true, isEscaped: false, exp: 0, gold: 0, hp: 50, mp: 20 })
+      })
+
+      expect(mockSend).toHaveBeenCalledWith({ type: 'END_BATTLE' })
+      expect(mockSend).not.toHaveBeenCalledWith(expect.objectContaining({ type: 'SHOW_POPUP' }))
     })
   })
 })
